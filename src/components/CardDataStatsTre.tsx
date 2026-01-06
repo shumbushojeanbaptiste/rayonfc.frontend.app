@@ -26,10 +26,7 @@ const CardDataStatsTre: React.FC<Props> = ({
   onAddMoney,
   canBuy = false,
 }) => {
-  const ACCENT = "#05333a";
-  const ACCENTDARK= "#0e0e327";
-
-
+ 
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
