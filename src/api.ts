@@ -21,7 +21,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 🚪 Auto logout on auth failure
+// 🚪 Auto logout on auth failure 
 api.interceptors.response.use(
   (res) => res,
   (err) => {
