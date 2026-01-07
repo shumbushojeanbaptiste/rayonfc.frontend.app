@@ -26,7 +26,7 @@ const CardDataStatsTre: React.FC<Props> = ({
   onAddMoney,
   canBuy = false,
 }) => {
- 
+ // imibare
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
