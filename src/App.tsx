@@ -90,19 +90,19 @@ export default function App() {
         }
       >
         <Route path="home" element={<Mainhome />} />
-        <Route path="home/profile" element={<Profile />} />
         <Route path="home/trendsvideos" element={<Trendsvideos/>} />
         <Route path="home/freevideos" element={<Freevideos/>} />
         <Route path="home/myvideos" element={<Purchvideos/>} />
         <Route path="home/latest" element={<Latestvideos/>} />
-        <Route path="home/forms/form-elements" element={<FormElements />} />
+       {/* <Route path="home/forms/form-elements" element={<FormElements />} />
         <Route path="home/forms/form-layout" element={<FormLayout />} />
-        <Route path="home/tables" element={<Tables />} />
+        <Route path="home/tables" element={<Tables />} />    
+        <Route path="home/profile" element={<Profile />} />
         <Route path="home/settings" element={<Settings />} />
         <Route path="home/chart" element={<Chart />} />
         <Route path="home/ui/alerts" element={<Alerts />} />
         <Route path="home/ui/buttons" element={<Buttons />} />
-        <Route path="home/videos" element={<Allvideos />} />
+        <Route path="home/videos" element={<Allvideos />} />*/}
 
       </Route>
 
