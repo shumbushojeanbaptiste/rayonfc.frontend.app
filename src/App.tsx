@@ -66,7 +66,7 @@ export default function App() {
           index
           element={
           localStorage.getItem("token")
-              ? <Navigate to="/home" replace />
+              ? <Navigate to="/" replace />
               : <PublicHome />
        }
       />

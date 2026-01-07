@@ -1,14 +1,15 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
+
 import { useState } from "react";
 import PublicHeader from "../components/Publicinfo/PublicHeader";
+import Sidebartwo from "../components/Sidebar/indextwo";
 
 export default function PublicLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden dark:bg-boxdark-2 dark:text-bodydark">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <Sidebartwo sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* MAIN SCROLL CONTAINER */}
       <div
