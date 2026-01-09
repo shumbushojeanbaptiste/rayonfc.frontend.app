@@ -1,3 +1,4 @@
+import Categories from "../../components/categories/Categories";
 import Freevideos from "../Freevideos";
 import Latestvideos from "../Latestvideos";
 import Purchvideos from "../Purchasedvideos";
@@ -8,6 +9,7 @@ const Mainhome: React.FC = () => {
  
   return (
     <div className="">
+      <Categories />
       {/*<Allvideos />*/}
       <Purchvideos/>
       <Trendsvideos/>
