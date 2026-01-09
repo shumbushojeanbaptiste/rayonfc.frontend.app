@@ -1,6 +1,6 @@
-# OleePlay — Media Streaming Frontend (React + Vite + Tailwind) 🎬 🎵
+# OleePlay — Media Streaming Frontend
 
-**OleePlay** is a lightweight, responsive frontend for streaming and selling media — videos, films, and songs. Built with **React**, **Vite**, **TypeScript**, and **Tailwind CSS**, it's focused on fast playback, secure purchase flow, and an accessible, mobile-first UI.
+**OleePlay** is a lightweight, responsive frontend for streaming and selling media — videos, films, and songs.
 
 ## Quick Start
 
