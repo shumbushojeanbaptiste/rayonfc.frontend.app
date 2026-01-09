@@ -3,7 +3,7 @@ import Freevideos from "../Freevideos";
 import Latestvideos from "../Latestvideos";
 import Purchvideos from "../Purchasedvideos";
 import Trendsvideos from "../Trendsvideos";
-import Allvideos from "../Videos";
+//import Allvideos from "../Videos";
 
 const Mainhome: React.FC = () => {
  
@@ -15,9 +15,6 @@ const Mainhome: React.FC = () => {
       <Trendsvideos/>
       <Freevideos />
       <Latestvideos />
-      
-
-     
     
     </div>
   );

@@ -13,14 +13,14 @@ import Videosplay from "./pages/Dashboard/Videosplay";
 
 /* Auth pages */
 import Mainhome from "./pages/Dashboard/Mainhome";
-import Profile from "./pages/Profile";
+/*import Profile from "./pages/Profile";
 import FormElements from "./pages/Form/FormElements";
 import FormLayout from "./pages/Form/FormLayout";
 import Tables from "./pages/Tables";
 import Settings from "./pages/Settings";
 import Chart from "./pages/Chart";
 import Alerts from "./pages/UiElements/Alerts";
-import Buttons from "./pages/UiElements/Buttons";
+import Buttons from "./pages/UiElements/Buttons";*/
 
 /* Studio */
 import Sdashboard from "./pages/Oleestupages/Dashboard";
@@ -31,7 +31,7 @@ import Supload from "./pages/Oleestupages/Upload";
 import Ssettings from "./pages/Oleestupages/Settings";
 import PublicLayout from "./layout/PublicLayout";
 import Trendsvideos from "./pages/Trendsvideos";
-import Allvideos from "./pages/Videos";
+//import Allvideos from "./pages/Videos";
 import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
