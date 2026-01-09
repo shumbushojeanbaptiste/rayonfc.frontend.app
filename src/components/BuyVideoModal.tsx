@@ -18,6 +18,7 @@ const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const user = getAuthUser(); // ✅ signed-in user
 
@@ -52,13 +53,15 @@ const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
   }, []);
 
   const handleBuy = async () => {
+    setErrorMessage(null);
+
     if (!user) {
-      alert("You must be logged in to buy this video.");
+      setErrorMessage("Please sign in to continue with your purchase.");
       return;
     }
 
     if (!selectedMethod) {
-      alert("Payment method not available.");
+      setErrorMessage("No payment method is currently available.");
       return;
     }
 
@@ -80,11 +83,19 @@ const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
       if (res.data?.status === "successful") {
         onSuccess();
       } else {
-        alert(res.data?.message || "Payment failed");
+        setErrorMessage(
+          res.data?.message === "You already purchased this video"
+            ? "You have already purchased this video."
+            : res.data?.message || "Payment failed. Please try again."
+        );
       }
     } catch (err: any) {
       console.error("Payment error:", err);
-      alert(err.response?.data?.message || "Payment failed");
+      setErrorMessage(
+        err.response?.data?.message === "You already purchased this video"
+          ? "You have already purchased this video."
+          : err.response?.data?.message || "Payment failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -102,6 +113,13 @@ const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
         <p className="mb-4 text-sm text-gray-600">
           Amount will be deducted from your wallet balance.
         </p>
+
+        {/* ERROR MESSAGE */}
+        {errorMessage && (
+          <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-300 p-3 text-sm text-yellow-800">
+            {errorMessage}
+          </div>
+        )}
 
         {/* PAYMENT METHODS */}
         <div className="mb-4">
