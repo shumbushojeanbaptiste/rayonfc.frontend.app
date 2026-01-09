@@ -163,7 +163,7 @@ const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
           </button>
         </div>
       </div>
-    </div>
+    </div> 
   );
 };
 

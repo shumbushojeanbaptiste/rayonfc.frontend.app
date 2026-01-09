@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import DefaultLayout from "./layout/DefaultLayout";
 import Slayout from "./components/Oleestudio/Slayout";
@@ -35,6 +35,7 @@ import Allvideos from "./pages/Videos";
 import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
+import Loader from "./common/Loader";
 
  
 /* 🔐 Auth guard */
@@ -55,9 +56,20 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
 };
 
 export default function App() {
+  const [loading, setLoading] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  return (
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
+  return  loading ? (
+    <Loader />
+  ) :  (
     <Routes>
 
       {/* 🌍 PUBLIC ROUTES */}
