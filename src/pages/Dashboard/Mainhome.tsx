@@ -8,7 +8,7 @@ const Mainhome: React.FC = () => {
  
   return (
     <div className="">
-      <Allvideos />
+      {/*<Allvideos />*/}
       <Purchvideos/>
       <Trendsvideos/>
       <Freevideos />

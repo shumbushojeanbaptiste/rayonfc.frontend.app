@@ -71,7 +71,7 @@ const CardDataStatsPur: React.FC<Props> = ({
       <div className="flex justify-between items-center mt-2">
         <p className="text-sm text-gray-600 dark:text-white">{total}</p>
 
-        {/* ACTION BUTTON */}
+        {/* ACTION BUTTONs */}
         {isPaid ? (
           canBuy ? (
             <button

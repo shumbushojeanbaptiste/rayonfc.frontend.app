@@ -65,7 +65,7 @@ const DropdownUserLogin = () => {
         <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">
             <li>
-              <Link to="/home" className="hover:text-green-900">
+              <Link to="/" className="hover:text-green-900">
                 Home
               </Link>
             </li>
