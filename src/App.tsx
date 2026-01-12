@@ -1,5 +1,5 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import DefaultLayout from "./layout/DefaultLayout";
 import Slayout from "./components/Oleestudio/Slayout";
@@ -13,14 +13,14 @@ import Videosplay from "./pages/Dashboard/Videosplay";
 
 /* Auth pages */
 import Mainhome from "./pages/Dashboard/Mainhome";
-import Profile from "./pages/Profile";
+/*import Profile from "./pages/Profile";
 import FormElements from "./pages/Form/FormElements";
 import FormLayout from "./pages/Form/FormLayout";
 import Tables from "./pages/Tables";
 import Settings from "./pages/Settings";
 import Chart from "./pages/Chart";
 import Alerts from "./pages/UiElements/Alerts";
-import Buttons from "./pages/UiElements/Buttons";
+import Buttons from "./pages/UiElements/Buttons";*/
 
 /* Studio */
 import Sdashboard from "./pages/Oleestupages/Dashboard";
@@ -31,10 +31,11 @@ import Supload from "./pages/Oleestupages/Upload";
 import Ssettings from "./pages/Oleestupages/Settings";
 import PublicLayout from "./layout/PublicLayout";
 import Trendsvideos from "./pages/Trendsvideos";
-import Allvideos from "./pages/Videos";
+//import Allvideos from "./pages/Videos";
 import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
+import Loader from "./common/Loader";
 
  
 /* 🔐 Auth guard */
@@ -55,9 +56,20 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
 };
 
 export default function App() {
+  const [loading, setLoading] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
-  return (
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
+
+  return  loading ? (
+    <Loader />
+  ) :  (
     <Routes>
 
       {/* 🌍 PUBLIC ROUTES */}

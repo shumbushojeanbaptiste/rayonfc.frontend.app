@@ -57,7 +57,7 @@ const Header = (props: {
           
           {/* <!-- Hamburger Toggle BTN --> */}
 
-          <Link className="block flex-shrink-0 lg:hidden" to="/">
+          <Link className="block flex-shrink-0 lg:hidden" to="home/">
             <img src={LogoIcon} alt="Logo" className="w-10 h-12"/>
           </Link>
         </div>
@@ -109,11 +109,11 @@ const Header = (props: {
             {/* <!-- Dark Mode Toggler --> */}
 
             {/* <!-- Notification Menu Area --> */}
-            <DropdownNotification />
+            {/*<DropdownNotification />*/}
             {/* <!-- Notification Menu Area --> */}
 
             {/* <!-- Chat Notification Area --> */}
-            <DropdownMessage />
+            {/*<DropdownMessage />*/}
             {/* <!-- Chat Notification Area --> */}
           </ul>
 

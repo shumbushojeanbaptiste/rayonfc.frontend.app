@@ -213,3 +213,14 @@ span.flatpickr-weekday,
 [x-cloak] {
   display: none !important;
 }
+
+/* Hide scrollbar (Chrome, Safari) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar (Firefox & Edge) */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Edge */
+  scrollbar-width: none;    /* Firefox */
+}
