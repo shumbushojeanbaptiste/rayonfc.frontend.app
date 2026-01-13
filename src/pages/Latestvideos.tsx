@@ -9,7 +9,7 @@ const Latestvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
  
   const navigate = useNavigate();
-  const ACCENT = "#05333a";
+  const ACCENT = "#05333a"; 
 
   /* -----------------------------
      LOAD VIDEOS
@@ -41,7 +41,7 @@ const Latestvideos: React.FC = () => {
         {videos.map((video: any, idx: number) => {
            
            //console.log("VIDEO OBJECT:", video);
-
+     
           return (
             <div
               key={`${video.id}-${idx}`}
