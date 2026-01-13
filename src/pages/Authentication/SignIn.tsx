@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import LogoDark from '../../images/logo/logo-dark.svg';
-import Logo from '../../images/logo/logo.svg';
+import LogoDark from '../../images/logo/logo2.png';
+import Logo from '../../images/logo/logo2.png';
 import { motion } from "framer-motion";
 
 const SignIn: React.FC = () => {
@@ -34,8 +34,8 @@ const SignIn: React.FC = () => {
       }
 
       // Save JWT & user info
-      localStorage.setItem('token', result.data.jwt);
-      localStorage.setItem('user', JSON.stringify(result.data));
+     sessionStorage.setItem('token', result.data.jwt);
+     sessionStorage.setItem('user', JSON.stringify(result.data));
 
       // ✅ Redirect to authenticated home
       navigate('/home', { replace: true });

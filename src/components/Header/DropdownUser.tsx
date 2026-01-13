@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
+
 interface User {
   first_name?: string;
   last_name?: string;
@@ -14,7 +15,7 @@ const DropdownUser = () => {
   // 🔹 Read signed-in user
   const user: User | null = (() => {
     try {
-      const stored = localStorage.getItem('user');
+      const stored = sessionStorage.getItem('user'); // ✅ FIX
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -22,8 +23,8 @@ const DropdownUser = () => {
   })();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('token'); // ✅ FIX
+    sessionStorage.removeItem('user');
     navigate('/', { replace: true });
   };
 
@@ -44,7 +45,7 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src="/default-avatar.png"alt="User" />
+          <img src="/default-avatar.png" alt="User" />
         </span>
 
         <svg
@@ -61,7 +62,6 @@ const DropdownUser = () => {
         </svg>
       </Link>
 
-      {/* Dropdown */}
       {dropdownOpen && (
         <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">

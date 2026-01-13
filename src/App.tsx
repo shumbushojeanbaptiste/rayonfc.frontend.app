@@ -40,15 +40,20 @@ import Loader from "./common/Loader";
  
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
+
   if (!token) return <Navigate to="/auth/signin" replace />;
 
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if (payload.exp * 1000 < Date.now()) {
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
       return <Navigate to="/auth/signin" replace />;
     }
   } catch {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
     return <Navigate to="/auth/signin" replace />;
   }
 
@@ -59,6 +64,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
   const { pathname } = useLocation();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -67,31 +73,27 @@ export default function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  return  loading ? (
+  return loading ? (
     <Loader />
-  ) :  (
+  ) : (
     <Routes>
 
       {/* 🌍 PUBLIC ROUTES */}
-       <Route element={<PublicLayout />}>
-      <Route
+      <Route element={<PublicLayout />}>
+        <Route
           index
           element={
-          localStorage.getItem("token")
+            sessionStorage.getItem("token")
               ? <Navigate to="/" replace />
               : <PublicHome />
-       }
-      />
-      
-      <Route path="auth/signin" element={<SignIn />} />
-      <Route path="auth/signup" element={<SignUp />} />
-      <Route path="auth/verify" element={<Verify />} />
-      <Route path="watch/:id" element={<Videosplay />} />
+          }
+        />
+
+        <Route path="auth/signin" element={<SignIn />} />
+        <Route path="auth/signup" element={<SignUp />} />
+        <Route path="auth/verify" element={<Verify />} />
+        <Route path="watch/:id" element={<Videosplay />} />
       </Route>
-      
-   
-
-
 
       {/* 🔐 AUTHENTICATED APP */}
       <Route
@@ -102,20 +104,10 @@ export default function App() {
         }
       >
         <Route path="home" element={<Mainhome />} />
-        <Route path="home/trendsvideos" element={<Trendsvideos/>} />
-        <Route path="home/freevideos" element={<Freevideos/>} />
-        <Route path="home/myvideos" element={<Purchvideos/>} />
-        <Route path="home/latest" element={<Latestvideos/>} />
-       {/* <Route path="home/forms/form-elements" element={<FormElements />} />
-        <Route path="home/forms/form-layout" element={<FormLayout />} />
-        <Route path="home/tables" element={<Tables />} />    
-        <Route path="home/profile" element={<Profile />} />
-        <Route path="home/settings" element={<Settings />} />
-        <Route path="home/chart" element={<Chart />} />
-        <Route path="home/ui/alerts" element={<Alerts />} />
-        <Route path="home/ui/buttons" element={<Buttons />} />
-        <Route path="home/videos" element={<Allvideos />} />*/}
-
+        <Route path="home/trendsvideos" element={<Trendsvideos />} />
+        <Route path="home/freevideos" element={<Freevideos />} />
+        <Route path="home/myvideos" element={<Purchvideos />} />
+        <Route path="home/latest" element={<Latestvideos />} />
       </Route>
 
       {/* 🔐 OLEEPLAY STUDIO */}

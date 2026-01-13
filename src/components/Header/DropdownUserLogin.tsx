@@ -15,7 +15,7 @@ const DropdownUserLogin = () => {
   // 🔹 Read signed-in user
   const user: User | null = (() => {
     try {
-      const stored = localStorage.getItem('user');
+      const stored = sessionStorage.getItem('user'); // ✅ FIX
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -60,7 +60,6 @@ const DropdownUserLogin = () => {
         </svg>
       </Link>
 
-      {/* Dropdown */}
       {dropdownOpen && (
         <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">
@@ -69,7 +68,6 @@ const DropdownUserLogin = () => {
                 Home
               </Link>
             </li>
-           
           </ul>
 
           <button
