@@ -36,7 +36,7 @@ import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
 import Loader from "./common/Loader";
-
+import Search from "./pages/Search";
  
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -103,6 +103,7 @@ export default function App() {
           </RequireAuth>
         }
       >
+        <Route path="home/search" element={<Search />} />
         <Route path="home" element={<Mainhome />} />
         <Route path="home/trendsvideos" element={<Trendsvideos />} />
         <Route path="home/freevideos" element={<Freevideos />} />

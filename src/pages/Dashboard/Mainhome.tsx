@@ -9,7 +9,7 @@ const Mainhome: React.FC = () => {
  
   return (
     <div className="">
-      <Categories />
+      {/*<Categories />*/}
       {/*<Allvideos />*/}
       <Purchvideos/>
       <Trendsvideos/>
