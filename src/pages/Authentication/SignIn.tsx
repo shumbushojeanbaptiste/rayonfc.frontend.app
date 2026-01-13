@@ -34,27 +34,28 @@ const SignIn: React.FC = () => {
       }
 
       // Save JWT & user info
-     sessionStorage.setItem('token', result.data.jwt);
-     sessionStorage.setItem('user', JSON.stringify(result.data));
+      sessionStorage.setItem('token', result.data.jwt);
+      sessionStorage.setItem('user', JSON.stringify(result.data));
 
-      // ✅ Redirect to authenticated home
-      navigate('/home', { replace: true });
+      // ✅ Redirect to unified home page
+      navigate('/', { replace: true });
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
- 
+
   return (
     <>
       <Breadcrumb pageName="Sign In" />
 
       <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+      >
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">

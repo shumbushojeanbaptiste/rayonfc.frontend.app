@@ -149,7 +149,7 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               
               <li>
                 <NavLink
-                  to="home/Trendsvideos"
+                  to="/Trendsvideos"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-gray-900 dark:text-white duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-meta-4 ${
                     pathname.includes('calendar') &&
                     'bg-graydark dark:bg-meta-4'
@@ -177,7 +177,7 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </li>
               <li>
                 <NavLink
-                  to="home/latest"
+                  to="/latest"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-gray-900 dark:text-white duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-meta-4 ${
                     pathname.includes('calendar') &&
                     'bg-graydark dark:bg-meta-4'
@@ -205,7 +205,7 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </li>
               <li>
                 <NavLink
-                  to="home/freevideos"
+                  to="/freevideos"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-gray-900 dark:text-white duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-meta-4 ${
                     pathname.includes('calendar') &&
                     'bg-graydark dark:bg-meta-4'
@@ -330,7 +330,7 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
               <li>
                 <NavLink
-                  to="home/myvideos"
+                  to="/myvideos"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-gray-900 dark:text-white duration-300 ease-in-out hover:bg-gray-100 dark:hover:bg-meta-4 ${
                     pathname.includes('calendar') &&
                     'bg-graydark dark:bg-meta-4'
