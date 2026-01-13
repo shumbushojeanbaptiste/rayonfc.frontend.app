@@ -54,9 +54,9 @@ export default function Sdashboard() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   // Signed user
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userSession = sessionStorage.getItem("user"); // ✅ sessionStorage
+  const user = userSession ? JSON.parse(userSession) : null;
   const userId = user?.user_id;
-
   const location = useLocation(); // ✅ NEW
 
   // --------------------------------

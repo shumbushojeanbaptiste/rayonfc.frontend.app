@@ -7,7 +7,7 @@ export const api = axios.create({
 
 // 🔐 Attach JWT + handle FormData
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token"); // ✅ changed
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -21,19 +21,17 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 🚪 Auto logout on auth failure 
+// 🚪 Auto logout on auth failure
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 || err.response?.status === 403) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("token"); // ✅ changed
+      sessionStorage.removeItem("user");
       window.location.href = "/";
     }
     return Promise.reject(err);
   }
 );
-
-
 
 export default api;
