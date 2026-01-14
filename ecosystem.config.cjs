@@ -2,8 +2,8 @@ module.exports = {
   apps: [
     {
       name: "oleeplay-frontend",
-      script: "npx",
-      args: "serve -s dist -l 4000 --listen 0.0.0.0",
+      script: "npm",
+      args: "run start",
       cwd: "/home/oleeplay/htdocs/www.oleeplay.com/oleeplay-frontend-web",
       watch: false,
       env: {
