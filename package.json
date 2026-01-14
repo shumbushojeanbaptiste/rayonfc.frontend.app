@@ -12,7 +12,7 @@
     "name": "TailAdmin",
     "email": "hello@tailadmin.com",
     "url": "https://tailadmin.com"
-  },
+  }, 
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "apexcharts": "^3.41.0",
