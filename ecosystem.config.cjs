@@ -1,12 +1,14 @@
 module.exports = {
   apps: [
     {
-      name: "olee-react",
-      script: "serve",
-      args: "-s dist -l 3000",
+      name: "oleeplay-frontend",        // Name in PM2
+      script: "npm",                   // Run npm
+      args: "run dev",                 // Command
+      cwd: "/home/oleeplay/htdocs/www.oleeplay.com/oleeplay-frontend-web", // Project dir
+      watch: false,                    // Disable file watching
       env: {
-        NODE_ENV: "production"
+        NODE_ENV: "development"
       }
     }
   ]
-};
+}
