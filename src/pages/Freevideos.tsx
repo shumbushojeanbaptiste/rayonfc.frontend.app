@@ -4,6 +4,7 @@ import Breadcrumb from "../components/Breadcrumbs/Breadcrumb";
 import api from "../api";
 import { Video } from "../types/videouser";
 import CardDataStatsFree from "../components/CardDataStatsFree";
+import { encodeId } from "../utils/hashid"; // ✅ ADDED
 
 const Freevideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -21,7 +22,6 @@ const Freevideos: React.FC = () => {
       .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err));
   }, []);
 
- 
   /* -----------------------------
      FILE URL
   ------------------------------*/
@@ -32,17 +32,12 @@ const Freevideos: React.FC = () => {
     return path.includes("/") ? path : `${path}`;
   };
 
-
   return (
     <>
       <Breadcrumb pageName="Free Videos" />
 
       <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {videos.map((video: any, idx: number) => {
-           
-           //console.log("VIDEO OBJECT:", video);
-
-
           return (
             <div
               key={`${video.video_id}-${idx}`}
@@ -57,15 +52,15 @@ const Freevideos: React.FC = () => {
               <CardDataStatsFree
                 id={video.video_id}
                 videoTitle={video.title}
-                //channelName={ownerName || "Unknown Owner"}
                 total={`${video.views_count ?? 0} views`}
                 price={video.price}
                 thumbnail={fileUrl(video.thumbnail)}
                 profileImage={fileUrl(video.profile_photo)}
-                onClick={() =>  navigate(`/watch/${video.video_id}`, {
-                  state: video, // pass the full video object
-                })}
-                
+                onClick={() =>
+                  navigate(`/watch/${encodeId(video.video_id)}`, {
+                    state: video, // pass the full video object
+                  })
+                }
               />
             </div>
           );

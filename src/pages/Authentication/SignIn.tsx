@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo2.png';
@@ -33,9 +33,9 @@ const SignIn: React.FC = () => {
         throw new Error(result.message || 'Login failed');
       }
 
-      // Save JWT & user info
-      sessionStorage.setItem('token', result.data.jwt);
-      sessionStorage.setItem('user', JSON.stringify(result.data));
+      // ✅ Save JWT & user info to localStorage for persistent login
+      localStorage.setItem('token', result.data.jwt);
+      localStorage.setItem('user', JSON.stringify(result.data));
 
       // ✅ Redirect to unified home page
       navigate('/', { replace: true });
@@ -123,7 +123,7 @@ const SignIn: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Don’t have an account?{' '}
-                    <Link to="/auth/signup" className="text-green-950">
+                    <Link to="/auth/signup" className="text-green-950 dark:text-gray-200">
                       Sign Up
                     </Link>
                   </p>

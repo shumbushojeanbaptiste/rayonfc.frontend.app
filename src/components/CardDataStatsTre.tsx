@@ -33,7 +33,7 @@ const CardDataStatsTre: React.FC<Props> = ({
   return (
     <div
       className="bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition p-2
-      dark:bg-gray-800 dark:border-gray-700"
+      dark:bg-gray-800 dark:border-gray-700" onClick={onClick}
       
     >
       <div className="relative"> 
@@ -84,7 +84,7 @@ const CardDataStatsTre: React.FC<Props> = ({
             </button>
           ) : (
             <button
-              onClick={(e) => {
+              onClick={(e) => { 
                 e.stopPropagation();
                 onAddMoney?.();
               }}
