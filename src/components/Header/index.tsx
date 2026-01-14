@@ -67,7 +67,7 @@ const Header = (props: {
             </span>
           </button>
 
-          <Link className="block flex-shrink-0 lg:hidden" to="home/">
+          <Link className="block flex-shrink-0 lg:hidden" to="/">
             <img src={LogoIcon} alt="Logo" className="w-10 h-12" />
           </Link>
         </div>

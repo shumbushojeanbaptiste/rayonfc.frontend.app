@@ -6,7 +6,7 @@ import CardDataStatsTre from "../components/CardDataStatsTre";
 import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
-
+ 
 const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
