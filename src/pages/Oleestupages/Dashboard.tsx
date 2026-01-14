@@ -54,7 +54,7 @@ export default function Sdashboard() {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
   // Signed user
-  const userSession = sessionStorage.getItem("user"); // ✅ sessionStorage
+  const userSession = localStorage.getItem("user"); // ✅ UPDATED to localStorage
   const user = userSession ? JSON.parse(userSession) : null;
   const userId = user?.user_id;
   const location = useLocation(); // ✅ NEW
@@ -217,11 +217,11 @@ export default function Sdashboard() {
       <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
 
       {/* WALLET */}
-      <div className="bg-white p-4 rounded shadow mb-6">
+      <div className="bg-white dark:bg-gray-900 p-4 rounded shadow mb-6">
         <h3 className="font-semibold mb-3">Wallet</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white p-4 rounded shadow border-2 border-green-600">
+          <div className="bg-white dark:bg-gray-900 p-4 rounded shadow border-2 border-green-600">
             <p className="text-sm text-gray-500">Balance</p>
             <p className="text-2xl font-bold text-green-600">
               {balance.toLocaleString()}
@@ -247,7 +247,7 @@ export default function Sdashboard() {
       </div>
 
       {/* ANALYTICS */}
-      <div className="bg-white p-4 rounded shadow">
+      <div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
         <h3 className="font-semibold mb-2">Views (recent days)</h3>
         <div style={{ width: "100%", height: 240 }}>
           <ResponsiveContainer>
@@ -264,11 +264,11 @@ export default function Sdashboard() {
       {/* DEPOSIT MODAL */}
       {showDeposit && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-sm">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded shadow w-full max-w-sm">
             <h3 className="text-lg font-semibold mb-4">Deposit Funds</h3>
 
             <select
-              className="border p-2 w-full mb-3"
+              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
               value={paymentMethodId}
               onChange={(e) => setPaymentMethodId(e.target.value)}
             >
@@ -281,7 +281,7 @@ export default function Sdashboard() {
             </select>
 
             <select
-              className="border p-2 w-full mb-3"
+              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
               value={currencyId}
               onChange={(e) => setCurrencyId(e.target.value)}
             >
@@ -294,7 +294,7 @@ export default function Sdashboard() {
             </select>
 
             <input
-              className="border p-2 w-full mb-3"
+              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
               placeholder="Phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -302,7 +302,7 @@ export default function Sdashboard() {
 
             <input
               type="number"
-              className="border p-2 w-full mb-4"
+              className="border p-2 w-full mb-4 bg-white dark:bg-gray-900"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
@@ -311,7 +311,7 @@ export default function Sdashboard() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="px-4 py-2 text-gray-600"
+                className="px-4 py-2 text-gray-600 "
               >
                 Cancel
               </button>

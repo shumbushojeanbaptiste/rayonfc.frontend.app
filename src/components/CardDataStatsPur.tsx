@@ -106,7 +106,7 @@ const CardDataStatsPur: React.FC<Props> = ({
           >
             Watch
           </button>
-        )}
+        ) }
       </div>
     </div>
   );

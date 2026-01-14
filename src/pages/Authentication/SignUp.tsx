@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import LogoDark from "../../images/logo/logo-dark.svg";
-import Logo from "../../images/logo/logo.svg";
+import LogoDark from '../../images/logo/logo2.png';
+import Logo from '../../images/logo/logo2.png';
 import { User, Mail } from "lucide-react";
 import api from "../../api";
 
@@ -47,7 +47,13 @@ const SignUp: React.FC = () => {
         email: textFields.email,
       };
 
-      await api.post("/api/accounts/new_account", payload);
+      const res = await api.post("/api/accounts/new_account", payload);
+
+      // ✅ Save JWT & user info to localStorage for persistent login
+      if (res.data?.jwt && res.data?.user) {
+        localStorage.setItem("token", res.data.jwt);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+      }
 
       // 👉 Redirect to Verify page after successful registration
       navigate(`/auth/verify?email=${encodeURIComponent(textFields.email)}`);
@@ -143,7 +149,7 @@ const SignUp: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Already have an account?{" "}
-                    <Link to="/auth/signin" className="text-green-950">
+                    <Link to="/auth/signin" className="text-gray-200">
                       Sign In
                     </Link>
                   </p>

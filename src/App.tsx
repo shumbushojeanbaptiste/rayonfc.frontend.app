@@ -30,20 +30,20 @@ import Loader from "./common/Loader";
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token"); // ✅ use localStorage
 
   if (!token) return <Navigate to="/auth/signin" replace />;
 
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
     if (payload.exp * 1000 < Date.now()) {
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("user");
+      localStorage.removeItem("token"); // ✅ update
+      localStorage.removeItem("user");  // ✅ update
       return <Navigate to="/auth/signin" replace />;
     }
   } catch {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("user");
+    localStorage.removeItem("token"); // ✅ update
+    localStorage.removeItem("user");  // ✅ update
     return <Navigate to="/auth/signin" replace />;
   }
 
@@ -54,7 +54,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
   const { pathname } = useLocation();
-  const token = sessionStorage.getItem("token");
+  const token = localStorage.getItem("token"); // ✅ use localStorage
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -93,7 +93,8 @@ export default function App() {
         <Route path="auth/signin" element={<SignIn />} />
         <Route path="auth/signup" element={<SignUp />} />
         <Route path="auth/verify" element={<Verify />} />
-        <Route path="watch/:id" element={<Videosplay />} />
+         {/* 🎥 Video watch page (HASHED ID) */}
+        <Route path="watch/:hash" element={<Videosplay />} />
       </Route>
 
       {/* 🔐 AUTHENTICATED APP */}

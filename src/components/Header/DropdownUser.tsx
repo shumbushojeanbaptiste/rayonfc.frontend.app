@@ -12,10 +12,10 @@ const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate(); 
 
-  // 🔹 Read signed-in user
+  // 🔹 Read signed-in user from localStorage instead of sessionStorage
   const user: User | null = (() => {
     try {
-      const stored = sessionStorage.getItem('user'); // ✅ FIX
+      const stored = localStorage.getItem('user'); // ✅ Changed to localStorage
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -23,8 +23,8 @@ const DropdownUser = () => {
   })();
 
   const handleLogout = () => {
-    sessionStorage.removeItem('token'); // ✅ FIX
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('token'); // ✅ Changed to localStorage
+    localStorage.removeItem('user');
     navigate('/', { replace: true });
   };
 
@@ -66,7 +66,7 @@ const DropdownUser = () => {
         <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">
             <li>
-              <Link to="/" className="hover:text-green-900">
+              <Link to="/" className="hover:text-gray-300">
                 Home
               </Link>
             </li>
@@ -81,7 +81,7 @@ const DropdownUser = () => {
               </Link>
             </li>*/}
             <li>
-              <Link to="/studio" className="hover:text-green-900">
+              <Link to="/studio" className="hover:text-gray-300">
                 Studio
               </Link>
             </li>
@@ -89,7 +89,7 @@ const DropdownUser = () => {
 
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3.5 px-6 py-4 text-sm font-medium hover:text-red-600"
+            className="flex w-full items-center gap-3.5 px-6 py-4 text-sm font-medium hover:text-gray-300"
           >
             Log Out
           </button>

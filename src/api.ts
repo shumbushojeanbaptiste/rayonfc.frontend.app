@@ -7,7 +7,8 @@ export const api = axios.create({
 
 // 🔐 Attach JWT + handle FormData
 api.interceptors.request.use((config) => {
-  const token = sessionStorage.getItem("token"); // ✅ changed
+  // Use localStorage instead of sessionStorage
+  const token = localStorage.getItem("token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -26,9 +27,9 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401 || err.response?.status === 403) {
-      sessionStorage.removeItem("token"); // ✅ changed
-      sessionStorage.removeItem("user");
-      window.location.href = "/";
+      localStorage.removeItem("token"); // ✅ changed
+      localStorage.removeItem("user");
+      window.location.href = "/"; // redirect to login page
     }
     return Promise.reject(err);
   }

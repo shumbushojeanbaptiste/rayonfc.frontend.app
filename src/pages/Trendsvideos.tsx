@@ -6,7 +6,8 @@ import CardDataStatsTre from "../components/CardDataStatsTre";
 import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
- 
+import { encodeId } from "../utils/hashid"; // ✅ ADDED
+
 const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -68,22 +69,25 @@ const Trendsvideos: React.FC = () => {
   };
 
   const handleAddMoney = () => {
-    // ✅ correct route + auto-open deposit modal
     navigate({
       pathname: "/studio",
       search: "?deposit=true",
     });
   };
 
- const handleWatch = (video: Video) => {
-  navigate(`/watch/${video.id}`, {
-    state: {
-      ...video,
-      source: "trending",
-    },
-  });
-};
+  // ✅ UPDATED: Allow 5-second free preview before requiring purchase
+  const handleWatch = (video: Video) => {
+    const freePreview = video.price > 0 && (!user || walletBalance < video.price);
 
+    navigate(`/watch/${encodeId(video.id)}`, {
+      state: {
+        ...video,
+        source: "trending",
+        freePreview,          // flag to enable preview
+        previewDuration: 5,   // 5 seconds
+      },
+    });
+  };
 
   return (
     <>
@@ -130,7 +134,6 @@ const Trendsvideos: React.FC = () => {
           onSuccess={() => {
             setSelectedVideo(null);
 
-            // refresh balance after purchase
             if (user) {
               api
                 .get(`/api/payments/balance/${user.user_id}`)
