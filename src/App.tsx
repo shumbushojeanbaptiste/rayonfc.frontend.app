@@ -13,14 +13,6 @@ import Videosplay from "./pages/Dashboard/Videosplay";
 
 /* Auth pages */
 import Mainhome from "./pages/Dashboard/Mainhome";
-/*import Profile from "./pages/Profile";
-import FormElements from "./pages/Form/FormElements";
-import FormLayout from "./pages/Form/FormLayout";
-import Tables from "./pages/Tables";
-import Settings from "./pages/Settings";
-import Chart from "./pages/Chart";
-import Alerts from "./pages/UiElements/Alerts";
-import Buttons from "./pages/UiElements/Buttons";*/
 
 /* Studio */
 import Sdashboard from "./pages/Oleestupages/Dashboard";
@@ -31,13 +23,11 @@ import Supload from "./pages/Oleestupages/Upload";
 import Ssettings from "./pages/Oleestupages/Settings";
 import PublicLayout from "./layout/PublicLayout";
 import Trendsvideos from "./pages/Trendsvideos";
-//import Allvideos from "./pages/Videos";
 import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
 import Loader from "./common/Loader";
 
- 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
   const token = sessionStorage.getItem("token");
@@ -64,6 +54,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const [dark, setDark] = useState(false);
   const { pathname } = useLocation();
+  const token = sessionStorage.getItem("token");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -73,22 +64,32 @@ export default function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  return loading ? (
-    <Loader />
-  ) : (
+  if (loading) return <Loader />;
+
+  return (
     <Routes>
+
+      {/* 🌍 HOME - unified URL "/" */}
+      <Route
+        path="/"
+        element={
+          token ? (
+            <RequireAuth>
+              <DefaultLayout />
+            </RequireAuth>
+          ) : (
+            <PublicLayout />
+          )
+        }
+      >
+        <Route
+          index
+          element={token ? <Mainhome /> : <PublicHome />}
+        />
+      </Route>
 
       {/* 🌍 PUBLIC ROUTES */}
       <Route element={<PublicLayout />}>
-        <Route
-          index
-          element={
-            sessionStorage.getItem("token")
-              ? <Navigate to="/" replace />
-              : <PublicHome />
-          }
-        />
-
         <Route path="auth/signin" element={<SignIn />} />
         <Route path="auth/signup" element={<SignUp />} />
         <Route path="auth/verify" element={<Verify />} />
@@ -103,11 +104,10 @@ export default function App() {
           </RequireAuth>
         }
       >
-        <Route path="home" element={<Mainhome />} />
-        <Route path="home/trendsvideos" element={<Trendsvideos />} />
-        <Route path="home/freevideos" element={<Freevideos />} />
-        <Route path="home/myvideos" element={<Purchvideos />} />
-        <Route path="home/latest" element={<Latestvideos />} />
+        <Route path="trendsvideos" element={<Trendsvideos />} />
+        <Route path="freevideos" element={<Freevideos />} />
+        <Route path="myvideos" element={<Purchvideos />} />
+        <Route path="latest" element={<Latestvideos />} />
       </Route>
 
       {/* 🔐 OLEEPLAY STUDIO */}

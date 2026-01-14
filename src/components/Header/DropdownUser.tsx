@@ -70,7 +70,7 @@ const DropdownUser = () => {
                 Home
               </Link>
             </li>
-            <li>
+            {/*<li>
               <Link to="/profile" className="hover:text-green-900">
                 My Profile
               </Link>
@@ -79,7 +79,7 @@ const DropdownUser = () => {
               <Link to="/settings" className="hover:text-green-900">
                 Account Settings
               </Link>
-            </li>
+            </li>*/}
             <li>
               <Link to="/studio" className="hover:text-green-900">
                 Studio
