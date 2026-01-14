@@ -1,12 +1,12 @@
 // src/pages/PublicHome.tsx 
-import Trendsvideos from "./Trendsvideos";
-import Freevideos from "./Freevideos";
+
+import Trendsvideossample from "./Trendsvideossample";
 
  const PublicHome: React.FC = () => {
   return (
    
       <div className="">
-       <Trendsvideos/>
+       <Trendsvideossample/>
        
       </div>
  
