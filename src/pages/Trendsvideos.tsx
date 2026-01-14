@@ -7,7 +7,7 @@ import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid"; // ✅ ADDED
-
+ 
 const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -75,16 +75,12 @@ const Trendsvideos: React.FC = () => {
     });
   };
 
-  // ✅ UPDATED: Allow 5-second free preview before requiring purchase
+  // ✅ UPDATED: encode ID before navigation
   const handleWatch = (video: Video) => {
-    const freePreview = video.price > 0 && (!user || walletBalance < video.price);
-
     navigate(`/watch/${encodeId(video.id)}`, {
       state: {
         ...video,
         source: "trending",
-        freePreview,          // flag to enable preview
-        previewDuration: 5,   // 5 seconds
       },
     });
   };

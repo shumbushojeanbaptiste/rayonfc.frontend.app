@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../../api";
 import CardVideoPlay from "../../components/CardsVideoPlay";
@@ -27,17 +27,15 @@ const Videosplay: React.FC = () => {
   const [newComment, setNewComment] = useState("");
   const [showMore, setShowMore] = useState(false);
 
-  // ✅ Free preview states
-  const [previewEnded, setPreviewEnded] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   const ACCENT = "#05333a";
 
   const fileUrl = (path: string) => {
     if (!path || path === "null" || path === "undefined") {
       return "/default-avatar.png";
     }
-    if (!path.includes("/")) path = `${path}`;
+    if (!path.includes("/")) {
+      path = `${path}`;
+    }
     return path;
   };
 
@@ -89,6 +87,7 @@ const Videosplay: React.FC = () => {
     }
     forceScrollTop();
 
+    // ✅ Skip API calls if user is not authenticated
     const token = localStorage.getItem("token");
 
     if (passedVideo) {
@@ -125,19 +124,6 @@ const Videosplay: React.FC = () => {
     setTimeout(forceScrollTop, 120);
   }, [id]);
 
-  // ✅ Free preview timer
-  useEffect(() => {
-    if (videoRef.current) {
-      const timer = setTimeout(() => {
-        videoRef.current?.pause();
-        setPreviewEnded(true);
-        toast.info("Your free preview has ended. Please purchase to continue watching.");
-      }, 5000); // 5 seconds free preview
-
-      return () => clearTimeout(timer);
-    }
-  }, [video]);
-
   const submitComment = async () => {
     if (!newComment.trim()) {
       toast.error("Comment cannot be empty.");
@@ -146,14 +132,14 @@ const Videosplay: React.FC = () => {
 
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("You must be logged in to comment.");
+      toast.error("You must be logged in to comment."); // ✅ Toast instead of alert
       return;
     }
 
     const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
 
     if (!currentUser.user_id) {
-      toast.error("You must be logged in to comment.");
+      toast.error("You must be logged in to comment."); // ✅ Toast
       return;
     }
 
@@ -164,14 +150,14 @@ const Videosplay: React.FC = () => {
         comment: newComment,
       });
 
-      toast.success("Comment posted successfully!");
+      toast.success("Comment posted successfully!"); // ✅ Toast
       setNewComment("");
 
       const res = await api.get(`/api/videos/comments/${id}`);
       setComments(res.data.data || []);
     } catch (err) {
       console.error("Failed to add comment:", err);
-      toast.error("Failed to submit comment. Please try again.");
+      toast.error("Failed to submit comment. Please try again."); // ✅ Toast
     }
   };
 
@@ -215,9 +201,8 @@ const Videosplay: React.FC = () => {
             rate=""
           >
             {/* PLAYER */}
-            <div className="relative w-full rounded-xl overflow-hidden shadow-lg bg-black">
+            <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
               <video
-                ref={videoRef}
                 src={fileUrl(getVideoUrl(video))}
                 controls
                 autoPlay
@@ -231,19 +216,6 @@ const Videosplay: React.FC = () => {
                 playsInline
                 webkit-playsinline="true"
               />
-
-              {/* ✅ Free preview overlay */}
-              {previewEnded && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/70 text-white text-center p-4">
-                  <p className="mb-4">Your free preview has ended.</p>
-                  <button
-                    className="px-4 py-2 bg-green-600 rounded"
-                    onClick={() => navigate("/studio?deposit=true")}
-                  >
-                    Buy to Continue
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* DESCRIPTION */}
@@ -327,7 +299,7 @@ const Videosplay: React.FC = () => {
                   }}
                 >
                   <img
-                    src="/default-avatar.png"
+                    src= "/default-avatar.png"
                     className="w-12 h-12 rounded-full object-cover bg-gray-300"
                     alt="user"
                   />
