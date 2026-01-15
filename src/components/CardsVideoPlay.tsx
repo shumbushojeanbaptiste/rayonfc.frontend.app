@@ -1,33 +1,36 @@
 import React, { useState } from "react";
-import {
-  ThumbsUp,
-  Share2,
-  Bookmark,
-  ThumbsDown,
-  X,
-  Link,
- 
-} from "lucide-react";
+import { ThumbsUp, Share2, ThumbsDown, X, Link } from "lucide-react";
 import { toast } from "react-toastify";
-import {  BsWhatsapp} from "react-icons/bs";
+import { BsWhatsapp } from "react-icons/bs";
 import { RiFacebookFill, RiTwitterXFill } from "react-icons/ri";
-
 
 interface Props {
   title?: string;
   total?: string;
+  totallike?: string;
+  totaldislike?: string;
+  onLike?: () => void;
+  onDislike?: () => void;
+  liked?: boolean;
+  disliked?: boolean;
   videoTitle: string;
   channelName: string;
   followers?: string;
   periode: string;
   rate?: string;
-  children: any;
+  children: React.ReactNode;
   shareUrl?: string;
 }
 
 const CardVideoPlay: React.FC<Props> = ({
   title,
   total,
+  totallike,
+  totaldislike,
+  onLike,
+  onDislike,
+  liked,
+  disliked,
   videoTitle,
   channelName,
   followers,
@@ -62,7 +65,6 @@ const CardVideoPlay: React.FC<Props> = ({
     return `${shareUrl}?t=${formatTimestamp(getCurrentTime())}`;
   };
 
-  // ✅ FIXED: ALWAYS open YouTube-style modal
   const handleShare = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -91,27 +93,40 @@ const CardVideoPlay: React.FC<Props> = ({
       </div>
 
       {/* ACTION BUTTONS */}
-      <div className="flex gap-4 mt-4 border-y py-3 text-gray-700  dark:text-white ">
-        <button className="flex items-center gap-2 hover:text-gray-500 dark:hover:text-slate-300">
-          <ThumbsUp size={18} /> Like
-        </button>
+      <div className="flex gap-4 mt-4 border-y py-3 text-gray-700 dark:text-white">
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={onLike}
+            disabled={liked || disliked}
+            className={`flex items-center ${
+              liked ? "text-blue-600 dark:text-blue-400" : "hover:text-gray-500 dark:hover:text-slate-300"
+            }`}
+          >
+            <ThumbsUp size={18} />
+          </button>
+          <p className="text-base">{totallike}</p>
+        </div>
 
-        <button className="flex items-center gap-2 hover:text-gray-500 dark:hover:text-slate-300">
-          <ThumbsDown size={18} /> Dislike
-        </button>
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={onDislike}
+            disabled={liked || disliked}
+            className={`flex items-center ${
+              disliked ? "text-red-600 dark:text-red-400" : "hover:text-gray-500 dark:hover:text-slate-300"
+            }`}
+          >
+            <ThumbsDown size={18} />
+          </button>
+          <p className="text-base">{totaldislike}</p>
+        </div>
 
-        {/* ✅ FIXED SHARE BUTTON */}
         <button
           type="button"
           onClick={handleShare}
-          className="flex items-center gap-2  hover:text-gray-500 dark:hover:text-slate-300"
+          className="flex items-center gap-2 hover:text-gray-500 dark:hover:text-slate-300"
         >
           <Share2 size={18} /> Share
         </button>
-
-        {/*<button className="flex items-center gap-2">
-          <Bookmark size={18} /> Save
-        </button>*/}
       </div>
 
       {/* CHANNEL INFO */}
@@ -157,9 +172,7 @@ const CardVideoPlay: React.FC<Props> = ({
               </a>
 
               <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-                  buildShareUrl()
-                )}`}
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(buildShareUrl())}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex flex-col items-center gap-1"
@@ -169,21 +182,16 @@ const CardVideoPlay: React.FC<Props> = ({
               </a>
 
               <a
-                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(
-                  buildShareUrl()
-                )}`}
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(buildShareUrl())}`}
                 target="_blank"
                 rel="noreferrer"
                 className="flex flex-col items-center gap-1"
               >
-                < RiTwitterXFill size={18} />
+                <RiTwitterXFill size={18} />
                 X
               </a>
 
-              <button
-                onClick={copyLink}
-                className="flex flex-col items-center gap-1"
-              >
+              <button onClick={copyLink} className="flex flex-col items-center gap-1">
                 <Link size={18} />
                 Copy
               </button>
