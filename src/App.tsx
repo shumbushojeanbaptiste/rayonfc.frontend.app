@@ -94,7 +94,7 @@ export default function App() {
         <Route path="auth/signup" element={<SignUp />} />
         <Route path="auth/verify" element={<Verify />} />
          {/* 🎥 Video watch page (HASHED ID) */}
-        <Route path="watch/:hash" element={<Videosplay />} />
+        <Route path="watching/:hash" element={<Videosplay />} />
       </Route>
 
       {/* 🔐 AUTHENTICATED APP */}
@@ -105,6 +105,7 @@ export default function App() {
           </RequireAuth>
         }
       >
+        <Route path="watch/:hash" element={<Videosplay />} />
         <Route path="trendsvideos" element={<Trendsvideos />} />
         <Route path="freevideos" element={<Freevideos />} />
         <Route path="myvideos" element={<Purchvideos />} />
