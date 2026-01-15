@@ -77,7 +77,7 @@ const Trendsvideossample: React.FC = () => {
 
   // ✅ UPDATED: encode ID before navigation
   const handleWatch = (video: Video) => {
-    navigate(`/watch/${encodeId(video.id)}`, {
+    navigate(`/watching/${encodeId(video.id)}`, {
       state: {
         ...video,
         source: "trending",

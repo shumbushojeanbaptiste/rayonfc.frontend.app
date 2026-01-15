@@ -39,7 +39,7 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {user ? `${user.first_name} ${user.last_name}` : 'Guest'}
           </span>
-          <span className="block text-xs text-gray-500">
+          <span className="block text-xs text-gray-500 dark:text-slate-300">
             {user?.email}
           </span>
         </span>
@@ -66,7 +66,7 @@ const DropdownUser = () => {
         <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">
             <li>
-              <Link to="/" className="hover:text-gray-300">
+              <Link to="/" className="dark:hover:text-gray-300 hover:text-gray-700">
                 Home
               </Link>
             </li>
@@ -81,7 +81,7 @@ const DropdownUser = () => {
               </Link>
             </li>*/}
             <li>
-              <Link to="/studio" className="hover:text-gray-300">
+              <Link to="/studio" className="dark:hover:text-gray-300 hover:text-gray-700">
                 Studio
               </Link>
             </li>
@@ -89,7 +89,7 @@ const DropdownUser = () => {
 
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3.5 px-6 py-4 text-sm font-medium hover:text-gray-300"
+            className="flex w-full items-center gap-3.5 px-6 py-4 text-sm font-medium hover:text-gray-700 dark:hover:text-gray-300"
           >
             Log Out
           </button>
