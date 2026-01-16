@@ -77,7 +77,7 @@ const Header = (props: {
           <form onSubmit={handleSearch}>
             <div className="relative">
               <button
-                type="submit"
+                //type="submit"
                 className="absolute left-0 top-1/2 -translate-y-1/2"
               >
                 <svg
