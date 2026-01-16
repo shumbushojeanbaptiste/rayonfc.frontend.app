@@ -5,6 +5,7 @@ interface Props {
   videoTitle: string;
   channelName: string;
   total: string;
+  duration: string;
   price?: number | string | null;
   thumbnail?: string;
   profileImage?: string;
@@ -18,6 +19,7 @@ const CardDataStatsTresample: React.FC<Props> = ({
   videoTitle,
   channelName,
   total,
+  duration,
   price,
   thumbnail,
   profileImage,
@@ -48,6 +50,9 @@ const CardDataStatsTresample: React.FC<Props> = ({
             {numericPrice.toFixed(2)}
           </div>
         )}
+        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
+            {duration}
+          </div>
       </div>
 
       <div className="flex items-center gap-3 mt-2">

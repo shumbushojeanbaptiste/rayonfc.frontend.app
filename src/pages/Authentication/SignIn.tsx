@@ -114,7 +114,7 @@ const SignIn: React.FC = () => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-lg bg-green-950 p-4 text-white hover:bg-opacity-90 disabled:opacity-50"
+                    className="w-full rounded-lg bg-green-950 dark:bg-yellow-400 p-4 text-white dark:text-green-950 hover:bg-opacity-90 disabled:opacity-50"
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </motion.button>

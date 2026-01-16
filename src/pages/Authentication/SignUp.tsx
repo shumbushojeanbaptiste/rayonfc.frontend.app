@@ -141,7 +141,7 @@ const SignUp: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-950 text-white p-4 rounded-lg mt-4 disabled:opacity-60"
+                  className="w-full bg-green-950 dark:bg-yellow-400 text-white dark:text-green-950 p-4 rounded-lg mt-4 disabled:opacity-60"
                 >
                   {loading ? "Creating..." : "Create Account"}
                 </motion.button>

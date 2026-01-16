@@ -67,7 +67,7 @@ const Verify = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="p-10 bg-white dark:bg-black rounded-xl shadow-lg w-full max-w-md"
+        className="p-10 bg-green-950 dark:bg-yellow-400 rounded-xl shadow-lg w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-6 text-center dark:text-white">
           Verify Your Account
