@@ -55,14 +55,14 @@ export default function Categories() {
   }, []);
 
   return (
-    <div className="relative w-full border-b border-gray-200 select-none">
+    <div className="relative w-full  border-gray-200 select-none">
 
       {/* LEFT ARROW */}
       {showLeft && (
         <button
           onClick={scrollLeft}
-          className="flex absolute left-0 top-1/2 -translate-y-1/2 z-10
-                     bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 dark:border-[#05333a]
+          className="flex absolute -left-4 top-1/2 -translate-y-1/2 z-10
+                     bg-slate-100 backdrop-blur-sm shadow-lg border border-gray-200 dark:border-[#05333a]
                      w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
                      items-center justify-center rounded-full
                      hover:bg-white hover:shadow-xl transition dark:text-white dark:bg-[#05333a]"
@@ -109,8 +109,8 @@ export default function Categories() {
       {showRight && (
         <button
           onClick={scrollRight}
-          className="flex absolute right-0 top-1/2 -translate-y-1/2 z-10
-                     bg-white/90 backdrop-blur-sm shadow-lg border border-gray-200 dark:border-[#05333a]
+          className="flex absolute -right-4 top-1/2 -translate-y-1/2 z-10
+                     bg-slate-100 backdrop-blur-sm shadow-lg border border-gray-200 dark:border-[#05333a]
                      w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10
                      items-center justify-center rounded-full
                      hover:bg-white hover:shadow-xl transition dark:text-white dark:bg-[#05333a]"

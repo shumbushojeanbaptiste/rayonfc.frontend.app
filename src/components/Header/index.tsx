@@ -76,7 +76,7 @@ const Header = (props: {
         <div className="hidden sm:block">
           <form onSubmit={handleSearch}>
             <div className="relative">
-              {/*<button
+              <button
                 type="submit"
                 className="absolute left-0 top-1/2 -translate-y-1/2"
               >
@@ -109,7 +109,7 @@ const Header = (props: {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type to search..."
                 className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
-              />*/}
+              />
             </div>
           </form>
         </div>
