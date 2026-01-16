@@ -126,13 +126,13 @@ const Trendsvideos: React.FC = () => {
                   <div
                     key={video.id}
                     style={{ borderLeft: "5px solid transparent" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderLeft =
-                        "5px solid transparent")
-                    }
+                   // onMouseEnter={(e) =>
+                     // (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
+                   // }
+                   // onMouseLeave={(e) =>
+                    //  (e.currentTarget.style.borderLeft =
+                     //   "5px solid transparent")
+                   // }
                   >
                     <CardDataStatsTre
                       id={video.id}

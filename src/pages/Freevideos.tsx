@@ -71,13 +71,13 @@ const Freevideos: React.FC = () => {
                   <div
                     key={`${video.video_id}-${idx}`}
                     style={{ borderLeft: "5px solid transparent" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderLeft =
-                        "5px solid transparent")
-                    }
+                       // onMouseEnter={(e) =>
+                     // (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
+                   // }
+                   // onMouseLeave={(e) =>
+                    //  (e.currentTarget.style.borderLeft =
+                     //   "5px solid transparent")
+                   // }
                   >
                     <CardDataStatsFree
                       id={video.video_id}

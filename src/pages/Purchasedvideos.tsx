@@ -71,13 +71,14 @@ const Purchvideos: React.FC = () => {
                   <div
                     key={`${video.id}-${idx}`}
                     style={{ borderLeft: "5px solid transparent" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderLeft =
-                        "5px solid transparent")
-                    }
+                    //onMouseEnter={(e) =>
+                    //  (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
+                 //   }
+                    //onMouseLeave={(e) =>
+                     // (e.currentTarget.style.borderLeft =
+                       // "5px solid transparent")
+                   // }
+                       
                   >
                     <CardDataStatsPur
                       id={video.id}
