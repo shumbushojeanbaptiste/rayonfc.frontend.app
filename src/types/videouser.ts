@@ -3,6 +3,7 @@ export interface Video {
   id: number;
   title: string;
   price: number;
+  duration: string;
   ref?: string; // needed for payment check
   thumbnail?: string;
   profile_photo?: string;

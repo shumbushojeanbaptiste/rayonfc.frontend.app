@@ -112,7 +112,7 @@ const Videosplay: React.FC = () => {
     api
       .get(
         source === "trending"
-          ? `/api/videos/trends/recommended/${id}`
+          ? `/api/videos/recommended/${id}`
           : `/api/videos/recommended/${id}`
       )
       .then((res) => setRecommended(res.data.data || []))

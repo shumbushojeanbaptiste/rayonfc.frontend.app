@@ -72,7 +72,7 @@ const CardDataStatsFree: React.FC<Props> = ({
         <p className="text-sm text-gray-600 dark:text-white">{total}</p>
 
         {/* ACTION BUTTON */}
-        {isPaid ? (
+       {/* {isPaid ? (
           canBuy ? (
             <button
               onClick={(e) => {
@@ -106,7 +106,7 @@ const CardDataStatsFree: React.FC<Props> = ({
           >
             Watch
           </button>
-        )}
+        )}  */}
       </div>
     </div>
   );
