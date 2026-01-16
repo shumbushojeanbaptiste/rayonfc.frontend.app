@@ -34,15 +34,14 @@ const CardDataStatsPur: React.FC<Props> = ({
 
   return (
     <div
-      className="bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition p-2
-      dark:bg-gray-800 dark:border-gray-700"
+      className=" rounded-xl cursor-pointer hover:shadow-md p-2 group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}
     >
-      <div className="relative"> 
+      <div className="relative "> 
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
-          className="w-full h-44 object-cover rounded-xl"
+          className="w-full h-44 object-cover rounded-xl "
         />
 
         {isPaid && (
