@@ -1,23 +1,37 @@
 import { Outlet } from "react-router-dom";
+import { useState } from "react";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
-import { useState } from "react";
 
 export default function DefaultLayout() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Mobile sidebar open/close
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  // Desktop sidebar expanded/collapsed
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   return (
-    <div className="flex h-screen overflow-hidden dark:bg-boxdark-2 dark:text-bodydark">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="flex flex-col h-screen overflow-hidden dark:bg-boxdark-2 dark:text-bodydark">
+      
+      {/* HEADER */}
+      <Header
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        expanded={expanded}
+        setExpanded={setExpanded}
+      />
 
-      {/* MAIN SCROLL CONTAINER */}
-      <div
-        id="app-scroll-container"
-        className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
-      >
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      {/* MAIN AREA: sidebar + content */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* SIDEBAR */}
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          expanded={expanded}
+        />
 
-        <main className="p-4 md:p-6 2xl:p-10">
+        {/* MAIN CONTENT */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 2xl:p-10">
           <Outlet />
         </main>
       </div>

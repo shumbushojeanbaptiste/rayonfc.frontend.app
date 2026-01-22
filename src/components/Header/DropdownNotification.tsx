@@ -8,7 +8,7 @@ const DropdownNotification = () => {
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
-      <li>
+      <div className="relative">
         <Link
           onClick={() => {
             setNotifying(false);
@@ -117,7 +117,7 @@ const DropdownNotification = () => {
             </ul>
           </div>
         )}
-      </li>
+      </div>
     </ClickOutside>
   );
 };

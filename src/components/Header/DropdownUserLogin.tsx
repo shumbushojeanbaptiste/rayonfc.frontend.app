@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
+import { Home, Settings, HelpCircle, LogIn } from 'lucide-react';
 
 interface User {
   first_name?: string;
@@ -10,12 +11,11 @@ interface User {
 
 const DropdownUserLogin = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  // 🔹 Read signed-in user from localStorage for persistent login
   const user: User | null = (() => {
     try {
-      const stored = localStorage.getItem('user'); // ✅ changed to localStorage
+      const stored = localStorage.getItem('user');
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -23,61 +23,99 @@ const DropdownUserLogin = () => {
   })();
 
   const handleSignin = () => {
+    setDropdownOpen(false);
     navigate('/auth/signin', { replace: true });
   };
 
+  const itemClass = ({ isActive }: { isActive: boolean }) =>
+    `
+      flex items-center gap-3
+      rounded-lg px-4 py-3
+      transition-colors
+      hover:bg-gray-100 dark:hover:bg-meta-4
+      ${isActive ? 'bg-gray-100 dark:bg-meta-4 font-medium' : ''}
+    `;
+
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
+      {/* TRIGGER */}
       <Link
-        onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-4"
         to="#"
+        onClick={(e) => {
+          e.preventDefault();
+          setDropdownOpen((prev) => !prev);
+        }}
+        className="flex items-center gap-4"
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {user ? `${user.first_name} ${user.last_name}` : 'Guest'}
           </span>
-          <span className="block text-xs text-gray-500">
+          <span className="block text-xs text-gray-500 dark:text-slate-300">
             {user?.email}
           </span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
+        <span className="h-10 w-10 rounded-full overflow-hidden">
           <img src="/default-avatar.png" alt="User" />
         </span>
-
-        <svg
-          className="hidden fill-current sm:block"
-          width="12"
-          height="8"
-          viewBox="0 0 12 8"
-        >
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            d="M0.41 0.91a1 1 0 0 1 1.18 0L6 5.32l4.41-4.41a.83.83 0 1 1 1.18 1.18l-5 5a.83.83 0 0 1-1.18 0l-5-5a.83.83 0 0 1 0-1.18z"
-          />
-        </svg>
       </Link>
 
-      {dropdownOpen && (
-        <div className="absolute right-0 mt-4 w-62.5 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <ul className="flex flex-col gap-5 border-b px-6 py-7.5 dark:border-strokedark">
-            <li>
-              <Link to="/" className="dark:hover:text-gray-300 hover:text-gray-700">
-                Home
-              </Link>
-            </li>
-          </ul>
+      {/* DROPDOWN */}
+      <div
+        className={`
+          absolute right-0 top-full mt-2 w-64
+          rounded-2xl bg-white
+          shadow-xl ring-1 ring-black/5
+          dark:bg-boxdark
+          transform transition-all duration-200 ease-out
+          ${
+            dropdownOpen
+              ? 'scale-100 opacity-100 visible'
+              : 'scale-95 opacity-0 invisible'
+          }
+        `}
+      >
+        <ul className="py-2 text-sm text-gray-800 dark:text-gray-200">
+          <li>
+            <NavLink to="/" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <Home size={18} />
+              Home
+            </NavLink>
+          </li>
 
-          <button
-            onClick={handleSignin}
-            className="flex w-full items-center gap-3.5 px-6 py-4 text-sm font-medium dark:hover:text-gray-300 hover:text-gray-700"
-          >
-            Sign-In
-          </button>
-        </div>
-      )}
+          <li>
+            <NavLink to="/settings" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <Settings size={18} />
+              Settings
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink to="/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <HelpCircle size={18} />
+              Help
+            </NavLink>
+          </li>
+        </ul>
+
+        <div className="border-t border-gray-200 dark:border-strokedark" />
+
+        <button
+          onClick={handleSignin}
+          className="
+            flex items-center gap-3 w-full
+            rounded-b-2xl px-4 py-3
+            text-sm font-medium
+            transition-colors
+            hover:bg-gray-100
+            dark:hover:bg-meta-4
+          "
+        >
+          <LogIn size={18} />
+          Sign-In
+        </button>
+      </div>
     </ClickOutside>
   );
 };
