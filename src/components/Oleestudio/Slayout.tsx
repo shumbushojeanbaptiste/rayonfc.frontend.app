@@ -1,28 +1,38 @@
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Ssidebar from "./Ssidar";
 import Stopbar from "./Stopbar";
-import Header from "../Header";
+import Ssidebar from "./Ssidar";
 
-type SlayoutProps = {
-  dark: boolean;
-  setDark: React.Dispatch<React.SetStateAction<boolean>>;
-};
+export default function Slayout() {
+  const [sidebarOpen, setSidebarOpen] = useState(true); // desktop collapsed/expanded
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false); // mobile overlay
+  const [expanded, setExpanded] = useState(true); // header hamburger toggle (optional)
 
-
-
-export default function Slayout({ dark, setDark }: SlayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <Ssidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}  />
-      <div className="flex-1 flex flex-col">
-        <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen}/>
-        <Stopbar dark={dark} setDark={setDark} />
-        <main className="p-6 overflow-auto">
+    <div className="flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+      
+      {/* Header / Topbar */}
+      <Stopbar
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        expanded={expanded}
+        setExpanded={setExpanded}
+        mobileSidebarOpen={mobileSidebarOpen}
+        setMobileSidebarOpen={setMobileSidebarOpen}
+      />
+
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <Ssidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          mobileSidebarOpen={mobileSidebarOpen}
+          setMobileSidebarOpen={setMobileSidebarOpen}
+        />
+
+        {/* Page content */}
+        <main className="flex-1 overflow-auto p-6 transition-all duration-300">
           <Outlet />
-          
         </main>
       </div>
     </div>

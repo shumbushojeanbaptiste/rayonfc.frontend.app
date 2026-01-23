@@ -1,24 +1,32 @@
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
+import { useState } from 'react';
+import PublicHeader from '../components/Publicinfo/PublicHeader';
+import Sidebartwo from '../components/Sidebar/indextwo';
 
-import { useState } from "react";
-import PublicHeader from "../components/Publicinfo/PublicHeader";
-import Sidebartwo from "../components/Sidebar/indextwo";
-
-export default function PublicLayout() {
+export default function DefaultLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   return (
-    <div className="flex h-screen overflow-hidden dark:bg-boxdark-2 dark:text-bodydark">
-      <Sidebartwo sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="h-screen flex flex-col dark:bg-boxdark-2 dark:text-bodydark">
+      {/* HEADER */}
+      <PublicHeader
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+        expanded={expanded}
+        setExpanded={setExpanded}
+      />
 
-      {/* MAIN SCROLL CONTAINER */}
-      <div
-        id="app-scroll-container"
-        className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
-      >
-        <PublicHeader sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      {/* BODY */}
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebartwo
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          expanded={expanded}
+        />
 
-        <main className="p-4 md:p-6 2xl:p-10">
+        {/* MAIN CONTENT SCROLLS */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 2xl:p-10">
           <Outlet />
         </main>
       </div>

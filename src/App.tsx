@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import DefaultLayout from "./layout/DefaultLayout";
 import Slayout from "./components/Oleestudio/Slayout";
+import Flayout from "./components/Finance/Flayout";
 
 /* Public pages */
 import PublicHome from "./pages/PublicHome";
@@ -27,6 +28,8 @@ import Freevideos from "./pages/Freevideos";
 import Purchvideos from "./pages/Purchasedvideos";
 import Latestvideos from "./pages/Latestvideos";
 import Loader from "./common/Loader";
+import Deposit from "./pages/Finance/Deposit";
+import Fdashboard from "./pages/Finance/Dashboard";
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -116,7 +119,7 @@ export default function App() {
       <Route
         element={
           <RequireAuth>
-            <Slayout dark={dark} setDark={setDark} />
+            <Slayout />
           </RequireAuth>
         }
       >
@@ -127,6 +130,20 @@ export default function App() {
         <Route path="studio/upload" element={<Supload />} />
         <Route path="studio/settings" element={<Ssettings />} />
       </Route>
+
+      {/* 🔐 OLEEPLAY FINANCE */}
+      <Route
+        element={
+          <RequireAuth>
+            <Flayout />
+          </RequireAuth>
+        }
+      >
+        <Route path="finance" element={<Fdashboard />} />
+        <Route path="finance/deposits" element={<Deposit />} />
+       
+      </Route>
+
 
     </Routes>
   );

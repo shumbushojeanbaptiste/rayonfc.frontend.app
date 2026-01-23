@@ -1,120 +1,160 @@
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import LogoIcon from '../../images/logo/logo2.png';
-import DarkModeSwitcher from '../Header/DarkModeSwitcher';
 import DropdownUserLogin from '../Header/DropdownUserLogin';
+import DarkModeSwitcher from '../Header/DarkModeSwitcher';
+import DropdownMessage from '../Header/DropdownMessage';
+import DropdownNotification from '../Header/DropdownNotification';
 
+interface HeaderProps {
+  sidebarOpen: boolean;
+  setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  expanded: boolean;
+  setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-const PublicHeader = (props: {
-  sidebarOpen: string | boolean | undefined;
-  setSidebarOpen: (arg0: boolean) => void;
-}) => { 
+const PublicHeader: React.FC<HeaderProps> = ({
+  sidebarOpen,
+  setSidebarOpen,
+  expanded,
+  setExpanded,
+}) => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+  const mobileSearchRef = useRef<HTMLDivElement | null>(null);
+  const mobileSearchButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/home/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setMobileSearchOpen(false);
+    }
+  };
+
+  // Close mobile search when clicking outside (exclude the icon)
+  useEffect(() => {
+    if (!mobileSearchOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        mobileSearchRef.current?.contains(target) ||
+        mobileSearchButtonRef.current?.contains(target)
+      ) return; // click inside search area or icon, do nothing
+
+      setMobileSearchOpen(false);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [mobileSearchOpen]);
+
+  const SearchIcon = (
+    <svg
+      className="fill-body hover:fill-green-950 dark:fill-bodydark dark:hover:fill-green-950"
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
+      />
+    </svg>
+  );
+
   return (
-    <header className="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
-      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
-        <div className="flex items-center gap-6 sm:gap-4  lg:hidden">
-          {/* <!-- Hamburger Toggle BTN --> */}
-          <button
-            aria-controls="sidebar"
-            onClick={(e) => {
-              e.stopPropagation();
-              props.setSidebarOpen(!props.sidebarOpen);
-            }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
-          >
-            <span className="relative block h-5.5 w-5.5 cursor-pointer">
-              <span className="du-block absolute right-0 h-full w-full">
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && '!w-full delay-300'
-                  }`}
-                ></span>
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && 'delay-400 !w-full'
-                  }`}
-                ></span>
-                <span
-                  className={`relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && '!w-full delay-500'
-                  }`}
-                ></span>
-              </span>
-              <span className="absolute right-0 h-full w-full rotate-45">
-                <span
-                  className={`absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && '!h-0 !delay-[0]'
-                  }`}
-                ></span>
-                <span
-                  className={`delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white ${
-                    !props.sidebarOpen && '!h-0 !delay-200'
-                  }`}
-                ></span>
-              </span>
-            </span>
-          </button> 
-          
-          {/* <!-- Hamburger Toggle BTN --> */}
+    <header className="sticky top-0 z-50 w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
 
-          <Link className="block flex-shrink-0 lg:hidden" to="/">
-            <img src={LogoIcon} alt="Logo" className="w-10 h-12"/>
+      {/* TOP BAR */}
+      <div className="flex items-center justify-between px-4 py-2 md:px-6 2xl:px-11">
+
+        {/* LEFT */}
+        <div className="flex items-center  gap-4">
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="hidden -ml-1 lg:flex w-10 h-10 items-center justify-center rounded text-title-md  hover:bg-gray-200  dark:hover:bg-meta-4"
+          >
+            ☰
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); setSidebarOpen(prev => !prev); }}
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded border border-stroke bg-white dark:bg-boxdark"
+          >
+            ☰
+          </button>
+
+          <Link to="/">
+            <img src={LogoIcon} alt="Logo" className="w-10 h-12" />
           </Link>
         </div>
 
-        {/* <!-- Search--> */}
-        <div className="hidden sm:block">
-          <form action="" method="">
+        {/* DESKTOP SEARCH */}
+        <div className="hidden sm:block flex-1 max-w-md mx-6">
+          <form onSubmit={handleSearch}>
             <div className="relative">
-              <button className="absolute left-0 top-1/2 -translate-y-1/2">
-                <svg
-                  className="fill-body hover:fill-primary dark:fill-bodydark dark:hover:fill-primary"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-                    fill=""
-                  />
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-                    fill=""
-                  />
-                </svg>
-                
-
+              <button type="submit" className="absolute left-0 top-1/2 -translate-y-1/2">
+                {SearchIcon}
               </button>
-
               <input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 text-black focus:outline-none dark:text-white xl:w-125"
+                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
               />
             </div>
           </form>
         </div>
-         {/* <!-- Search--> */}
 
-        <div className="flex items-center gap-3 2xsm:gap-7">
-          <ul className="flex items-center gap-2 2xsm:gap-4">
-            {/* <!-- Dark Mode Toggler --> */}
-            <DarkModeSwitcher />
-            {/* <!-- Dark Mode Toggler --> */}
+        {/* RIGHT */}
+        <div className="flex items-center gap-3">
+          {/* MOBILE SEARCH ICON */}
+          <button
+            ref={mobileSearchButtonRef}
+            onClick={() => setMobileSearchOpen(prev => !prev)}
+            className="sm:hidden w-10 h-10 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-meta-4"
+          >
+            {SearchIcon}
+          </button>
 
-           
-          </ul>
-
-          {/* <!-- User Area --> */}
+          <DarkModeSwitcher />
+          <DropdownMessage />
+          <DropdownNotification />
           <DropdownUserLogin />
-          {/* <!-- User Area --> */}
         </div>
       </div>
+
+      {/* MOBILE SEARCH BAR */}
+      {mobileSearchOpen && (
+        <div ref={mobileSearchRef} className="sm:hidden px-4 pb-3">
+          <form onSubmit={handleSearch}>
+            <div className="relative">
+              <button type="submit" className="absolute left-0 top-1/2 -translate-y-1/2">
+                {SearchIcon}
+              </button>
+              <input
+                autoFocus
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Type to search..."
+                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
+              />
+            </div>
+          </form>
+        </div>
+      )}
     </header>
   );
 };
