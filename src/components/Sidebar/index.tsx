@@ -19,6 +19,7 @@ import {
   Bolt,
   Settings,
   HeartHandshake,
+  BadgeDollarSign,
 } from 'lucide-react';
 
 /* ICON PROPS */
@@ -71,8 +72,9 @@ const MENU = [
     title: 'You',
     items: [
       { label: 'Profile', to: '/profile', icon: User },
+      { label: 'Follows', to: '/follow', icon: SubsIcon },
       { label: 'Studio', to: '/studio', icon: Bolt },
-      { label: 'Subscriptions', to: '/subscriptions', icon: SubsIcon },
+      { label: 'Finance', to: '/finance', icon: BadgeDollarSign },
       { label: 'Library', to: '/library', icon: LibraryIcon },
       { label: 'History', to: '/history', icon: HistoryIcon },
       { label: 'Watch Later', to: '/watch-later', icon: WatchLaterIcon },
@@ -92,7 +94,7 @@ const MENU = [
   {
     title: '',
     items: [
-      { label: 'Settings', to: '/settings', icon: Settings },
+      { label: 'Settings', to: '#', icon: Settings },
       { label: 'Help', to: '/help', icon: HeartHandshake },
     ],
   },

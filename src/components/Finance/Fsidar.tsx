@@ -13,6 +13,8 @@ import {
   HiCreditCard,
 } from "react-icons/hi";
 
+import { PiHandDeposit, PiHandWithdraw } from "react-icons/pi";
+
 type SsidebarProps = {
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,20 +23,19 @@ type SsidebarProps = {
 };
 
 const MENU = [
- 
   {
     title: "",
     items: [
       { to: "/finance", label: "Dashboard", icon: <HiHome /> },
-      { to: "/finance/deposits", label: "Deposits", icon: <HiCash /> },
+      { to: "/finance/deposits", label: "Deposits", icon: <PiHandDeposit /> },
       { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
-      { to: "/finance/withdrawals", label: "Withdrawals", icon: <HiArrowDown /> },
+      { to: "/finance/withdrawals", label: "Withdrawals", icon: <PiHandWithdraw /> },
       { to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
       
     ],
   },
   {
-    title: "", // last section
+    title: "",
     items: [{ to: "/studio/settings", label: "Settings", icon: <HiCog /> }],
   },
 ];
@@ -47,6 +48,11 @@ export default function Fsidebar({
 }: SsidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // ✅ Force collapsed sidebar as default
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
 
   // Detect mobile resizing
   useEffect(() => {
@@ -79,6 +85,7 @@ export default function Fsidebar({
           hidden md:flex flex-col
           bg-white dark:bg-gray-800
           border-r dark:border-gray-700
+          dark:text-slate-400
           transition-[width] duration-300
           ${sidebarOpen ? "w-64" : "w-20"}
           h-screen
@@ -99,14 +106,12 @@ export default function Fsidebar({
         >
           {MENU.map((section, sectionIndex) => (
             <div key={sectionIndex} className="mb-1">
-              {/* Section title */}
               {section.title && sidebarOpen && (
                 <div className="mt-2 px-4 text-xs font-semibold uppercase text-gray-500">
                   {section.title}
                 </div>
               )}
 
-              {/* Section items */}
               {section.items.map((item, idx) => (
                 <NavLink
                   key={`${item.to}-${idx}`}
@@ -118,7 +123,7 @@ export default function Fsidebar({
                         sidebarOpen
                           ? "flex-row gap-3"
                           : "flex-col gap-1 justify-center items-center w-full"
-                      } 
+                      }
                       px-4 py-3 rounded-lg text-sm font-medium text-center
                       ${
                         isActive
@@ -135,7 +140,6 @@ export default function Fsidebar({
                 </NavLink>
               ))}
 
-              {/* Divider */}
               {sectionIndex < MENU.length - 1 && (
                 <hr className="my-1 border-gray-200 dark:border-gray-700" />
               )}
@@ -152,7 +156,6 @@ export default function Fsidebar({
           ${mobileSidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
         `}
       >
-        {/* Backdrop */}
         <div
           className="absolute inset-0 bg-black bg-opacity-30"
           onClick={() => setMobileSidebarOpen(false)}

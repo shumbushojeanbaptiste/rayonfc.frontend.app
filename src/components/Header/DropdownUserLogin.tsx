@@ -48,7 +48,7 @@ const DropdownUserLogin = () => {
         className="flex items-center gap-4"
       >
         <span className="hidden text-right lg:block">
-          <span className="block text-sm font-medium text-black dark:text-white">
+          <span className="block text-sm font-medium text-black dark:text-slate-300">
             {user ? `${user.first_name} ${user.last_name}` : 'Guest'}
           </span>
           <span className="block text-xs text-gray-500 dark:text-slate-300">
@@ -76,7 +76,7 @@ const DropdownUserLogin = () => {
           }
         `}
       >
-        <ul className="py-2 text-sm text-gray-800 dark:text-gray-200">
+        <ul className="py-2 text-sm text-gray-800 dark:text-gray-400">
           <li>
             <NavLink to="/" className={itemClass} onClick={() => setDropdownOpen(false)}>
               <Home size={18} />

@@ -180,49 +180,52 @@ export default function Fdashboard() {
   // Render
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6 dark:text-slate-300">Dashboard</h1>
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white p-4 rounded shadow border border-green-100">
-          <p className="text-gray-500 text-sm">Total Income</p>
-          <h2 className="text-2xl font-bold">$7.8k</h2>
+        <div className="bg-white dark:bg-blue-800 p-4 rounded shadow-8  ">
+          <p className="text-gray-400 dark:text-slate-200 text-sm">Total Income</p>
+          <h2 className="text-2xl font-bold dark:text-slate-300">$7.8k</h2>
         </div>
 
-        <div className="bg-white p-4 rounded shadow border border-blue-100">
-          <p className="text-gray-500 text-sm">Total Expense</p>
-          <h2 className="text-2xl font-bold">$4.3k</h2>
+        <div className="bg-white dark:bg-green-800 p-4 rounded shadow-8 ">
+          <p className="text-gray-500 dark:text-slate-200 text-sm">Total Expense</p>
+          <h2 className="text-2xl font-bold dark:text-slate-300">$4.3k</h2>
         </div>
 
-        <div className="bg-white p-4 rounded shadow border border-orange-100">
-          <p className="text-gray-500 text-sm">Total Savings</p>
-          <h2 className="text-2xl font-bold">$5.6k</h2>
+        <div className="bg-white dark:bg-yellow-600 p-4 rounded shadow-8 ">
+          <p className="text-gray-500 dark:text-slate-200 text-sm">Total Savings</p>
+          <h2 className="text-2xl font-bold dark:text-slate-300">$5.6k</h2>
         </div>
 
-        <div className="bg-white p-4 rounded shadow border border-purple-100">
-          <p className="text-gray-500 text-sm">Total Investment</p>
-          <h2 className="text-2xl font-bold">$3.75k</h2>
-        </div>
+       {/* <div className="bg-white dark:bg-red-800 p-4 rounded shadow-8">
+          <p className="text-gray-500 dark:text-slate-200 text-sm">Total Investment</p>
+          <h2 className="text-2xl font-bold dark:text-slate-300">$3.75k</h2>
+        </div>*/}
       </div>
 
          {/* WALLET */}
-      <div className="bg-white p-4 rounded shadow">
-        <h3 className="font-semibold mb-3">Wallet</h3>
-        <div className="border-2 border-green-600 p-4 rounded">
-          <p className="text-sm text-gray-500">Balance</p>
-          <p className="text-2xl font-bold text-green-600">{balance.toLocaleString()}</p>
-        </div>
+      <div className="bg-white dark:bg-black p-4 rounded shadow-8">
+        <h3 className="font-semibold mb-3 dark:text-slate-300">Wallet</h3>
+        <div className="bg-slate-50 dark:bg-black p-4 rounded shadow-8">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Available Balance</p>
+            <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-500">
+              <h4>{balance.toLocaleString()}</h4> 
+              <p className="text-sm mt-2">RWF</p>
+            </p>
+          </div>
       </div>
 
       
 
     {/* AUDIT LOGS */}
-      <div className="bg-white p-4 rounded shadow">
-        <h3 className="font-semibold mb-2 flex justify-between items-center">
+      <div className="bg-white dark:bg-black p-4 rounded shadow-8">
+        <h3 className="font-semibold mb-2  dark:text-slate-300 flex justify-between items-center">
           Transactions Activities
           <button
             onClick={() => exportExcel(auditLogs, "audit-logs")}
-            className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+            className="px-3 py-1 dark:bg-yellow-600 text-white rounded text-sm"
           >
             Export CSV
           </button>
@@ -235,16 +238,17 @@ export default function Fdashboard() {
             { key: "details", label: "Details" },
           ]}
           data={auditLogs}
+          className="dark:rounded dark:shadow-2 dark:border dark:border-gray-800 dark:text-slate-400 "
         />
       </div>
 
       {/* SUSPICIOUS LOGINS */}
-      <div className="bg-white p-4 rounded shadow">
-        <h3 className="font-semibold mb-2 flex justify-between items-center">
+      <div className="bg-white dark:bg-black p-4 rounded shadow-8">
+        <h3 className="font-semibold mb-2  dark:text-slate-300 flex justify-between items-center">
           Suspicious Logins
           <button
             onClick={() => exportExcel(suspiciousLogins, "suspicious-logins")}
-            className="px-3 py-1 bg-blue-600 text-white rounded text-sm"
+            className="px-3 py-1 dark:bg-yellow-600 text-white rounded text-sm"
           >
             Export CSV
           </button>
@@ -256,31 +260,32 @@ export default function Fdashboard() {
             { key: "timestamp", label: "Timestamp" },
           ]}
           data={suspiciousLogins}
+          className="dark:rounded dark:shadow-2 dark:border dark:border-gray-800 dark:text-slate-400 "
         />
       </div>
 
 {/* MONTHLY TRENDS */}
-      <div className="bg-white p-4 rounded shadow">
+      <div className="bg-white dark:bg-black p-4 rounded shadow">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h3 className="font-semibold">Monthly Trends</h3>
-            <p className="text-sm text-gray-500">Income vs. expenses over time</p>
+            <h3 className="font-semibold dark:text-slate-300">Monthly Trends</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400">Income vs. expenses over time</p>
           </div>
 
           <select
             value={range}
             onChange={(e) => setRange(e.target.value)}
-            className="border rounded px-3 py-1 text-sm"
+            className="border shadow-5 rounded dark:text-slate-300 px-3 py-1 text-sm dark:bg-black"
           >
-            <option value="3m">Last 3 months</option>
-            <option value="30d">Last 30 days</option>
-            <option value="7d">Last 7 days</option>
+            <option value="3m" className="dark:text-slate-300">Last 3 months</option>
+            <option value="30d" className="dark:text-slate-300">Last 30 days</option>
+            <option value="7d" className="dark:text-slate-300">Last 7 days</option>
           </select>
         </div>
 
-        <div className="h-72">
+        <div className="h-72 ">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={monthlyTrends}>
+            <AreaChart data={monthlyTrends} >
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />

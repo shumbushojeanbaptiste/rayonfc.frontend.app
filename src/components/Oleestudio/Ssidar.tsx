@@ -22,27 +22,18 @@ type SsidebarProps = {
 
 const MENU = [
   {
-    title: "", // first section
+    title: "",
     items: [
       { to: "/studio", label: "Dashboard", icon: <HiHome /> },
       { to: "/studio/content", label: "Content", icon: <HiCollection /> },
       { to: "/studio/analytics", label: "Analytics", icon: <HiChartBar /> },
       { to: "/studio/comments", label: "Comments", icon: <HiChat /> },
       { to: "/studio/upload", label: "Upload", icon: <HiUpload /> },
-    ],
-  },
-  {
-    title: "Finance",
-    items: [
-      { to: "/finance/deposits", label: "Deposits", icon: <HiCash /> },
-      { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
-      { to: "/finance/withdrawals", label: "Withdrawals", icon: <HiArrowDown /> },
-      { to: "/finance/cards", label: "My cards", icon: <HiCreditCard /> },
       
     ],
   },
   {
-    title: "", // last section
+    title: "",
     items: [{ to: "/studio/settings", label: "Settings", icon: <HiCog /> }],
   },
 ];
@@ -55,6 +46,11 @@ export default function Ssidebar({
 }: SsidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // ✅ Force collapsed sidebar as default
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
 
   // Detect mobile resizing
   useEffect(() => {
@@ -87,6 +83,7 @@ export default function Ssidebar({
           hidden md:flex flex-col
           bg-white dark:bg-gray-800
           border-r dark:border-gray-700
+          dark:text-slate-400
           transition-[width] duration-300
           ${sidebarOpen ? "w-64" : "w-20"}
           h-screen
@@ -107,14 +104,12 @@ export default function Ssidebar({
         >
           {MENU.map((section, sectionIndex) => (
             <div key={sectionIndex} className="mb-1">
-              {/* Section title */}
               {section.title && sidebarOpen && (
                 <div className="mt-2 px-4 text-xs font-semibold uppercase text-gray-500">
                   {section.title}
                 </div>
               )}
 
-              {/* Section items */}
               {section.items.map((item, idx) => (
                 <NavLink
                   key={`${item.to}-${idx}`}
@@ -126,7 +121,7 @@ export default function Ssidebar({
                         sidebarOpen
                           ? "flex-row gap-3"
                           : "flex-col gap-1 justify-center items-center w-full"
-                      } 
+                      }
                       px-4 py-3 rounded-lg text-sm font-medium text-center
                       ${
                         isActive
@@ -143,7 +138,6 @@ export default function Ssidebar({
                 </NavLink>
               ))}
 
-              {/* Divider */}
               {sectionIndex < MENU.length - 1 && (
                 <hr className="my-1 border-gray-200 dark:border-gray-700" />
               )}
@@ -160,7 +154,6 @@ export default function Ssidebar({
           ${mobileSidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
         `}
       >
-        {/* Backdrop */}
         <div
           className="absolute inset-0 bg-black bg-opacity-30"
           onClick={() => setMobileSidebarOpen(false)}
