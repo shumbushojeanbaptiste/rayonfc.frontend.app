@@ -65,7 +65,7 @@ const DropdownNotification = () => {
     updateUnread(updated);
   } catch (err) {
     console.error("Failed to mark notification as read:", err);
-  }
+  }      
 };
 
 
