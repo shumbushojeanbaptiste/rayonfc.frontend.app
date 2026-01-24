@@ -5,7 +5,7 @@ import Sidebartwo from '../components/Sidebar/indextwo';
 
 export default function DefaultLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);  // <-- set default collapsed here
 
   return (
     <div className="h-screen flex flex-col dark:bg-boxdark-2 dark:text-bodydark">

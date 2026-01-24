@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoIcon from "../../images/logo/logo2.png";
 import DarkModeSwitcher from "../Header/DarkModeSwitcher";
@@ -26,18 +26,47 @@ const Stopbar: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1); // for keyboard navigation
+  const [searchResults, setSearchResults] = useState<string[]>([]); // placeholder for suggestions
 
   const mobileSearchRef = useRef<HTMLDivElement | null>(null);
   const mobileSearchButtonRef = useRef<HTMLButtonElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  // Handle search submission
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/home/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setMobileSearchOpen(false);
+      setFocusedIndex(-1);
     }
   };
 
+  // Handle keyboard navigation
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (!searchResults.length) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setFocusedIndex((prev) => (prev + 1) % searchResults.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setFocusedIndex((prev) =>
+        prev === -1 ? searchResults.length - 1 : (prev - 1 + searchResults.length) % searchResults.length
+      );
+    } else if (e.key === "Enter" && focusedIndex >= 0) {
+      e.preventDefault();
+      setSearchQuery(searchResults[focusedIndex]);
+      setFocusedIndex(-1);
+      handleSearch();
+    } else if (e.key === "Escape") {
+      setMobileSearchOpen(false);
+      setFocusedIndex(-1);
+    }
+  };
+
+  // Close mobile search when clicking outside
   useEffect(() => {
     if (!mobileSearchOpen) return;
 
@@ -49,11 +78,27 @@ const Stopbar: React.FC<HeaderProps> = ({
       )
         return;
       setMobileSearchOpen(false);
+      setFocusedIndex(-1);
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [mobileSearchOpen]);
+
+  // Optional: live search suggestions placeholder
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    // Simulate API search results (replace with real API)
+    setSearchResults(
+      ["Apple", "Banana", "Cherry", "Date", "Elderberry"].filter((item) =>
+        item.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+    setFocusedIndex(-1);
+  }, [searchQuery]);
 
   const SearchIcon = (
     <svg
@@ -75,7 +120,6 @@ const Stopbar: React.FC<HeaderProps> = ({
     </svg>
   );
 
-
   return (
     <header className="sticky top-0 z-50 w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
       <div className="flex items-center justify-between px-4 py-2 md:px-6 2xl:px-11">
@@ -84,7 +128,7 @@ const Stopbar: React.FC<HeaderProps> = ({
           {/* Desktop toggle: collapse/expand sidebar */}
           <button
             onClick={() => setSidebarOpen((prev) => !prev)}
-            className="hidden lg:flex w-10 h-10 items-center justify-center rounded text-title-md hover:bg-gray-200 dark:hover:bg-meta-4"
+            className="hidden lg:flex w-10 h-10 items-center justify-center rounded text-title-md hover:bg-gray-200 dark:hover:bg-meta-4 dark:text-slate-300"
           >
             ☰
           </button>
@@ -106,7 +150,7 @@ const Stopbar: React.FC<HeaderProps> = ({
         </div>
 
         {/* DESKTOP SEARCH */}
-        <div className="hidden sm:block flex-1 max-w-md mx-6">
+        <div className="hidden sm:block flex-1 max-w-md mx-6 relative">
           <form onSubmit={handleSearch}>
             <div className="relative">
               <button
@@ -116,18 +160,42 @@ const Stopbar: React.FC<HeaderProps> = ({
                 {SearchIcon}
               </button>
               <input
+                ref={inputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
+                onKeyDown={handleKeyDown}
+                className="w-full bg-transparent pl-9 pr-4 py-1 rounded-md border border-gray-300 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white dark:border-meta-3 dark:focus:ring-green-400"
               />
             </div>
           </form>
+          {/* Suggestion dropdown */}
+          {searchResults.length > 0 && (
+            <ul className="absolute w-full bg-white dark:bg-boxdark border border-gray-200 dark:border-meta-4 mt-1 rounded-md shadow-md max-h-48 overflow-auto z-50">
+              {searchResults.map((item, index) => (
+                <li
+                  key={index}
+                  className={`px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-meta-3 ${
+                    index === focusedIndex ? "bg-green-100 dark:bg-green-900" : ""
+                  }`}
+                  onClick={() => {
+                    setSearchQuery(item);
+                    setSearchResults([]);
+                    handleSearch();
+                  }}
+                  onMouseEnter={() => setFocusedIndex(index)}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
+          {/* MOBILE SEARCH ICON */}
           <button
             ref={mobileSearchButtonRef}
             onClick={() => setMobileSearchOpen((prev) => !prev)}
@@ -137,7 +205,7 @@ const Stopbar: React.FC<HeaderProps> = ({
           </button>
 
           <DarkModeSwitcher />
-          <DropdownMessage />
+          {/*<DropdownMessage />*/}
           <DropdownNotification />
           <DropdownUser />
         </div>
@@ -145,7 +213,10 @@ const Stopbar: React.FC<HeaderProps> = ({
 
       {/* MOBILE SEARCH BAR */}
       {mobileSearchOpen && (
-        <div ref={mobileSearchRef} className="sm:hidden px-4 pb-3">
+        <div
+          ref={mobileSearchRef}
+          className="sm:hidden px-4 pb-3 transition-all duration-300 ease-in-out"
+        >
           <form onSubmit={handleSearch}>
             <div className="relative">
               <button
@@ -156,11 +227,13 @@ const Stopbar: React.FC<HeaderProps> = ({
               </button>
               <input
                 autoFocus
+                ref={inputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
+                className="w-full bg-transparent pl-9 pr-4 py-1 rounded-md border border-gray-300 focus:ring-1 focus:ring-green-500 focus:outline-none dark:text-white dark:border-meta-3 dark:focus:ring-green-400"
               />
             </div>
           </form>

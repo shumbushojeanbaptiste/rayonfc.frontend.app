@@ -30,6 +30,12 @@ import Latestvideos from "./pages/Latestvideos";
 import Loader from "./common/Loader";
 import Deposit from "./pages/Finance/Deposit";
 import Fdashboard from "./pages/Finance/Dashboard";
+import Withdraw from "./pages/Finance/Withdraw";
+import Search from "./pages/Search";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import Searchsample from "./pages/Searchsample";
+import Videosplaysample from "./pages/Dashboard/Videosplaysample";
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -97,7 +103,8 @@ export default function App() {
         <Route path="auth/signup" element={<SignUp />} />
         <Route path="auth/verify" element={<Verify />} />
          {/* 🎥 Video watch page (HASHED ID) */}
-        <Route path="watching/:hash" element={<Videosplay />} />
+        <Route path="watching/:hash" element={<Videosplaysample />} />
+        <Route path="home/searching" element={<Searchsample />} />
       </Route>
 
       {/* 🔐 AUTHENTICATED APP */}
@@ -108,11 +115,14 @@ export default function App() {
           </RequireAuth>
         }
       >
+        <Route path="home/search" element={<Search />} />
         <Route path="watch/:hash" element={<Videosplay />} />
         <Route path="trendsvideos" element={<Trendsvideos />} />
         <Route path="freevideos" element={<Freevideos />} />
         <Route path="myvideos" element={<Purchvideos />} />
         <Route path="latest" element={<Latestvideos />} />
+        <Route path="profile" element={<Profile />} />
+        {/*<Route path="settings" element={<Settings />} />*/}
       </Route>
 
       {/* 🔐 OLEEPLAY STUDIO */}
@@ -141,6 +151,7 @@ export default function App() {
       >
         <Route path="finance" element={<Fdashboard />} />
         <Route path="finance/deposits" element={<Deposit />} />
+        <Route path="finance/withdrawals" element={<Withdraw />} />
        
       </Route>
 

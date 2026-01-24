@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import LogoIcon from "../../images/logo/logo2.png";
 import DarkModeSwitcher from "../Header/DarkModeSwitcher";
-import DropdownMessage from "../Header/DropdownMessage";
 import DropdownNotification from "../Header/DropdownNotification";
 import DropdownUser from "../Header/DropdownUser";
 
@@ -15,6 +14,20 @@ interface HeaderProps {
   setMobileSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Example suggestions (replace with real API later)
+const SUGGESTIONS = [
+  "React tutorials",
+  "Music videos",
+  "Gaming highlights",
+  "Trending news",
+  "Latest movies",
+  "JavaScript tips",
+  "Sports highlights",
+  "Funny videos",
+  "Documentaries",
+  "Short films",
+];
+
 const Ftopbar: React.FC<HeaderProps> = ({
   sidebarOpen,
   setSidebarOpen,
@@ -26,38 +39,80 @@ const Ftopbar: React.FC<HeaderProps> = ({
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(-1);
 
   const mobileSearchRef = useRef<HTMLDivElement | null>(null);
   const mobileSearchButtonRef = useRef<HTMLButtonElement | null>(null);
+  const desktopSearchRef = useRef<HTMLDivElement | null>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/home/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setMobileSearchOpen(false);
+      setFilteredSuggestions([]);
     }
   };
 
+  // Update suggestions based on input
   useEffect(() => {
-    if (!mobileSearchOpen) return;
+    if (!searchQuery.trim()) {
+      setFilteredSuggestions([]);
+      setActiveSuggestionIndex(-1);
+      return;
+    }
+    const filtered = SUGGESTIONS.filter((s) =>
+      s.toLowerCase().includes(searchQuery.toLowerCase())
+    ).slice(0, 5);
+    setFilteredSuggestions(filtered);
+    setActiveSuggestionIndex(-1);
+  }, [searchQuery]);
 
+  // Close search dropdown when clicking outside
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Node;
       if (
         mobileSearchRef.current?.contains(target) ||
-        mobileSearchButtonRef.current?.contains(target)
+        mobileSearchButtonRef.current?.contains(target) ||
+        desktopSearchRef.current?.contains(target)
       )
         return;
       setMobileSearchOpen(false);
+      setFilteredSuggestions([]);
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [mobileSearchOpen]);
+  }, []);
+
+  // Keyboard navigation for suggestions
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (filteredSuggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveSuggestionIndex((prev) =>
+        prev < filteredSuggestions.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveSuggestionIndex((prev) =>
+        prev > 0 ? prev - 1 : filteredSuggestions.length - 1
+      );
+    } else if (e.key === "Enter") {
+      if (activeSuggestionIndex >= 0) {
+        setSearchQuery(filteredSuggestions[activeSuggestionIndex]);
+      }
+      handleSearch(e as any);
+    } else if (e.key === "Escape") {
+      setFilteredSuggestions([]);
+    }
+  };
 
   const SearchIcon = (
     <svg
-      className="fill-body hover:fill-green-950 dark:fill-bodydark dark:hover:fill-green-950"
+      className="fill-gray-500 hover:fill-gray-700 dark:fill-gray-400 dark:hover:fill-gray-200 transition-colors"
       width="20"
       height="20"
       viewBox="0 0 20 20"
@@ -75,27 +130,26 @@ const Ftopbar: React.FC<HeaderProps> = ({
     </svg>
   );
 
-
   return (
-    <header className="sticky top-0 z-50 w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+    <header className="sticky top-0 z-50 w-full bg-white dark:bg-boxdark drop-shadow-sm dark:drop-shadow-none">
       <div className="flex items-center justify-between px-4 py-2 md:px-6 2xl:px-11">
         {/* LEFT */}
         <div className="flex items-center gap-4">
-          {/* Desktop toggle: collapse/expand sidebar */}
+          {/* Desktop toggle */}
           <button
             onClick={() => setSidebarOpen((prev) => !prev)}
-            className="hidden lg:flex w-10 h-10 items-center justify-center rounded text-title-md hover:bg-gray-200 dark:hover:bg-meta-4"
+            className="hidden lg:flex w-10 h-10 items-center justify-center rounded text-title-md hover:bg-gray-200 dark:hover:bg-meta-4 dark:text-slate-300 transition"
           >
             ☰
           </button>
 
-          {/* Mobile toggle: overlay sidebar */}
+          {/* Mobile toggle */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               setMobileSidebarOpen((prev) => !prev);
             }}
-            className="lg:hidden w-10 h-10 flex items-center justify-center rounded border border-stroke bg-white dark:bg-boxdark"
+            className="lg:hidden w-10 h-10 flex items-center justify-center rounded border border-stroke bg-white dark:bg-boxdark transition"
           >
             ☰
           </button>
@@ -106,12 +160,16 @@ const Ftopbar: React.FC<HeaderProps> = ({
         </div>
 
         {/* DESKTOP SEARCH */}
-        <div className="hidden sm:block flex-1 max-w-md mx-6">
+        <div
+          ref={desktopSearchRef}
+          className="hidden sm:block flex-1 max-w-lg mx-6 relative"
+        >
           <form onSubmit={handleSearch}>
-            <div className="relative">
+            <div className="relative group">
               <button
                 type="submit"
-                className="absolute left-0 top-1/2 -translate-y-1/2"
+                aria-label="Search"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-200 transition-colors"
               >
                 {SearchIcon}
               </button>
@@ -119,53 +177,100 @@ const Ftopbar: React.FC<HeaderProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
+                onKeyDown={handleKeyDown}
+                placeholder="Search videos, music, and more..."
+                className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full py-2.5 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:shadow-md transition text-sm"
               />
+              {filteredSuggestions.length > 0 && (
+                <ul className="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                  {filteredSuggestions.map((sugg, index) => (
+                    <li
+                      key={sugg}
+                      onMouseDown={() => {
+                        setSearchQuery(sugg);
+                        handleSearch({ preventDefault: () => {} } as any);
+                      }}
+                      className={`px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                        index === activeSuggestionIndex
+                          ? "bg-gray-100 dark:bg-gray-700"
+                          : ""
+                      }`}
+                    >
+                      {sugg}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </form>
         </div>
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">
+          {/* MOBILE SEARCH */}
           <button
             ref={mobileSearchButtonRef}
             onClick={() => setMobileSearchOpen((prev) => !prev)}
-            className="sm:hidden w-10 h-10 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-meta-4"
+            className="sm:hidden w-10 h-10 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-meta-4 transition-colors"
+            aria-label="Open search"
           >
             {SearchIcon}
           </button>
 
           <DarkModeSwitcher />
-          <DropdownMessage />
           <DropdownNotification />
           <DropdownUser />
         </div>
       </div>
 
       {/* MOBILE SEARCH BAR */}
-      {mobileSearchOpen && (
-        <div ref={mobileSearchRef} className="sm:hidden px-4 pb-3">
-          <form onSubmit={handleSearch}>
-            <div className="relative">
-              <button
-                type="submit"
-                className="absolute left-0 top-1/2 -translate-y-1/2"
-              >
-                {SearchIcon}
-              </button>
-              <input
-                autoFocus
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type to search..."
-                className="w-full bg-transparent pl-9 pr-4 focus:outline-none dark:text-white"
-              />
-            </div>
-          </form>
-        </div>
-      )}
+      <div
+        ref={mobileSearchRef}
+        className={`sm:hidden px-4 transition-all duration-300 ease-in-out ${
+          mobileSearchOpen ? "max-h-80 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0 overflow-hidden"
+        }`}
+      >
+        <form onSubmit={handleSearch}>
+          <div className="relative">
+            <button
+              type="submit"
+              aria-label="Search"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+            >
+              {SearchIcon}
+            </button>
+            <input
+              autoFocus={mobileSearchOpen}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search videos, music, and more..."
+              className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full py-3 pl-11 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:shadow-md transition text-base"
+            />
+            {filteredSuggestions.length > 0 && (
+              <ul className="absolute z-50 w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md mt-1 shadow-lg max-h-60 overflow-y-auto">
+                {filteredSuggestions.map((sugg, index) => (
+                  <li
+                    key={sugg}
+                    onMouseDown={() => {
+                      setSearchQuery(sugg);
+                      handleSearch({ preventDefault: () => {} } as any);
+                    }}
+                    className={`px-4 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                      index === activeSuggestionIndex
+                        ? "bg-gray-100 dark:bg-gray-700"
+                        : ""
+                    }`}
+                  >
+                    {sugg}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </form>
+      </div>
     </header>
   );
 };
