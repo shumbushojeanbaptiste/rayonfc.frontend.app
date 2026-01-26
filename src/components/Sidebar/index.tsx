@@ -76,7 +76,7 @@ const MENU = [
     items: [
       { label: 'My videos', to: '/myvideos', icon: ListVideo },
       { label: 'Profile', to: '/profile', icon: User },
-      //{ label: 'Follows', to: '/follow', icon: SubsIcon },
+      { label: 'Follows', to: '/follow', icon: SubsIcon },
       { label: 'Studio', to: '/studio', icon: Bolt },
       { label: 'Finance', to: '/finance', icon: BadgeDollarSign },
       //{ label: 'Library', to: '/library', icon: LibraryIcon },
@@ -87,19 +87,17 @@ const MENU = [
   {
     title: 'Explore',
     items: [
-     // { label: 'Explore', to: '/explore', icon: ExploreIcon },
-     // { label: 'Shorts', to: '/shorts', icon: ShortsIcon },
-      //{ label: 'Music', to: '/music', icon: MusicIcon },
-      //{ label: 'Gaming', to: '/gaming', icon: GamingIcon },
-      //{ label: 'News', to: '/news', icon: NewsIcon },
-      //{ label: 'Sports', to: '/sports', icon: SportsIcon },
+      { label: 'Music', to: '/music', icon: MusicIcon },
+      { label: 'Gaming', to: '/gaming', icon: GamingIcon },
+      { label: 'News', to: '/news', icon: NewsIcon },
+      { label: 'Sports', to: '/sports', icon: SportsIcon },
     ],
   },
   {
     title: '',
     items: [
-     // { label: 'Settings', to: '#', icon: Settings },
-     // { label: 'Help', to: '/help', icon: HeartHandshake },
+      { label: 'Settings', to: '/settings', icon: Settings },
+      { label: 'Help', to: '/help', icon: HeartHandshake },
     ],
   },
 ];

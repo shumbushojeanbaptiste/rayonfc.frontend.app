@@ -35,11 +35,7 @@ const CardsDataStatshorts: React.FC<Props> = ({
           className="w-full h-44 object-cover rounded-xl"
         />
 
-        {isPaid && (
-          <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-            {numericPrice.toFixed(2)}
-          </div>
-        )}
+        
 
         <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
           {duration}
@@ -55,9 +51,17 @@ const CardsDataStatshorts: React.FC<Props> = ({
         </p>
       </div>
 
-      <div className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+    
+      <div className=" flex mt-1 gap-40 text-sm text-gray-500 dark:text-gray-400">
         {views.toLocaleString()} views
+
+         {isPaid && (
+          <div className=" top-2  -mt-0 left-2 bg-gray-700 text-white px-2 py-1 rounded text-xs">
+            {numericPrice.toFixed(2)} Rwf
+          </div>
+        )}
       </div>
+    
     </div>
   );
 };

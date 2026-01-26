@@ -5,49 +5,44 @@ interface Props {
   videoTitle: string;
   channelName: string;
   total: string;
+  duration: string;
   price?: number | string | null;
   thumbnail?: string;
   profileImage?: string;
-  onClick?: () => void;
-  onBuy?: () => void;
-  onAddMoney?: () => void; 
-  canBuy?: boolean;
+  onClick: () => void;
 }
 
 const CardDataStatsTre: React.FC<Props> = ({
   videoTitle,
   channelName,
   total,
+  duration,
   price,
   thumbnail,
   profileImage,
   onClick,
-  onBuy,
-  onAddMoney,
-  canBuy = false,
 }) => {
- // imibare
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
   return (
     <div
-      className=" rounded-xl cursor-pointer hover:shadow-md p-2 group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
-      
-      
+      onClick={onClick}
+      className="rounded-xl cursor-pointer hover:shadow-md p-2 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
     >
-      <div className="relative"> 
+      <div className="relative">
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
           className="w-full h-44 object-cover rounded-xl"
         />
 
-        {isPaid && (
-          <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
-            {numericPrice.toFixed(2)}
-          </div>
-        )}
+        {/* Duration Badge */}
+        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+          {duration}
+        </div>
+
+        
       </div>
 
       <div className="flex items-center gap-3 mt-2">
@@ -56,54 +51,20 @@ const CardDataStatsTre: React.FC<Props> = ({
           alt={channelName}
           className="w-10 h-10 rounded-full object-cover"
         />
+
         <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">
-            {videoTitle}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-white line-clamp-1">
-            {channelName}
-          </p>
+          <h3 className="font-semibold line-clamp-1">{videoTitle}</h3>
+          <p className="text-sm text-gray-400 line-clamp-1">{channelName}</p>
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-2">
-        <p className="text-sm text-gray-600 dark:text-white">{total}</p>
-
-        {/* ACTION BUTTON */}
-        {isPaid ? (
-          canBuy ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onBuy?.();
-              }}
-              className="px-3 py-1 rounded-lg text-white dark:text-[#05333a]  font-semibold bg-[#05333a] dark:bg-[#e0e327]"
-              
-            >
-              Buy
-            </button>
-          ) : (
-            <button
-              onClick={(e) => { 
-                e.stopPropagation();
-                onAddMoney?.();
-              }}
-              className="px-3 py-1 rounded-lg text-[#05333a] dark:text-white font-semibold bg-[#e0e327] dark:bg-[#014551]"
-            >
-              Top Up
-            </button>
-          )
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            className="px-3 py-1 rounded-lg text-white  dark:text-[#05333a] bg-[#05333a] dark:bg-[#e0e327] font-semibold"
-            
-          >
-            Watch
-          </button>
+      <div className="text-sm flex gap-40 text-gray-400 mt-2">
+        {total}
+          {/* Price Badge */}
+        {isPaid && (
+          <div className=" top-2 right-2 bg-gray-800 text-white px-2 py-1 rounded text-sm">
+            {numericPrice.toFixed(2)} RWF
+          </div>
         )}
       </div>
     </div>

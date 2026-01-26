@@ -116,7 +116,12 @@ export default function App() {
           </RequireAuth>
         }
       >
-        <Route path="shorts" element={<Shortvideos />} />
+        <Route path="music" element={<Trendsvideos />} />
+        <Route path="gaming" element={<Trendsvideos />} />
+        <Route path="news" element={<Trendsvideos />} />
+        <Route path="sports" element={<Trendsvideos />} />
+        <Route path="help" element={<Trendsvideos />} />
+        <Route path="shorts" element={< Shortvideos />} />
         <Route path="home/search" element={<Search />} />
         <Route path="watch/:hash" element={<Videosplay />} />
         <Route path="trendsvideos" element={<Trendsvideos />} />
@@ -124,7 +129,7 @@ export default function App() {
         <Route path="myvideos" element={<Purchvideos />} />
         <Route path="latest" element={<Latestvideos />} />
         <Route path="profile" element={<Profile />} />
-        {/*<Route path="settings" element={<Settings />} />*/}
+        <Route path="settings" element={<Trendsvideos />} />
       </Route>
 
       {/* 🔐 OLEEPLAY STUDIO */}

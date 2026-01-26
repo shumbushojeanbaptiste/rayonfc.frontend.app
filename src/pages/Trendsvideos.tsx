@@ -6,31 +6,34 @@ import CardDataStatsTre from "../components/CardDataStatsTre";
 import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
-import { encodeId } from "../utils/hashid"; // ✅ ADDED
- 
+import { encodeId } from "../utils/hashid";
+
 const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
   const [loadingBalance, setLoadingBalance] = useState(true);
+  const [loadingVideos, setLoadingVideos] = useState(true);
+  const [checkingAccessId, setCheckingAccessId] = useState<number | null>(null);
 
   const navigate = useNavigate();
-  const ACCENT = "#05333a";
   const user = getAuthUser();
 
-  /* -----------------------------
-     LOAD VIDEOS
-  ------------------------------*/
+  /* ===============================
+     LOAD TRENDING VIDEOS
+  ================================ */
   useEffect(() => {
+    setLoadingVideos(true);
     api
       .get("/api/videos/trends")
       .then((res) => setVideos(res.data.data || []))
-      .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err));
+      .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err))
+      .finally(() => setLoadingVideos(false));
   }, []);
 
-  /* -----------------------------
+  /* ===============================
      LOAD WALLET BALANCE
-  ------------------------------*/
+  ================================ */
   useEffect(() => {
     if (!user) {
       setWalletBalance(0);
@@ -47,97 +50,97 @@ const Trendsvideos: React.FC = () => {
       .finally(() => setLoadingBalance(false));
   }, [user]);
 
-  /* -----------------------------
-     FILE URL
-  ------------------------------*/
-  const fileUrl = (path?: string) => {
-    if (!path || path === "null" || path === "undefined") {
-      return "/default-avatar.png";
-    }
-    return path.includes("/") ? path : `${path}`;
-  };
+  /* ===============================
+     FILE URL FALLBACK
+  ================================ */
+  const fileUrl = (path?: string) =>
+    path && path !== "null" && path !== "undefined" ? path : "/default-avatar.png";
 
-  /* -----------------------------
-     ACTIONS
-  ------------------------------*/
-  const handleBuy = (video: Video) => {
+  /* ===============================
+     HANDLE VIDEO CLICK
+  ================================ */
+  const handleVideoClick = async (video: Video) => {
     if (!user) {
       alert("Please login first");
       return;
     }
-    setSelectedVideo(video);
+
+    // Free video → watch directly
+    if (!video.price || Number(video.price) === 0) {
+      navigate(`/watch/${encodeId(video.id)}`, { state: { ...video, source: "trending" } });
+      return;
+    }
+
+    // Prevent multiple API calls if already checking
+    if (checkingAccessId === video.id) return;
+    setCheckingAccessId(video.id);
+
+    try {
+      const res = await api.get(`/api/videos/${video.id}/has-access`);
+      const hasAccess = res?.data?.data?.hasAccess ?? res?.data?.hasAccess ?? false;
+
+      if (hasAccess) {
+        navigate(`/watch/${encodeId(video.id)}`, { state: { ...video, source: "trending" } });
+      } else {
+        setSelectedVideo(video);
+      }
+    } catch (err) {
+      console.warn("Failed to check video access:", err);
+      setSelectedVideo(video);
+    } finally {
+      setCheckingAccessId(null);
+    }
   };
 
-  const handleAddMoney = () => {
-    navigate({
-      pathname: "/finance/deposits",
-      search: "?deposit=true",
-    });
-  };
-
-  // ✅ UPDATED: encode ID before navigation
-  const handleWatch = (video: Video) => {
-    navigate(`/watch/${encodeId(video.id)}`, {
-      state: {
-        ...video,
-        source: "trending",
-      },
-    });
+  /* ===============================
+     REFRESH WALLET BALANCE
+  ================================ */
+  const refreshWallet = () => {
+    if (!user) return;
+    api
+      .get(`/api/payments/balance/${user.user_id}`)
+      .then((res) =>
+        setWalletBalance(Number(res.data.data?.balance || 0))
+      )
+      .catch(() => {});
   };
 
   return (
     <>
       <Breadcrumb pageName="Trending Videos" />
 
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-        {videos.map((video) => {
-          const canBuy = !loadingBalance && walletBalance >= video.price;
-
-          return (
-            <div
+      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {loadingVideos ? (
+          <p className="col-span-full text-center text-gray-500">Loading videos...</p>
+        ) : (
+          videos.map((video) => (
+            <CardDataStatsTre
               key={video.id}
-              style={{ borderLeft: "5px solid transparent" }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderLeft = `5px solid ${ACCENT}`)
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderLeft = "5px solid transparent")
-              }
-            >
-              <CardDataStatsTre
-                id={video.id}
-                videoTitle={video.title}
-                channelName={video.owner || "Unknown Owner"}
-                total={`${video.views ?? 0} views`}
-                price={video.price}
-                thumbnail={fileUrl(video.thumbnail)}
-                profileImage={fileUrl(video.profile_photo)}
-                canBuy={canBuy}
-                onClick={() => handleWatch(video)}
-                onBuy={() => handleBuy(video)}
-                onAddMoney={handleAddMoney}
-              />
-            </div>
-          );
-        })}
+              id={video.id}
+              videoTitle={video.title}
+              channelName={video.owner || "Unknown Owner"}
+              total={`${video.views ?? 0} views`}
+              price={video.price}
+              duration={video.duration}
+              thumbnail={fileUrl(video.thumbnail)}
+              profileImage={fileUrl(video.profile_photo)}
+              onClick={() => handleVideoClick(video)}
+            />
+          ))
+        )}
       </div>
 
-      {/* BUY VIDEO MODAL */}
+      {/* ===============================
+          BUY VIDEO MODAL
+      ================================ */}
       {selectedVideo && (
         <BuyVideoModal
           video={selectedVideo}
+          walletBalance={walletBalance}
           onClose={() => setSelectedVideo(null)}
           onSuccess={() => {
             setSelectedVideo(null);
-
-            if (user) {
-              api
-                .get(`/api/payments/balance/${user.user_id}`)
-                .then((res) =>
-                  setWalletBalance(Number(res.data.data?.balance || 0))
-                )
-                .catch(() => {});
-            }
+            refreshWallet();
           }}
         />
       )}
