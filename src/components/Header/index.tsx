@@ -4,6 +4,7 @@ import DropdownUser from './DropdownUser';
 import LogoIcon from '../../images/logo/logo2.png';
 import DarkModeSwitcher from './DarkModeSwitcher';
 import DropdownNotification from './DropdownNotification';
+import BalanceDeposit from '../balance/BalanceDeposit';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -226,6 +227,7 @@ const Header: React.FC<HeaderProps> = ({
 
           <DarkModeSwitcher />
           <DropdownNotification />
+          <BalanceDeposit />
           <DropdownUser />
         </div>
       </div>
