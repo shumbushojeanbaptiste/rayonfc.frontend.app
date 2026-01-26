@@ -36,6 +36,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Searchsample from "./pages/Searchsample";
 import Videosplaysample from "./pages/Dashboard/Videosplaysample";
+import Shortvideos from "./pages/Shortsvideos";
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -115,6 +116,7 @@ export default function App() {
           </RequireAuth>
         }
       >
+        <Route path="shorts" element={<Shortvideos />} />
         <Route path="home/search" element={<Search />} />
         <Route path="watch/:hash" element={<Videosplay />} />
         <Route path="trendsvideos" element={<Trendsvideos />} />

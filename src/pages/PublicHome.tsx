@@ -1,6 +1,7 @@
 // src/pages/PublicHome.tsx 
 
 import Categories from "../components/categories/Categories";
+import Shortvideos from "./Shortsvideos";
 import Trendsvideossample from "./Trendsvideossample";
 
  const PublicHome: React.FC = () => {
@@ -8,6 +9,7 @@ import Trendsvideossample from "./Trendsvideossample";
    
       <div className="">
         <Categories />
+        <Shortvideos />
        <Trendsvideossample/>
        
       </div>

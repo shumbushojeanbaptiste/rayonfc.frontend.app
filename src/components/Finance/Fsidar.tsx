@@ -28,15 +28,16 @@ const MENU = [
     items: [
       { to: "/finance", label: "Dashboard", icon: <HiHome /> },
       { to: "/finance/deposits", label: "Deposits", icon: <PiHandDeposit /> },
-      { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
+     // { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
       { to: "/finance/withdrawals", label: "Withdrawals", icon: <PiHandWithdraw /> },
-      { to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
-      
+     // { to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
     ],
   },
   {
     title: "",
-    items: [{ to: "/studio/settings", label: "Settings", icon: <HiCog /> }],
+    items: [
+      //{ to: "/studio/settings", label: "Settings", icon: <HiCog /> }
+    ],
   },
 ];
 

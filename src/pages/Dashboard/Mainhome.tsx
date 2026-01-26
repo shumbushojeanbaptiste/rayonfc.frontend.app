@@ -11,10 +11,10 @@ const Mainhome: React.FC = () => {
     <div className="">
       <Categories />
       {/*<Allvideos />*/}
-      <Purchvideos/>
+      {/*<Purchvideos/>*/}
       <Trendsvideos/>
-      <Freevideos />
-      <Latestvideos />
+      {/*<Freevideos />*/}
+      {/*<Latestvideos />*/}
     
     </div>
   );
