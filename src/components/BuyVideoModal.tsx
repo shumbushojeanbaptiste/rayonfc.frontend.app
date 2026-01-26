@@ -1,169 +1,214 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { Video } from "../types/videouser";
 import { getAuthUser } from "../utils/auth";
+import { encodeId } from "../utils/hashid";
 
 interface PaymentMethod {
   id: number;
   name: string;
 }
 
+interface RawPaymentMethod {
+  id?: number;
+  payment_method_id?: number;
+  method_id?: number;
+  name: string;
+}
+
 interface Props {
   video: Video;
+  walletBalance: number;
   onClose: () => void;
   onSuccess: () => void;
 }
 
-const BuyVideoModal: React.FC<Props> = ({ video, onClose, onSuccess }) => {
+const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loadingMethods, setLoadingMethods] = useState(true);
 
-  const user = getAuthUser(); // ✅ signed-in user
+  const user = getAuthUser();
+  const navigate = useNavigate();
 
-  // 🔹 Load & normalize payment methods
+  const canBuy = walletBalance >= Number(video.price || 0);
+
+  // -----------------------------
+  // Check if user already owns video
+  // -----------------------------
   useEffect(() => {
-    const loadPaymentMethods = async () => {
+    const checkAccess = async () => {
+      if (!user) return;
       try {
-        const res = await api.get("/api/settings/paymentMethods");
-
-        const raw = res.data?.data || res.data || [];
-
-        const methods: PaymentMethod[] = raw
-          .map((m: any) => ({
-            id: m.id ?? m.payment_method_id ?? m.method_id,
-            name: m.name,
-          }))
-          .filter((m: PaymentMethod) => typeof m.id === "number");
-
-        setPaymentMethods(methods);
-
-        // ✅ AUTO-SELECT FIRST AVAILABLE METHOD
-        if (methods.length > 0) {
-          setSelectedMethod(methods[0].id);
+        const res = await api.get(`/api/videos/${video.id}/has-access`);
+        const hasAccess = res?.data?.data?.hasAccess ?? false;
+        if (hasAccess) {
+          navigate(`/watch/${encodeId(video.id)}`);
+          onClose();
         }
       } catch (err) {
-        console.error("Failed to load payment methods:", err);
+        console.warn("Failed to check video access:", err);
+      }
+    };
+    checkAccess();
+  }, [video.id, user, navigate, onClose]);
+
+  // -----------------------------
+  // Load payment methods if user can buy
+  // -----------------------------
+  useEffect(() => {
+    if (!canBuy) return;
+
+    const loadPaymentMethods = async () => {
+      setLoadingMethods(true);
+      try {
+        const res = await api.get("/api/settings/paymentMethods");
+        const raw: RawPaymentMethod[] = res.data?.data || [];
+
+        const methods: PaymentMethod[] = raw
+          .map((m: RawPaymentMethod) => ({
+            id: m.id ?? m.payment_method_id ?? m.method_id ?? -1,
+            name: m.name,
+          }))
+          .filter((m): m is PaymentMethod => m.id > 0);
+
+        setPaymentMethods(methods);
+        if (methods.length > 0) setSelectedMethod(methods[0].id);
+      } catch (err) {
+        console.warn("Failed to load payment methods:", err);
         setPaymentMethods([]);
+      } finally {
+        setLoadingMethods(false);
       }
     };
 
     loadPaymentMethods();
-  }, []);
+  }, [canBuy]);
 
+  // -----------------------------
+  // Buy video
+  // -----------------------------
   const handleBuy = async () => {
     setErrorMessage(null);
 
     if (!user) {
-      setErrorMessage("Please sign in to continue with your purchase.");
+      setErrorMessage("Please sign in to continue.");
       return;
     }
 
     if (!selectedMethod) {
-      setErrorMessage("No payment method is currently available.");
+      setErrorMessage("No payment method available.");
       return;
     }
 
     setLoading(true);
-    try {
-      const body = {
-        user_id: user.user_id,          // ✅ FROM SIGNED USER
-        payment_method: selectedMethod, // ✅ FROM API
-        amount: video.price,            // ✅ VIDEO PRICE (WALLET)
-        video_id: video.id,             // ✅ VIDEO
-      };
 
-      const res = await api.post("/api/payments/buy-video", body, {
-        headers: {
-          Authorization: `Bearer ${user.jwt}`,
+    try {
+      const res = await api.post(
+        "/api/payments/buy-video",
+        {
+          user_id: user.user_id,
+          payment_method: selectedMethod,
+          amount: video.price,
+          video_id: video.id,
         },
-      });
+        { headers: { Authorization: `Bearer ${user.jwt}` } }
+      );
 
       if (res.data?.status === "successful") {
         onSuccess();
+        navigate(`/watch/${encodeId(video.id)}`);
       } else {
-        setErrorMessage(
-          res.data?.message === "You already purchased this video"
-            ? "You have already purchased this video."
-            : res.data?.message || "Payment failed. Please try again."
-        );
+        setErrorMessage(res.data?.message || "Payment failed.");
       }
     } catch (err: any) {
-      console.error("Payment error:", err);
-      setErrorMessage(
-        err.response?.data?.message === "You already purchased this video"
-          ? "You have already purchased this video."
-          : err.response?.data?.message || "Payment failed. Please try again."
-      );
+      setErrorMessage(err?.response?.data?.message || String(err) || "Payment failed.");
     } finally {
       setLoading(false);
     }
   };
 
+  // -----------------------------
+  // Top up
+  // -----------------------------
+  const handleTopUp = () => {
+    navigate("/finance/deposits?deposit=true");
+  };
+
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-96 shadow-lg">
-        <h2 className="text-xl font-semibold mb-4">Buy Video</h2>
+        <h2 className="text-xl font-semibold mb-3">{video.title}</h2>
 
-        <p className="mb-2">
-          {video.title} — <strong>{video.price} RWF</strong>
+        <p className="mb-2 text-sm">
+          Price: <strong>{video.price} RWF</strong>
         </p>
 
-        <p className="mb-4 text-sm text-gray-600">
-          Amount will be deducted from your wallet balance.
-        </p>
-
-        {/* ERROR MESSAGE */}
-        {errorMessage && (
+        {!canBuy && (
           <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-300 p-3 text-sm text-yellow-800">
+            Your wallet balance is too low to buy this video.
+          </div>
+        )}
+
+        {errorMessage && (
+          <div className="mb-4 rounded-lg bg-red-50 border border-red-300 p-3 text-sm text-red-700">
             {errorMessage}
           </div>
         )}
 
-        {/* PAYMENT METHODS */}
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2">Payment Method</h3>
+        {canBuy && (
+          <div className="mb-4">
+            <h3 className="font-semibold mb-2">Payment Method</h3>
 
-          <div className="flex flex-col gap-2">
-            {paymentMethods.map((method) => (
-              <label
-                key={method.id}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method.id}
-                  checked={selectedMethod === method.id}
-                  onChange={() => setSelectedMethod(method.id)}
-                />
-                <span>{method.name}</span>
-              </label>
-            ))}
+            {loadingMethods ? (
+              <p className="text-sm text-gray-500">Loading payment methods...</p>
+            ) : paymentMethods.length === 0 ? (
+              <p className="text-sm text-red-500">No payment methods available.</p>
+            ) : (
+              paymentMethods.map((method) => (
+                <label key={method.id} className="flex gap-2 items-center cursor-pointer">
+                  <input
+                    type="radio"
+                    checked={selectedMethod === method.id}
+                    onChange={() => setSelectedMethod(method.id)}
+                  />
+                  {method.name}
+                </label>
+              ))
+            )}
           </div>
-        </div>
+        )}
 
-        {/* ACTION BUTTONS */}
         <div className="flex justify-end gap-3">
-          <button
-            onClick={onClose}
-            disabled={loading}
-            className="px-4 py-2 rounded-lg border border-gray-400 font-semibold"
-          >
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border font-semibold">
             Cancel
           </button>
 
-          <button
-            onClick={handleBuy}
-            disabled={loading}
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-          >
-            {loading ? "Processing..." : "Buy Now"}
-          </button>
+          {canBuy ? (
+            <button
+              onClick={handleBuy}
+              disabled={loading || paymentMethods.length === 0}
+              className="px-4 py-2 rounded-lg bg-[#05333a] text-white font-semibold"
+            >
+              {loading ? "Processing..." : "Buy & Watch"}
+            </button>
+          ) : (
+            <button
+              onClick={handleTopUp}
+              className="px-4 py-2 rounded-lg bg-[#e0e327] font-semibold"
+            >
+              Top Up Wallet
+            </button>
+          )}
         </div>
       </div>
-    </div> 
+    </div>
   );
 };
 

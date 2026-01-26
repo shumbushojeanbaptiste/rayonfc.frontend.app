@@ -77,19 +77,19 @@ const MENU = [
   {
     title: 'Explore',
     items: [
-      //{ label: 'Explore', to: '/explore', icon: ExploreIcon },
-      //{ label: 'Shorts', to: '/shorts', icon: ShortsIcon },
-      //{ label: 'Music', to: '/music', icon: MusicIcon },
-      //{ label: 'Gaming', to: '/gaming', icon: GamingIcon },
-      //{ label: 'News', to: '/news', icon: NewsIcon },
-      //{ label: 'Sports', to: '/sports', icon: SportsIcon },
+      { label: 'Explore', to: '/explore', icon: ExploreIcon },
+      { label: 'Shorts', to: '/shorts', icon: ShortsIcon },
+      { label: 'Music', to: '/music', icon: MusicIcon },
+      { label: 'Gaming', to: '/gaming', icon: GamingIcon },
+      { label: 'News', to: '/news', icon: NewsIcon },
+      { label: 'Sports', to: '/sports', icon: SportsIcon },
     ],
   },
   {
     title: '',
     items: [
-      //{ label: 'Settings', to: '/settings', icon: Settings },
-     // { label: 'Help', to: '/help', icon: HeartHandshake },
+      { label: 'Settings', to: '/settings', icon: Settings },
+      { label: 'Help', to: '/help', icon: HeartHandshake },
     ],
   },
 ];
