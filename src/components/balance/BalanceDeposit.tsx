@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import api from '../../api';
+import { Plus } from 'lucide-react';
 
 interface Wallet {
   balance: number;
@@ -24,6 +25,8 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const [showDeposit, setShowDeposit] = useState(false);
 
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
   const [amount, setAmount] = useState('');
   const [phone, setPhone] = useState('');
   const [paymentMethodId, setPaymentMethodId] = useState('');
@@ -32,6 +35,10 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
+
+  // New states for dropdown open/close
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
 
   const user = (() => {
     try {
@@ -78,6 +85,24 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
     });
   }, []);
 
+  useEffect(() => {
+    if (!showDeposit) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setShowDeposit(false);
+        setPaymentOpen(false);
+        setCurrencyOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showDeposit]);
+
   const handleDeposit = async () => {
     if (!amount || !phone || !paymentMethodId || !currencyId) {
       alert('Please fill all fields');
@@ -100,6 +125,8 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
       setPhone('');
       setPaymentMethodId('');
       setCurrencyId('');
+      setPaymentOpen(false);
+      setCurrencyOpen(false);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Deposit failed');
     } finally {
@@ -123,48 +150,108 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="bg-[#FFFF00] px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-black  hover:bg-[#D1D100] transition"
+          className="hidden sm:inline-block bg-[#FFFF00] px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-black hover:bg-[#D1D100] transition"
         >
           DEPOSIT
+        </button>
+
+        <button
+          onClick={() => setShowDeposit(true)}
+          aria-label="Deposit"
+          className="inline-flex sm:hidden items-center justify-center rounded-full bg-[#FFFF00] w-8 h-8 text-black hover:bg-[#D1D100] transition shadow"
+        >
+          <Plus size={20} />
         </button>
       </div>
 
       {/* DEPOSIT MODAL */}
       {showDeposit && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center sm:items-start justify-center p-3 sm:pt-24">
-          <div className="w-full max-w-sm bg-white dark:bg-gray-900 p-4 sm:p-6 rounded shadow max-h-[90vh] overflow-y-auto">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 mt-15"
+          aria-modal="true"
+          role="dialog"
+          aria-labelledby="deposit-modal-title"
+        >
+          <div
+            ref={modalRef}
+            className="bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-md w-full max-h-[90vh] overflow-y-auto overflow-x-hidden p-6"
+            style={{ margin: 'auto' }}
+          >
+            <h3
+              id="deposit-modal-title"
+              className="text-lg font-semibold mb-4 text-gray-900 dark:text-white"
+            >
               Deposit Funds
             </h3>
 
-            <select
-              className="border p-2 text-sm w-full mb-2 sm:mb-3 bg-white dark:bg-gray-900"
-              value={paymentMethodId}
-              onChange={(e) => setPaymentMethodId(e.target.value)}
-            >
-              <option value="">Select Payment Method</option>
-              {paymentMethods.map((pm) => (
-                <option key={pm.id} value={pm.id}>
-                  {pm.name}
-                </option>
-              ))}
-            </select>
+            {/* PAYMENT METHOD CUSTOM DROPDOWN */}
+            <div className="mb-3 relative">
+              <div className="border rounded bg-white dark:bg-gray-900">
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm sm:text-base"
+                  onClick={() => setPaymentOpen(!paymentOpen)}
+                >
+                  {paymentMethodId
+                    ? paymentMethods.find((pm) => pm.id === Number(paymentMethodId))
+                        ?.name
+                    : 'Select Payment Method'}
+                </button>
 
-            <select
-              className="border p-2 text-sm w-full mb-2 sm:mb-3 bg-white dark:bg-gray-900"
-              value={currencyId}
-              onChange={(e) => setCurrencyId(e.target.value)}
-            >
-              <option value="">Select Currency</option>
-              {currencies.map((c) => (
-                <option key={c.currency_id} value={c.currency_id}>
-                  {c.currency_name}
-                </option>
-              ))}
-            </select>
+                {paymentOpen && (
+                  <ul className="absolute z-50 w-full max-h-40 overflow-y-auto border-t border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-b shadow-lg">
+                    {paymentMethods.map((pm) => (
+                      <li
+                        key={pm.id}
+                        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        onClick={() => {
+                          setPaymentMethodId(pm.id.toString());
+                          setPaymentOpen(false);
+                        }}
+                      >
+                        {pm.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {/* CURRENCY CUSTOM DROPDOWN */}
+            <div className="mb-3 relative">
+              <div className="border rounded bg-white dark:bg-gray-900">
+                <button
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm sm:text-base"
+                  onClick={() => setCurrencyOpen(!currencyOpen)}
+                >
+                  {currencyId
+                    ? currencies.find((c) => c.currency_id === Number(currencyId))
+                        ?.currency_name
+                    : 'Select Currency'}
+                </button>
+
+                {currencyOpen && (
+                  <ul className="absolute z-50 w-full max-h-40 overflow-y-auto border-t border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-b shadow-lg">
+                    {currencies.map((c) => (
+                      <li
+                        key={c.currency_id}
+                        className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                        onClick={() => {
+                          setCurrencyId(c.currency_id.toString());
+                          setCurrencyOpen(false);
+                        }}
+                      >
+                        {c.currency_name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
 
             <input
-              className="border p-2 text-sm w-full mb-2 sm:mb-3 bg-white dark:bg-gray-900"
+              className="border p-2 text-sm w-full mb-3 bg-white dark:bg-gray-900 rounded"
               placeholder="Phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -172,16 +259,16 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
             <input
               type="number"
-              className="border p-2 text-sm w-full mb-3 sm:mb-4 bg-white dark:bg-gray-900"
+              className="border p-2 text-sm w-full mb-4 bg-white dark:bg-gray-900 rounded"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="px-3 py-1.5 text-sm text-gray-600"
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition"
               >
                 Cancel
               </button>
@@ -189,7 +276,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
               <button
                 onClick={handleDeposit}
                 disabled={loading}
-                className="px-3 py-1.5 text-sm bg-green-600 text-white rounded"
+                className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50"
               >
                 {loading ? 'Processing…' : 'Deposit'}
               </button>

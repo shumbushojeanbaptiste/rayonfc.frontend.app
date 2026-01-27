@@ -221,7 +221,7 @@ const PublicHeader: React.FC<HeaderProps> = ({
             {SearchIcon}
           </button>
 
-          <DarkModeSwitcher />
+          {/*<DarkModeSwitcher />*/}
           <DropdownNotification />
           <DropdownUserLogin />
         </div>

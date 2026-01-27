@@ -140,6 +140,7 @@ const Trendsvideossample: React.FC = () => {
                       channelName={video.owner || "Unknown Owner"}
                       total={`${video.views ?? 0} views`}
                       duration={video.duration}
+                      price={video.price}
                       thumbnail={fileUrl(video.thumbnail)}
                       profileImage={fileUrl(video.profile_photo)}
                       canBuy={canBuy}
@@ -153,25 +154,7 @@ const Trendsvideossample: React.FC = () => {
         </div>
       </div>
 
-      {/* BUY VIDEO MODAL */}
-      {selectedVideo && (
-        <BuyVideoModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
-          onSuccess={() => {
-            setSelectedVideo(null);
-
-            if (user) {
-              api
-                .get(`/api/payments/balance/${user.user_id}`)
-                .then((res) =>
-                  setWalletBalance(Number(res.data.data?.balance || 0))
-                )
-                .catch(() => {});
-            }
-          }}
-        />
-      )}
+     
     </>
   );
 };

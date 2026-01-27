@@ -5,6 +5,7 @@ import DarkModeSwitcher from "../Header/DarkModeSwitcher";
 import DropdownMessage from "../Header/DropdownMessage";
 import DropdownNotification from "../Header/DropdownNotification";
 import DropdownUser from "../Header/DropdownUser";
+import BalanceDeposit from "../balance/BalanceDeposit";
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -204,9 +205,10 @@ const Stopbar: React.FC<HeaderProps> = ({
             {SearchIcon}
           </button>
 
-          <DarkModeSwitcher />
+          {/*<DarkModeSwitcher />*/}
           {/*<DropdownMessage />*/}
           <DropdownNotification />
+          <BalanceDeposit />
           <DropdownUser />
         </div>
       </div>

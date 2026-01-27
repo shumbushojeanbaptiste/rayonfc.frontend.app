@@ -45,11 +45,7 @@ const CardDataStatsTresample: React.FC<Props> = ({
           className="w-full h-44 object-cover rounded-xl"
         />
 
-        {isPaid && (
-          <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
-            {numericPrice.toFixed(2)}
-          </div>
-        )}
+        
         <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
             {duration}
           </div>
@@ -71,8 +67,15 @@ const CardDataStatsTresample: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="flex justify-between items-center mt-2">
-        <p className="text-sm text-gray-600 dark:text-white">{total}</p>
+      <div className="justify-between items-center mt-2">
+        <p className="flex gap-40 text-sm text-gray-600 dark:text-white">
+          {total} 
+          {isPaid && (
+          <div className=" top-2 -mt-1 right-2 bg-gray-700 text-white px-2 py-1 rounded">
+            {numericPrice.toFixed(2)} Rwf
+          </div>
+        )}
+          </p>
 
         
       </div>
