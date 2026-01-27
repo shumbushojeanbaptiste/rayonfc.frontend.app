@@ -225,7 +225,7 @@ const Header: React.FC<HeaderProps> = ({
             {SearchIcon}
           </button>
 
-          <DarkModeSwitcher />
+          {/*<DarkModeSwitcher />*/}
           <DropdownNotification />
           <BalanceDeposit />
           <DropdownUser />

@@ -37,6 +37,7 @@ import Settings from "./pages/Settings";
 import Searchsample from "./pages/Searchsample";
 import Videosplaysample from "./pages/Dashboard/Videosplaysample";
 import Shortvideos from "./pages/Shortsvideos";
+import Music from "./pages/Music";
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -116,7 +117,7 @@ export default function App() {
           </RequireAuth>
         }
       >
-        <Route path="music" element={<Trendsvideos />} />
+        <Route path="music" element={<Music />} />
         <Route path="gaming" element={<Trendsvideos />} />
         <Route path="news" element={<Trendsvideos />} />
         <Route path="sports" element={<Trendsvideos />} />
