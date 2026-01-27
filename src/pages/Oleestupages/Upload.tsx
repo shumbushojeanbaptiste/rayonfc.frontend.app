@@ -662,12 +662,12 @@ export default function UploadPage() {
         {/* PROGRESS BAR */}
         {progress > 0 && (
           <div className="w-full bg-gray-300 h-3 rounded">
-            <div className="bg-blue-600 h-3 rounded" style={{ width: `${progress}%` }}></div>
+            <div className="bg-yellow-500 h-3 rounded" style={{ width: `${progress}%` }}></div>
           </div>
         )}
 
         {/* SUBMIT */}
-        <button className="bg-blue-600 text-white p-2 rounded w-full">
+        <button className="bg-yellow-500 text-white p-2 rounded w-full">
           Upload {progress > 0 ? `${progress}%` : ""}
         </button>
       </form>
@@ -742,7 +742,7 @@ export default function UploadPage() {
                   <button
                     type="button"
                     onClick={handleCaptureFromEditor}
-                    className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                    className="bg-yellow-500 text-white px-3 py-1 rounded text-sm"
                   >
                     Capture Frame
                   </button>
@@ -886,7 +886,7 @@ export default function UploadPage() {
                   // close editor
                   closeEditor();
                 }}
-                className="bg-blue-600 text-white px-4 py-1 rounded"
+                className="bg-yellow-500 text-white px-4 py-1 rounded"
               >
                 Save & Close
               </button>
