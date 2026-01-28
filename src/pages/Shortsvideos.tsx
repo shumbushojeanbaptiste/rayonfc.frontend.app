@@ -68,7 +68,7 @@ const Shortvideos: React.FC = () => {
           ? [...Array(8)].map((_, i) => <SkeletonCard key={i} />)
           : videos.map((video) => (
               <CardsDataStatshorts
-                key={video.id}
+                key={video.id} 
                 id={video.id}
                 title={video.title}
                 owner={video.owner || "Unknown"}

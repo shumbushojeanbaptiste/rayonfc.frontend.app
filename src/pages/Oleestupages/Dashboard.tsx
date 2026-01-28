@@ -1,390 +1,332 @@
 import React, { useEffect, useState } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { useLocation } from "react-router-dom"; // ✅ NEW
+import { useLocation } from "react-router-dom";
 import api from "../../api";
 
-// -----------------------------
-// Types
-// -----------------------------
-type PaymentMethodRaw = {
-  method_id?: number;
-  payment_method_id?: number;
-  id?: number;
-  name: string;
-};
-
-type PaymentMethod = {
-  id: number;
-  name: string;
-};
-
-type Currency = {
-  currency_id: number;
-  currency_name: string;
-};
+type PaymentMethod = { id: number; name: string };
+type Currency = { currency_id: number; currency_name: string };
 
 export default function Sdashboard() {
-  const [stats, setStats] = useState<any>(null);
-  const [analytics, setAnalytics] = useState<any[]>([]);
+  const location = useLocation();
+
   const [wallet, setWallet] = useState<any>(null);
+  const [analytics, setAnalytics] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Deposit modal
   const [showDeposit, setShowDeposit] = useState(false);
-  const [amount, setAmount] = useState("");
-  const [phone, setPhone] = useState("");
-  const [paymentMethodId, setPaymentMethodId] = useState("");
-  const [currencyId, setCurrencyId] = useState("");
-  const [depositLoading, setDepositLoading] = useState(false);
-
-  // Withdraw modal
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [withdrawLoading, setWithdrawLoading] = useState(false);
 
-  // DB data
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
-  // Signed user
-  const userSession = localStorage.getItem("user"); // ✅ UPDATED to localStorage
-  const user = userSession ? JSON.parse(userSession) : null;
-  const userId = user?.user_id;
-  const location = useLocation(); // ✅ NEW
+  const [marketTab, setMarketTab] = useState<
+    "holding" | "hot" | "new" | "favorite" | "gainers" | "volume"
+  >("holding");
 
-  // --------------------------------
-  // AUTO OPEN DEPOSIT MODAL
-  // --------------------------------
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const userId = user?.user_id;
+
+  /* ---------------- AUTO OPEN DEPOSIT ---------------- */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    if (params.get("deposit") === "true") {
-      setShowDeposit(true);
-    }
+    if (params.get("deposit") === "true") setShowDeposit(true);
   }, [location.search]);
 
-  // -----------------------------
-  // Independent balance loader
-  // -----------------------------
+  /* ---------------- LOAD BALANCE ---------------- */
   const loadBalance = async () => {
-    if (!userId) return;
-    try {
-      const res = await api.get(`/api/payments/balance/${userId}`);
-      setWallet(res.data.data);
-    } catch (err) {
-      console.error("Balance load failed:", err);
-    }
+    const res = await api.get(`/api/payments/balance/${userId}`);
+    setWallet(res.data.data);
   };
 
-  // -----------------------------
-  // Load dashboard (NO balance here)
-  // -----------------------------
+  /* ---------------- LOAD DASHBOARD ---------------- */
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setLoading(false);
+      return;
+    }
 
-    async function loadDashboard() {
+    const loadDashboard = async () => {
       try {
-        const [dashboardRes, analyticsRes] = await Promise.all([
-          api.get("/api/studio/dashboard"),
-          api.get("/api/studio/analytics"),
-        ]);
-
-        setStats(dashboardRes.data.data);
-        setAnalytics(analyticsRes.data.data || []);
+        const analyticsRes = await api.get("/api/studio/analytics");
+        setAnalytics(analyticsRes.data?.data || []);
+        await loadBalance();
       } catch (err) {
         console.error("Dashboard load failed:", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     loadDashboard();
-    loadBalance();
   }, [userId]);
 
-  // -----------------------------
-  // Load payment methods
-  // -----------------------------
-  useEffect(() => {
-    api.get("/api/settings/paymentMethods").then((res) => {
-      const raw: PaymentMethodRaw[] = res.data?.data || [];
-
-      const normalized: PaymentMethod[] = raw
-        .map((pm) => {
-          const id = pm.method_id ?? pm.payment_method_id ?? pm.id;
-          if (typeof id !== "number") return null;
-          return { id, name: pm.name };
-        })
-        .filter((pm): pm is PaymentMethod => pm !== null);
-
-      setPaymentMethods(normalized);
-    });
-  }, []);
-
-  // -----------------------------
-  // Load currencies
-  // -----------------------------
-  useEffect(() => {
-    api
-      .get("/api/currencies/all")
-      .then((res) => setCurrencies(res.data.data || []))
-      .catch((err) => console.error(err));
-  }, []);
-
-  // -----------------------------
-  // Deposit
-  // -----------------------------
-  const handleDeposit = async () => {
-    if (!amount || !phone || !paymentMethodId || !currencyId) {
-      alert("Please fill all deposit fields.");
-      return;
-    }
-
-    const payload = {
-      user_id: Number(userId),
-      payment_methods: Number(paymentMethodId),
-      amount: Number(amount),
-      phone: phone.trim(),
-      currency: Number(currencyId),
-    };
-
-    try {
-      setDepositLoading(true);
-      await api.post("/api/payments/init-deposit", payload);
-      await loadBalance();
-
-      setAmount("");
-      setPhone("");
-      setPaymentMethodId("");
-      setCurrencyId("");
-      setShowDeposit(false);
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Deposit failed");
-    } finally {
-      setDepositLoading(false);
-    }
-  };
-
-  // -----------------------------
-  // Withdraw
-  // -----------------------------
-  const handleWithdraw = async () => {
-    if (!withdrawAmount || !paymentMethodId || !currencyId) {
-      alert("Please fill all withdraw fields.");
-      return;
-    }
-
-    if (Number(withdrawAmount) > balance) {
-      alert("Insufficient balance.");
-      return;
-    }
-
-    const payload = {
-      user_id: Number(userId),
-      payment_method: Number(paymentMethodId),
-      amount: Number(withdrawAmount),
-      currency: Number(currencyId),
-    };
-
-    try {
-      setWithdrawLoading(true);
-      await api.post("/api/payments/withdraw", payload);
-      await loadBalance();
-
-      setWithdrawAmount("");
-      setPaymentMethodId("");
-      setCurrencyId("");
-      setShowWithdraw(false);
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Withdraw failed");
-    } finally {
-      setWithdrawLoading(false);
-    }
-  };
-
-  if (loading) return <div className="p-6">Loading dashboard…</div>;
+  if (loading) {
+    return (
+      <div className="p-6 text-white bg-[#0B0E11] min-h-screen">
+        Loading dashboard…
+      </div>
+    );
+  }
 
   const balance = Number(wallet?.balance || 0);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+    <div className="p-6 bg-[#0B0E11] min-h-screen text-white space-y-8">
 
-      {/* WALLET */}
-      <div className="bg-white dark:bg-gray-900 p-4 rounded shadow mb-6">
-        <h3 className="font-semibold mb-3">Wallet</h3>
+      {/* ================= HEADER ================= */}
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 bg-yellow-400 rounded-full" />
+        <div className="text-sm text-gray-400">
+          <div>User-{userId}</div>
+          <div>UID {userId}</div>
+        </div>
+        <div className="ml-auto text-sm">
+          VIP Level <span className="text-white">Regular User</span>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white dark:bg-gray-900 p-4 rounded shadow border-2 border-green-600">
-            <p className="text-sm text-gray-500">Balance</p>
-            <p className="text-2xl font-bold text-green-600">
-              {balance.toLocaleString()}
+      {/* ================= BALANCE + CHANNEL ANALYTICS ================= */}
+      <div className="bg-[#12161C] rounded-xl p-6 flex justify-between gap-6">
+
+        {/* LEFT SIDE */}
+        <div>
+          <p className="text-gray-400 text-sm">Estimated Balance</p>
+          <h2 className="text-3xl font-bold">{balance.toFixed(4)} BTC</h2>
+          <p className="text-red-500 text-sm mt-1">
+            Today’s PnL −$0.01 (−14.25%)
+          </p>
+
+          <div className="flex gap-3 mt-4">
+            <button
+              onClick={() => setShowDeposit(true)}
+              className="px-4 py-2 bg-[#1D9BF0] rounded"
+            >
+              Deposit
+            </button>
+            <button
+              onClick={() => setShowWithdraw(true)}
+              className="px-4 py-2 bg-gray-700 rounded"
+            >
+              Withdraw
+            </button>
+            <button className="px-4 py-2 bg-gray-700 rounded">
+              Cash In
+            </button>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE – CHANNEL ANALYTICS */}
+        <div className="w-[420px] bg-[#0E1116] rounded-lg p-4 text-sm">
+          <h4 className="font-semibold mb-3">Channel analytics</h4>
+
+          <div className="mb-4">
+            <p className="text-gray-400">Current subscribers</p>
+            <p className="text-xl font-bold">2,373</p>
+            <p className="text-green-500 text-xs">+42 in last 28 days</p>
+          </div>
+
+          <div className="border-t border-[#1E2329] pt-3 mb-4">
+            <p className="text-gray-400 text-xs">Summary</p>
+            <p className="text-gray-500 text-xs">Last 28 days</p>
+
+            <div className="flex justify-between mt-2">
+              <span>Views</span>
+              <span className="font-medium">10.0K</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Watch time (hours)</span>
+              <span className="font-medium">242.8</span>
+            </div>
+          </div>
+
+          <div className="border-t border-[#1E2329] pt-3">
+            <p className="text-gray-400 text-xs mb-2">
+              Top content · Last 48 hours
             </p>
+
+            <div className="flex justify-between text-xs mb-1">
+              <span className="truncate">Refined by Love, Not Burned...</span>
+              <span>74</span>
+            </div>
+            <div className="flex justify-between text-xs mb-1">
+              <span className="truncate">
+                SONG OF SONGS | Episode 12
+              </span>
+              <span>24</span>
+            </div>
+            <div className="flex justify-between text-xs">
+              <span className="truncate">
+                What If the Fire of God Is Love?
+              </span>
+              <span>22</span>
+            </div>
+
+            <button className="mt-3 text-yellow-400 text-xs">
+              Go to channel analytics →
+            </button>
           </div>
-        </div>
-
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowDeposit(true)}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Deposit
-          </button>
-
-          <button
-            onClick={() => setShowWithdraw(true)}
-            className="px-4 py-2 bg-red-600 text-white rounded"
-          >
-            Withdraw
-          </button>
         </div>
       </div>
 
-      {/* ANALYTICS */}
-      <div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
-        <h3 className="font-semibold mb-2">Views (recent days)</h3>
-        <div style={{ width: "100%", height: 240 }}>
-          <ResponsiveContainer>
-            <LineChart data={analytics}>
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line dataKey="views" stroke="#2563EB" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+      {/* ================= MARKETS ================= */}
+      <div className="bg-[#12161C] border border-[#1E2329] rounded-xl p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="font-semibold">Markets</h3>
+          <span className="text-sm text-gray-400 cursor-pointer">More &gt;</span>
         </div>
+
+        <div className="flex gap-6 text-sm text-gray-400 mb-4">
+          {[
+            ["holding", "Holding"],
+            ["hot", "Hot"],
+            ["new", "New Listing"],
+            ["favorite", "Favorite"],
+            ["gainers", "Top Gainers"],
+            ["volume", "24h Volume"],
+          ].map(([key, label]) => (
+            <span
+              key={key}
+              onClick={() => setMarketTab(key as any)}
+              className={`cursor-pointer pb-1 ${
+                marketTab === key
+                  ? "text-yellow-400 border-b-2 border-yellow-400"
+                  : ""
+              }`}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+
+        <table className="w-full text-sm">
+          <thead className="text-gray-500">
+            <tr>
+              <th className="text-left">Coin</th>
+              <th>Amount</th>
+              <th>Coin Price / Cost Price</th>
+              <th>24h Change</th>
+              <th />
+            </tr>
+          </thead>
+
+          <tbody>
+            {marketTab === "holding" && (
+              <>
+                <tr className="border-t border-[#1E2329]">
+                  <td className="py-4">HMSTR</td>
+                  <td className="text-center">185.37</td>
+                  <td className="text-center">$0.00</td>
+                  <td className="text-green-500 text-center">+5.17%</td>
+                  <td className="text-yellow-400 text-right">Trade</td>
+                </tr>
+                <tr className="border-t border-[#1E2329]">
+                  <td className="py-4">USDT</td>
+                  <td className="text-center">0.00365139</td>
+                  <td className="text-center">$1.00</td>
+                  <td className="text-red-500 text-center">-0.02%</td>
+                  <td className="text-yellow-400 text-right">Trade</td>
+                </tr>
+              </>
+            )}
+
+            {marketTab === "hot" && (
+              <tr className="border-t border-[#1E2329]">
+                <td className="py-4">BTC</td>
+                <td className="text-center">—</td>
+                <td className="text-center">$42,300</td>
+                <td className="text-green-500 text-center">+3.41%</td>
+                <td className="text-yellow-400 text-right">Trade</td>
+              </tr>
+            )}
+
+            {marketTab === "new" && (
+              <tr className="border-t border-[#1E2329]">
+                <td className="py-4">NEWCOIN</td>
+                <td className="text-center">—</td>
+                <td className="text-center">$0.012</td>
+                <td className="text-green-500 text-center">+120%</td>
+                <td className="text-yellow-400 text-right">Trade</td>
+              </tr>
+            )}
+
+            {marketTab === "favorite" && (
+              <tr className="border-t border-[#1E2329]">
+                <td className="py-4">ETH</td>
+                <td className="text-center">—</td>
+                <td className="text-center">$2,320</td>
+                <td className="text-red-500 text-center">-1.12%</td>
+                <td className="text-yellow-400 text-right">Trade</td>
+              </tr>
+            )}
+
+            {marketTab === "gainers" && (
+              <tr className="border-t border-[#1E2329]">
+                <td className="py-4">SOL</td>
+                <td className="text-center">—</td>
+                <td className="text-center">$98.45</td>
+                <td className="text-green-500 text-center">+18.7%</td>
+                <td className="text-yellow-400 text-right">Trade</td>
+              </tr>
+            )}
+
+            {marketTab === "volume" && (
+              <tr className="border-t border-[#1E2329]">
+                <td className="py-4">BTC</td>
+                <td className="text-center">—</td>
+                <td className="text-center">$42,300</td>
+                <td className="text-gray-400 text-center">High Volume</td>
+                <td className="text-yellow-400 text-right">Trade</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
-      {/* DEPOSIT MODAL */}
-      {showDeposit && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded shadow w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Deposit Funds</h3>
+      {/* ================= DISCOVER / EARN ================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-[#12161C] rounded-xl p-6">
+          <h3 className="font-semibold mb-4">Discover</h3>
 
-            <select
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
-              value={paymentMethodId}
-              onChange={(e) => setPaymentMethodId(e.target.value)}
-            >
-              <option value="">Select Payment Method</option>
-              {paymentMethods.map((pm) => (
-                <option key={pm.id} value={pm.id}>
-                  {pm.name}
-                </option>
+          <table className="w-full text-sm">
+            <thead className="text-gray-500">
+              <tr>
+                <th className="text-left">Coin</th>
+                <th>Est. APR</th>
+                <th>Duration</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["ETH", "1.39% - 170.70%", "flexible / locked"],
+                ["SOL", "1.80% - 153.40%", "flexible / locked"],
+                ["XUSD", "3.50%", "flexible"],
+                ["FDUSD", "0.32%", "flexible"],
+              ].map(([coin, apr, duration]) => (
+                <tr key={coin} className="border-t border-gray-800">
+                  <td className="py-3">{coin}</td>
+                  <td className="text-green-500">{apr}</td>
+                  <td>{duration}</td>
+                  <td className="text-yellow-400 cursor-pointer">
+                    Subscribe
+                  </td>
+                </tr>
               ))}
-            </select>
+            </tbody>
+          </table>
+        </div>
 
-            <select
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
-              value={currencyId}
-              onChange={(e) => setCurrencyId(e.target.value)}
-            >
-              <option value="">Select Currency</option>
-              {currencies.map((c) => (
-                <option key={c.currency_id} value={c.currency_id}>
-                  {c.currency_name}
-                </option>
-              ))}
-            </select>
-
-            <input
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
-              placeholder="Phone number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-
-            <input
-              type="number"
-              className="border p-2 w-full mb-4 bg-white dark:bg-gray-900"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowDeposit(false)}
-                className="px-4 py-2 text-gray-600 "
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeposit}
-                disabled={depositLoading}
-                className="px-4 py-2 bg-green-600 text-white rounded"
-              >
-                {depositLoading ? "Processing…" : "Deposit"}
-              </button>
-            </div>
+        <div className="space-y-6">
+          <div className="bg-[#12161C] rounded-xl p-6">
+            <h3 className="font-semibold">Announcements</h3>
+          </div>
+          <div className="bg-[#12161C] rounded-xl p-6">
+            <p className="text-xs text-gray-400">EARN TOGETHER</p>
+            <h4 className="text-yellow-400 font-semibold">
+              Unlock Up to 1,000 USDC
+            </h4>
           </div>
         </div>
-      )}
-
-      {/* WITHDRAW MODAL */}
-      {showWithdraw && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4">Withdraw Funds</h3>
-
-            <select
-              className="border p-2 w-full mb-3"
-              value={paymentMethodId}
-              onChange={(e) => setPaymentMethodId(e.target.value)}
-            >
-              <option value="">Select Payment Method</option>
-              {paymentMethods.map((pm) => (
-                <option key={pm.id} value={pm.id}>
-                  {pm.name}
-                </option>
-              ))}
-            </select>
-
-            <select
-              className="border p-2 w-full mb-3"
-              value={currencyId}
-              onChange={(e) => setCurrencyId(e.target.value)}
-            >
-              <option value="">Select Currency</option>
-              {currencies.map((c) => (
-                <option key={c.currency_id} value={c.currency_id}>
-                  {c.currency_name}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="number"
-              className="border p-2 w-full mb-4"
-              placeholder="Amount"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-            />
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setShowWithdraw(false)}
-                className="px-4 py-2 text-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleWithdraw}
-                disabled={withdrawLoading}
-                className="px-4 py-2 bg-red-600 text-white rounded"
-              >
-                {withdrawLoading ? "Processing…" : "Withdraw"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -28,27 +28,25 @@ const CardDataStatsTresample: React.FC<Props> = ({
   onAddMoney,
   canBuy = false,
 }) => {
- // imibare
+  // imibare
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
   return (
     <div
-       className=" rounded-xl cursor-pointer hover:shadow-md p-2 group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}
-      
+      className="rounded-xl cursor-pointer p-2 group transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
     >
-      <div className="relative"> 
+      <div className="relative">
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
           className="w-full h-44 object-cover rounded-xl"
         />
 
-        
-        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
-            {duration}
-          </div>
+        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+          {duration}
+        </div>
       </div>
 
       <div className="flex items-center gap-3 mt-2">
@@ -69,15 +67,13 @@ const CardDataStatsTresample: React.FC<Props> = ({
 
       <div className="justify-between items-center mt-2">
         <p className="flex gap-40 text-sm text-gray-600 dark:text-white">
-          {total} 
+          {total}
           {isPaid && (
-          <div className=" top-2 -mt-1 right-2 bg-gray-700 text-white px-2 py-1 rounded">
-            {numericPrice.toFixed(2)} Rwf
-          </div>
-        )}
-          </p>
-
-        
+            <div className="bg-gray-700 text-white px-2 py-1 rounded text-xs">
+              {numericPrice.toFixed(2)} Rwf
+            </div>
+          )}
+        </p>
       </div>
     </div>
   );

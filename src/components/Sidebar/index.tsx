@@ -65,7 +65,7 @@ const MENU = [
     title: '',
     items: [
       { label: 'Home', to: '/', icon: HomeIcon },
-      { label: 'Reels', to: '/shorts', icon: Clapperboard },
+      { label: 'Reels', to: '/reels', icon: Clapperboard },
       { label: 'Trending', to: '/Trendsvideos', icon: ChartIcon },
       { label: 'Latest', to: '/latest', icon: LatestIcon },
       { label: 'Free Videos', to: '/freevideos', icon: PlusIcon },

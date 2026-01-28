@@ -70,46 +70,9 @@ const CardDataStatsPur: React.FC<Props> = ({
       <div className="flex justify-between items-center mt-2">
         <p className="text-sm text-gray-600 dark:text-white">{total}</p>
 
-        {/* ACTION BUTTONs */}
-        {/* {isPaid ? (
-          canBuy ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onBuy?.();
-              }}
-              className="px-3 py-1 rounded-lg text-white dark:text-[#05333a]  font-semibold bg-[#05333a] dark:bg-[#e0e327]"
-              
-            >
-              Buy
-            </button>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAddMoney?.();
-              }}
-              className="px-3 py-1 rounded-lg text-white font-semibold bg-orange-600 hover:bg-orange-700"
-            >
-              Top Up
-            </button>
-          )
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            className="px-3 py-1 rounded-lg text-white  dark:text-[#05333a] bg-[#05333a] dark:bg-[#e0e327] font-semibold"
-            
-          >
-            Watch
-          </button>
-        ) }
-        */}
       </div>
     </div>
   );
 };
 
-export default CardDataStatsPur;
+export default CardDataStatsPur;  

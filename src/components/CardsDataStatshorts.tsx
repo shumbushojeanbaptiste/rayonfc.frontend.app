@@ -4,7 +4,7 @@ interface Props {
   id: number;
   title: string;
   owner: string;
-  views: number;
+  views: number; 
   duration: string;
   price?: number | string;
   thumbnail?: string;
@@ -67,3 +67,4 @@ const CardsDataStatshorts: React.FC<Props> = ({
 };
 
 export default CardsDataStatshorts;
+ 

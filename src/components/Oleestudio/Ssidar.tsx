@@ -25,17 +25,17 @@ const MENU = [
     title: "",
     items: [
       { to: "/studio", label: "Dashboard", icon: <HiHome /> },
-      //{ to: "/studio/content", label: "Content", icon: <HiCollection /> },
-      //{ to: "/studio/analytics", label: "Analytics", icon: <HiChartBar /> },
-      //{ to: "/studio/comments", label: "Comments", icon: <HiChat /> },
-      { to: "/studio/upload", label: "Upload", icon: <HiUpload /> },
+      { to: "/studio/content", label: "Content", icon: <HiCollection /> },
+      { to: "/studio/analytics", label: "Analytics", icon: <HiChartBar /> },
+      
+      //{ to: "/studio/upload", label: "Upload", icon: <HiUpload /> },
       
     ],
   },
   {
     title: "",
     items: [
-      //{ to: "/studio", label: "Settings", icon: <HiCog /> }
+      { to: "/studio", label: "Settings", icon: <HiCog /> }
     ],
   },
 ];

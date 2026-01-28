@@ -180,24 +180,11 @@ export default function Fdashboard() {
   // Render
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold mb-6 dark:text-slate-300">Dashboard</h1>
+      {/*<h1 className="text-2xl font-bold mb-6 dark:text-slate-300">Dashboard</h1>*/}
 
       {/* SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white dark:bg-blue-800 p-4 rounded shadow-8  ">
-          <p className="text-gray-400 dark:text-slate-200 text-sm">Total Income</p>
-          <h2 className="text-2xl font-bold dark:text-slate-300">$7.8k</h2>
-        </div>
-
-        <div className="bg-white dark:bg-green-800 p-4 rounded shadow-8 ">
-          <p className="text-gray-500 dark:text-slate-200 text-sm">Total Expense</p>
-          <h2 className="text-2xl font-bold dark:text-slate-300">$4.3k</h2>
-        </div>
-
-        <div className="bg-white dark:bg-yellow-600 p-4 rounded shadow-8 ">
-          <p className="text-gray-500 dark:text-slate-200 text-sm">Total Savings</p>
-          <h2 className="text-2xl font-bold dark:text-slate-300">$5.6k</h2>
-        </div>
+        
 
        {/* <div className="bg-white dark:bg-red-800 p-4 rounded shadow-8">
           <p className="text-gray-500 dark:text-slate-200 text-sm">Total Investment</p>
@@ -206,10 +193,26 @@ export default function Fdashboard() {
       </div>
 
          {/* WALLET */}
-      <div className="bg-white dark:bg-black p-4 rounded shadow-8">
-        <h3 className="font-semibold mb-3 dark:text-slate-300">Wallet</h3>
-        <div className="bg-slate-50 dark:bg-black p-4 rounded shadow-8">
+      <div className="bg-white dark:bg-black p-4 rounded shadow-8 grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {/*<h3 className="font-semibold mb-3 dark:text-slate-300">Wallet</h3>*/}
+        <div className="bg-slate-50 dark:bg-black p-4 rounded shadow-8 ">
             <p className="text-sm text-gray-500 dark:text-slate-400">Available Balance</p>
+            <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-500">
+              <h4>{balance.toLocaleString()}</h4> 
+              <p className="text-sm mt-2">RWF</p>
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-black p-4 rounded shadow-8">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Total Income</p>
+            <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-500">
+              <h4>{balance.toLocaleString()}</h4> 
+              <p className="text-sm mt-2">RWF</p>
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-black p-4 rounded shadow-8">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Total Withdrawals</p>
             <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-500">
               <h4>{balance.toLocaleString()}</h4> 
               <p className="text-sm mt-2">RWF</p>

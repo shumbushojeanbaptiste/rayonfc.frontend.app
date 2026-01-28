@@ -3,13 +3,16 @@ import Breadcrumb from '../components/Breadcrumbs/Breadcrumb';
 import CoverOne from '../images/cover/cover-01.png';
 import userSix from '../images/user/user-06.png';
 import { Link } from 'react-router-dom';
-import { FaLinkedin, FaGithub, FaGlobe } from 'react-icons/fa';
+import { FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter, FaFacebookF, FaInstagram } from "react-icons/fa6";
 import api from '../api';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // 🔹 Tabs state
+  const [activeTab, setActiveTab] = useState('Home');
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -57,15 +60,13 @@ const Profile = () => {
     followers,
     following,
     uploaded_videos,
-    balance,
-    currency,
   } = profile;
 
   const profileImage = profile_photo || userSix;
 
   return (
     <>
-      <Breadcrumb pageName="Profile" />
+      <Breadcrumb pageName="" />
 
       <div className="overflow-hidden rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         {/* Cover */}
@@ -81,11 +82,26 @@ const Profile = () => {
         <div className="px-4 sm:px-6 pb-6 text-center lg:pb-8 xl:pb-11.5">
           {/* Avatar */}
           <div className="relative z-30 mx-auto -mt-16 sm:-mt-22 h-28 w-28 sm:h-44 sm:w-44 rounded-full bg-white/20 p-1 sm:p-3 backdrop-blur">
-            <img
-              src={profileImage}
-              alt="profile"
-              className="rounded-full"
-            />
+            <img src={profileImage} alt="profile" className="rounded-full" />
+          </div>
+
+          {/* Buttons under avatar */}
+          <div className="mt-4 flex justify-center gap-4">
+            <button
+              className="rounded-full bg-gray-100 px-6 py-2 text-sm font-medium text-black transition hover:bg-gray-200"
+            >
+              Edit profile
+            </button>
+            <button
+              className="rounded-full bg-gray-100 px-6 py-2 text-sm font-medium text-black transition hover:bg-gray-200"
+            >
+              Studio
+            </button>
+             <button
+              className="rounded-full bg-gray-100 px-6 py-2 text-sm font-medium text-black transition hover:bg-gray-200"
+            > 
+              Finance
+            </button>
           </div>
 
           {/* User Info */}
@@ -96,6 +112,17 @@ const Profile = () => {
 
             <p className="text-sm sm:text-base font-medium text-gray-500">
               {email}
+            </p>
+
+            <h4 className="font-semibold text-black dark:text-white">
+              About Me
+            </h4>
+
+            <p className="mt-3 text-sm sm:text-base leading-relaxed">
+              Account created on{' '}
+              <span className="font-medium">
+                {new Date(created_at).toDateString()}
+              </span>
             </p>
 
             {/* Stats */}
@@ -122,36 +149,110 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* About */}
-            <div className="mx-auto max-w-xl">
-              <h4 className="font-semibold text-black dark:text-white">
-                About Me
-              </h4>
-
-              <p className="mt-3 text-sm sm:text-base leading-relaxed">
-                Account created on{' '}
-                <span className="font-medium">
-                  {new Date(created_at).toDateString()}
-                </span>
-              </p>
-
-             {/*  <p className="mt-2 text-sm sm:text-base">
-                Balance:{' '}
-                <span className="font-semibold">
-                  {balance} {currency}
-                </span>
-              </p> */}
+            {/* ================== MENU TABS ================== */}
+            <div className="border-b border-stroke dark:border-strokedark mb-6">
+              <ul className="flex flex-wrap justify-center gap-6 text-sm sm:text-base font-medium text-gray-500">
+                {['Home', 'Videos', 'Shorts', 'Podcasts', 'Playlists', 'Posts'].map(tab => (
+                  <li
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`pb-3 cursor-pointer ${
+                      activeTab === tab
+                        ? 'text-black dark:text-white border-b-2 border-black dark:border-white'
+                        : 'hover:text-black dark:hover:text-white'
+                    }`}
+                  >
+                    {tab}
+                  </li>
+                ))}
+              </ul>
             </div>
+            {/* ================== END MENU ================== */}
 
-            {/* Professional Icons */}
+            {/* ================== TAB CONTENT ================== */}
+            <div className="mx-auto max-w-5xl text-left">
+
+              {activeTab === 'Home' && (
+                <>
+                  <h4 className="font-semibold text-black dark:text-white">
+                    About Me
+                  </h4>
+
+                  <p className="mt-3 text-sm sm:text-base leading-relaxed">
+                    Account created on{' '}
+                    <span className="font-medium">
+                      {new Date(created_at).toDateString()}
+                    </span>
+                  </p>
+                </>
+              )}
+
+              {activeTab === 'Videos' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[1,2,3,4].map(i => (
+                    <div key={i} className="rounded-md border border-stroke p-3 dark:border-strokedark">
+                      <img
+                        src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg"
+                        alt="video"
+                        className="rounded-md mb-2"
+                      />
+                      <p className="font-semibold">Video Title {i}</p>
+                      <span className="text-xs text-gray-500">Views • Date</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'Shorts' && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  {[1,2,3,4,5,6].map(i => (
+                    <div
+                      key={i}
+                      className="h-48 rounded-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center"
+                    >
+                      Short {i}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'Podcasts' && (
+                <div className="space-y-4">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="rounded-md border border-stroke p-4 dark:border-strokedark">
+                      🎧 Podcast Episode {i}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'Playlists' && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                  {[1,2,3].map(i => (
+                    <div key={i} className="rounded-md border border-stroke p-4 dark:border-strokedark">
+                      ▶ Playlist {i}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {activeTab === 'Posts' && (
+                <div className="space-y-4">
+                  {[1,2].map(i => (
+                    <div key={i} className="rounded-md border border-stroke p-4 dark:border-strokedark">
+                      📝 Community post {i}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
+            {/* ================== END TAB CONTENT ================== */}
+
+            {/* ================== SOCIAL ICONS (UNCHANGED) ================== */}
             <div className="mt-6">
-              {/*<h4 className="mb-3 font-medium text-black dark:text-white">
-                Find Us
-              </h4>*/}
-
               <div className="flex items-center justify-center gap-4">
-                {/* Facebook */}
-                 <Link
+                <Link
                   to="#"
                   className="group relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-stroke text-gray-400 transition hover:scale-110 hover:border-yellow-500 hover:text-yellow-500 dark:border-strokedark"
                 >
@@ -161,7 +262,6 @@ const Profile = () => {
                   </span>
                 </Link>
 
-                {/* Instagram */}
                 <Link
                   to="#"
                   className="group relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-stroke text-gray-400 transition hover:scale-110 hover:border-yellow-500 hover:text-yellow-500 dark:border-strokedark"
@@ -172,7 +272,6 @@ const Profile = () => {
                   </span>
                 </Link>
 
-                {/* LinkedIn */}
                 <Link
                   to="#"
                   className="group relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-stroke text-gray-400 transition hover:scale-110 hover:border-yellow-500 hover:text-yellow-500 dark:border-strokedark"
@@ -182,7 +281,7 @@ const Profile = () => {
                     LinkedIn
                   </span>
                 </Link>
-               {/* X */}
+
                 <Link
                   to="#"
                   className="group relative flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-full border border-stroke text-gray-400 transition hover:scale-110 hover:border-yellow-500 hover:text-yellow-500 dark:border-strokedark"
@@ -192,10 +291,10 @@ const Profile = () => {
                     X
                   </span>
                 </Link>
-
-               
               </div>
             </div>
+            {/* ================== END SOCIAL ICONS ================== */}
+
           </div>
         </div>
       </div>

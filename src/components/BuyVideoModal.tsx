@@ -11,7 +11,7 @@ interface PaymentMethod {
 }
 
 interface RawPaymentMethod {
-  id?: number;
+  id?: number; 
   payment_method_id?: number;
   method_id?: number;
   name: string;
@@ -24,7 +24,12 @@ interface Props {
   onSuccess: () => void;
 }
 
-const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSuccess }) => {
+const BuyVideoModal: React.FC<Props> = ({
+  video,
+  walletBalance,
+  onClose,
+  onSuccess,
+}) => {
   const [loading, setLoading] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [selectedMethod, setSelectedMethod] = useState<number | null>(null);
@@ -34,33 +39,46 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
   const user = getAuthUser();
   const navigate = useNavigate();
 
-  const canBuy = walletBalance >= Number(video.price || 0);
+  const price = Number(video.price || 0);
+  const canBuy = walletBalance > 0 && walletBalance >= price;
 
-  // -----------------------------
-  // Check if user already owns video
-  // -----------------------------
+  // ------------------------------------------------
+  // CHECK IF USER ALREADY OWNS VIDEO (SAFE)
+  // ------------------------------------------------
   useEffect(() => {
+    if (!user || !video?.id) return;
+
+    let cancelled = false;
+
     const checkAccess = async () => {
-      if (!user) return;
       try {
         const res = await api.get(`/api/videos/${video.id}/has-access`);
-        const hasAccess = res?.data?.data?.hasAccess ?? false;
-        if (hasAccess) {
-          navigate(`/watch/${encodeId(video.id)}`);
+        if (!cancelled && res?.data?.data?.hasAccess) {
           onClose();
+          navigate(`/watch/${encodeId(video.id)}`, { replace: true });
         }
       } catch (err) {
         console.warn("Failed to check video access:", err);
       }
     };
-    checkAccess();
-  }, [video.id, user, navigate, onClose]);
 
-  // -----------------------------
-  // Load payment methods if user can buy
-  // -----------------------------
+    checkAccess();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [video.id, user]);
+
+  // ------------------------------------------------
+  // LOAD PAYMENT METHODS (ONLY IF CAN BUY)
+  // ------------------------------------------------
   useEffect(() => {
-    if (!canBuy) return;
+    if (!canBuy) {
+      setLoadingMethods(false);
+      return;
+    }
+
+    let cancelled = false;
 
     const loadPaymentMethods = async () => {
       setLoadingMethods(true);
@@ -69,29 +87,39 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
         const raw: RawPaymentMethod[] = res.data?.data || [];
 
         const methods: PaymentMethod[] = raw
-          .map((m: RawPaymentMethod) => ({
+          .map((m) => ({
             id: m.id ?? m.payment_method_id ?? m.method_id ?? -1,
             name: m.name,
           }))
-          .filter((m): m is PaymentMethod => m.id > 0);
+          .filter((m) => m.id > 0);
 
-        setPaymentMethods(methods);
-        if (methods.length > 0) setSelectedMethod(methods[0].id);
+        if (!cancelled) {
+          setPaymentMethods(methods);
+          if (methods.length > 0) setSelectedMethod(methods[0].id);
+        }
       } catch (err) {
-        console.warn("Failed to load payment methods:", err);
-        setPaymentMethods([]);
+        if (!cancelled) {
+          console.warn("Failed to load payment methods:", err);
+          setPaymentMethods([]);
+        }
       } finally {
-        setLoadingMethods(false);
+        if (!cancelled) setLoadingMethods(false);
       }
     };
 
     loadPaymentMethods();
+
+    return () => {
+      cancelled = true;
+    };
   }, [canBuy]);
 
-  // -----------------------------
-  // Buy video
-  // -----------------------------
+  // ------------------------------------------------
+  // BUY VIDEO (SAFE)
+  // ------------------------------------------------
   const handleBuy = async () => {
+    if (loading) return; // prevent double submit
+
     setErrorMessage(null);
 
     if (!user) {
@@ -100,23 +128,19 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
     }
 
     if (!selectedMethod) {
-      setErrorMessage("No payment method available.");
+      setErrorMessage("Please select a payment method.");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await api.post(
-        "/api/payments/buy-video",
-        {
-          user_id: user.user_id,
-          payment_method: selectedMethod,
-          amount: video.price,
-          video_id: video.id,
-        },
-        { headers: { Authorization: `Bearer ${user.jwt}` } }
-      );
+      const res = await api.post("/api/payments/buy-video", {
+        user_id: user.user_id,
+        payment_method: selectedMethod,
+        amount: price,
+        video_id: video.id,
+      });
 
       if (res.data?.status === "successful") {
         onSuccess();
@@ -125,33 +149,35 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
         setErrorMessage(res.data?.message || "Payment failed.");
       }
     } catch (err: any) {
-      setErrorMessage(err?.response?.data?.message || String(err) || "Payment failed.");
+      setErrorMessage(
+        err?.response?.data?.message || "Payment failed. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // -----------------------------
-  // Top up
-  // -----------------------------
+  // ------------------------------------------------
+  // TOP UP
+  // ------------------------------------------------
   const handleTopUp = () => {
     navigate("/finance/deposits?deposit=true");
   };
 
-  // -----------------------------
+  // ------------------------------------------------
   // UI
-  // -----------------------------
+  // ------------------------------------------------
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-96 shadow-lg">
-        <h2 className="text-xl font-semibold mb-3">{video.title}</h2>
+        <h2 className="text-xl font-semibold text-slate-600 mb-3">{video.title}</h2>
 
-        <p className="mb-2 text-sm">
-          Price: <strong>{video.price} RWF</strong>
+        <p className="mb-2 text-sm text-slate-600">
+          Price: <strong>{price} RWF</strong>
         </p>
 
         {!canBuy && (
-          <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-300 p-3 text-sm text-yellow-800">
+          <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-300 p-3 text-sm text-yellow-800 ">
             Your wallet balance is too low to buy this video.
           </div>
         )}
@@ -163,16 +189,23 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
         )}
 
         {canBuy && (
-          <div className="mb-4">
+          <div className="mb-4 text-slate-600">
             <h3 className="font-semibold mb-2">Payment Method</h3>
 
             {loadingMethods ? (
-              <p className="text-sm text-gray-500">Loading payment methods...</p>
+              <p className="text-sm text-gray-500">
+                Loading payment methods...
+              </p>
             ) : paymentMethods.length === 0 ? (
-              <p className="text-sm text-red-500">No payment methods available.</p>
+              <p className="text-sm text-red-500">
+                No payment methods available.
+              </p>
             ) : (
               paymentMethods.map((method) => (
-                <label key={method.id} className="flex gap-2 items-center cursor-pointer">
+                <label
+                  key={method.id}
+                  className="flex gap-2 items-center cursor-pointer"
+                >
                   <input
                     type="radio"
                     checked={selectedMethod === method.id}
@@ -186,15 +219,18 @@ const BuyVideoModal: React.FC<Props> = ({ video, walletBalance, onClose, onSucce
         )}
 
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg border font-semibold">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg border font-semibold text-slate-600"
+          >
             Cancel
           </button>
 
           {canBuy ? (
             <button
               onClick={handleBuy}
-              disabled={loading || paymentMethods.length === 0}
-              className="px-4 py-2 rounded-lg bg-[#05333a] text-white font-semibold"
+              disabled={loading || loadingMethods || paymentMethods.length === 0}
+              className="px-4 py-2 rounded-lg bg-[#05333a] text-white font-semibold disabled:opacity-50"
             >
               {loading ? "Processing..." : "Buy & Watch"}
             </button>
