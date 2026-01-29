@@ -7,6 +7,7 @@ import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
+import { toast } from "react-toastify"; // ✅ import toast
 
 const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -44,7 +45,7 @@ const Trendsvideos: React.FC = () => {
   // -----------------------------
   const handleVideoClick = (video: Video) => {
     if (!user) {
-      alert("Please login first");
+      toast.error("Please login first"); // ✅ replaced alert
       return;
     }
 
@@ -55,7 +56,6 @@ const Trendsvideos: React.FC = () => {
       return;
     }
 
-    // 🔥 Removed refreshWallet() here
     setSelectedVideo(video);
   };
 
@@ -110,6 +110,7 @@ const Trendsvideos: React.FC = () => {
           onSuccess={() => {
             refreshWallet();
             setSelectedVideo(null);
+            toast.success("Video purchased successfully!"); // ✅ optional toast
           }}
         />
       )}

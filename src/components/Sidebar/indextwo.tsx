@@ -19,6 +19,7 @@ import {
   Bolt,
   Settings,
   HeartHandshake,
+  Clapperboard,
 } from 'lucide-react';
 
 /* ICON PROPS */
@@ -62,6 +63,7 @@ const MENU = [
     title: '',
     items: [
       { label: 'Home', to: '/', icon: HomeIcon },
+      { label: 'Reels', to: '/reels', icon: Clapperboard },
       { label: 'Trending', to: '/Trendsvideos', icon: ChartIcon },
       { label: 'Latest', to: '/latest', icon: LatestIcon },
       { label: 'Free Videos', to: '/freevideos', icon: PlusIcon },
