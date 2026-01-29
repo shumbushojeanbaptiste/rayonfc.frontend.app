@@ -79,7 +79,6 @@ const MENU = [
   {
     title: 'Explore',
     items: [
-      { label: 'Shorts', to: '/shorts', icon: ShortsIcon },
       { label: 'Music', to: '/music', icon: MusicIcon },
       { label: 'Gaming', to: '/gaming', icon: GamingIcon },
       { label: 'News', to: '/news', icon: NewsIcon },
