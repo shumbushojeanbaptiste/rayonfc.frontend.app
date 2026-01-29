@@ -2,6 +2,7 @@
 
 import Categories from "../components/categories/Categories";
 import Shortvideos from "./Shortsvideos";
+import Trendsvideos from "./Trendsvideos";
 import Trendsvideossample from "./Trendsvideossample";
 
  const PublicHome: React.FC = () => {
@@ -10,7 +11,8 @@ import Trendsvideossample from "./Trendsvideossample";
       <div className="">
         <Categories />
         <Shortvideos />
-       <Trendsvideossample/>
+        <Trendsvideos />
+       {/*<Trendsvideossample/>*/}
        
        
        
