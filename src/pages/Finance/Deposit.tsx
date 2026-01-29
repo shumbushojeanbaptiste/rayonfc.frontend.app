@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import api from "../../api";
 
@@ -36,7 +36,9 @@ export default function Deposit() {
   const [wallet, setWallet] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Deposit modal
+  // -----------------------------
+  // Deposit modal states
+  // -----------------------------
   const [showDeposit, setShowDeposit] = useState(false);
   const [amount, setAmount] = useState("");
   const [phone, setPhone] = useState("");
@@ -44,18 +46,29 @@ export default function Deposit() {
   const [currencyId, setCurrencyId] = useState("");
   const [depositLoading, setDepositLoading] = useState(false);
 
+  // Custom dropdown + modal refs (NEW)
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [currencyOpen, setCurrencyOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  // -----------------------------
   // DB data
+  // -----------------------------
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
 
+  // -----------------------------
   // Deposit history
+  // -----------------------------
   const [deposits, setDeposits] = useState<DepositRecord[]>([]);
   const [sortField, setSortField] = useState<keyof DepositRecord>("date");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Signed user
+  // -----------------------------
+  // User
+  // -----------------------------
   const userSession = localStorage.getItem("user");
   const user = userSession ? JSON.parse(userSession) : null;
   const userId = user?.user_id;
@@ -90,21 +103,38 @@ export default function Deposit() {
   useEffect(() => {
     api.get("/api/settings/paymentMethods").then((res) => {
       const raw: PaymentMethodRaw[] = res.data?.data || [];
-      const normalized: PaymentMethod[] = raw
+      const normalized = raw
         .map((pm) => {
           const id = pm.method_id ?? pm.payment_method_id ?? pm.id;
-          if (typeof id !== "number") return null;
-          return { id, name: pm.name };
+          return typeof id === "number" ? { id, name: pm.name } : null;
         })
-        .filter((pm): pm is PaymentMethod => pm !== null);
+        .filter(Boolean) as PaymentMethod[];
       setPaymentMethods(normalized);
     });
 
     api
       .get("/api/currencies/all")
       .then((res) => setCurrencies(res.data.data || []))
-      .catch((err) => console.error(err));
+      .catch(console.error);
   }, []);
+
+  // -----------------------------
+  // CLOSE MODAL ON OUTSIDE CLICK
+  // -----------------------------
+  useEffect(() => {
+    if (!showDeposit) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setShowDeposit(false);
+        setPaymentOpen(false);
+        setCurrencyOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDeposit]);
 
   // -----------------------------
   // Deposit handler
@@ -115,23 +145,24 @@ export default function Deposit() {
       return;
     }
 
-    const payload = {
-      user_id: Number(userId),
-      payment_methods: Number(paymentMethodId),
-      amount: Number(amount),
-      phone: phone.trim(),
-      currency: Number(currencyId),
-    };
-
     try {
       setDepositLoading(true);
-      await api.post("/api/payments/init-deposit", payload);
+      await api.post("/api/payments/init-deposit", {
+        user_id: Number(userId),
+        payment_methods: Number(paymentMethodId),
+        amount: Number(amount),
+        phone: phone.trim(),
+        currency: Number(currencyId),
+      });
+
       await loadBalance();
+      setShowDeposit(false);
       setAmount("");
       setPhone("");
       setPaymentMethodId("");
       setCurrencyId("");
-      setShowDeposit(false);
+      setPaymentOpen(false);
+      setCurrencyOpen(false);
       loadDeposits();
     } catch (err: any) {
       alert(err.response?.data?.message || "Deposit failed");
@@ -190,28 +221,35 @@ export default function Deposit() {
         <h3 className="font-semibold mb-3">Wallet</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-slate-50 dark:bg-gray-800 p-4 rounded shadow-5">
-            <p className="text-sm text-gray-500">Available Balance</p>
+          <div className="bg-slate-50 dark:bg-gray-700 p-4 rounded shadow-5">
+            <p className="text-sm text-gray-400">Available Balance</p>
             <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-700">
-              <h4>{balance.toLocaleString()}</h4> 
+              <h4>{balance.toLocaleString()}</h4>
+              <p className="text-sm mt-2">RWF</p>
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-gray-700 p-4 rounded shadow-5">
+            <p className="text-sm text-gray-400">Total Income</p>
+            <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-700">
+              <h4>{balance.toLocaleString()}</h4>
               <p className="text-sm mt-2">RWF</p>
             </p>
           </div>
         </div>
 
-        <div className="flex gap-3">
-          <button
-            onClick={() => setShowDeposit(true)}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Deposit
-          </button>
-        </div>
+        <button
+          onClick={() => setShowDeposit(true)}
+          className="px-4 py-2 bg-green-600 text-white rounded"
+        >
+          Deposit
+        </button>
       </div>
 
       {/* DEPOSIT HISTORY TABLE */}
       <div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
         <h3 className="font-semibold mb-4">Deposit History</h3>
+
         <table className="w-full text-left border-collapse">
           <thead>
             <tr>
@@ -241,6 +279,7 @@ export default function Deposit() {
               ))}
             </tr>
           </thead>
+
           <tbody>
             {currentItems.map((dep) => (
               <tr key={dep.id} className="hover:bg-gray-100">
@@ -279,38 +318,79 @@ export default function Deposit() {
 
       {/* DEPOSIT MODAL */}
       {showDeposit && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded shadow w-full max-w-sm">
+        <div className="fixed  inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div
+            ref={modalRef}
+            className="bg-white dark:bg-gray-900 rounded-lg shadow-lg max-w-sm w-full p-6"
+          >
             <h3 className="text-lg font-semibold mb-4">Deposit Funds</h3>
 
-            <select
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
-              value={paymentMethodId}
-              onChange={(e) => setPaymentMethodId(e.target.value)}
-            >
-              <option value="">Select Payment Method</option>
-              {paymentMethods.map((pm) => (
-                <option key={pm.id} value={pm.id}>
-                  {pm.name}
-                </option>
-              ))}
-            </select>
+            {/* PAYMENT METHOD DROPDOWN */}
+            <div className="mb-3 relative">
+              <button
+                type="button"
+                className="w-full border p-2 text-left rounded bg-white dark:bg-gray-900"
+                onClick={() => setPaymentOpen(!paymentOpen)}
+              >
+                {paymentMethodId
+                  ? paymentMethods.find(
+                      (p) => p.id === Number(paymentMethodId)
+                    )?.name
+                  : "Select Payment Method"}
+              </button>
 
-            <select
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
-              value={currencyId}
-              onChange={(e) => setCurrencyId(e.target.value)}
-            >
-              <option value="">Select Currency</option>
-              {currencies.map((c) => (
-                <option key={c.currency_id} value={c.currency_id}>
-                  {c.currency_name}
-                </option>
-              ))}
-            </select>
+              {paymentOpen && (
+                <ul className="absolute z-50 w-full max-h-40 overflow-y-auto bg-white dark:bg-gray-900 border rounded shadow">
+                  {paymentMethods.map((pm) => (
+                    <li
+                      key={pm.id}
+                      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                      onClick={() => {
+                        setPaymentMethodId(pm.id.toString());
+                        setPaymentOpen(false);
+                      }}
+                    >
+                      {pm.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* CURRENCY DROPDOWN */}
+            <div className="mb-3 relative">
+              <button
+                type="button"
+                className="w-full border p-2 text-left rounded bg-white dark:bg-gray-900"
+                onClick={() => setCurrencyOpen(!currencyOpen)}
+              >
+                {currencyId
+                  ? currencies.find(
+                      (c) => c.currency_id === Number(currencyId)
+                    )?.currency_name
+                  : "Select Currency"}
+              </button>
+
+              {currencyOpen && (
+                <ul className="absolute z-50 w-full max-h-40 overflow-y-auto bg-white dark:bg-gray-900 border rounded shadow">
+                  {currencies.map((c) => (
+                    <li
+                      key={c.currency_id}
+                      className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+                      onClick={() => {
+                        setCurrencyId(c.currency_id.toString());
+                        setCurrencyOpen(false);
+                      }}
+                    >
+                      {c.currency_name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
             <input
-              className="border p-2 w-full mb-3 bg-white dark:bg-gray-900"
+              className="border p-2 w-full mb-3 rounded bg-white dark:bg-gray-900"
               placeholder="Phone number"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -318,16 +398,16 @@ export default function Deposit() {
 
             <input
               type="number"
-              className="border p-2 w-full mb-4 bg-white dark:bg-gray-900"
+              className="border p-2 w-full mb-4 rounded bg-white dark:bg-gray-900"
               placeholder="Amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
             />
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="px-4 py-2 text-gray-600 "
+                className="text-gray-600"
               >
                 Cancel
               </button>

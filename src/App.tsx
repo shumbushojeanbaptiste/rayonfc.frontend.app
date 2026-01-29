@@ -122,7 +122,7 @@ export default function App() {
         <Route path="news" element={<Trendsvideos />} />
         <Route path="sports" element={<Trendsvideos />} />
         <Route path="help" element={<Trendsvideos />} />
-        <Route path="shorts" element={< Shortvideos />} />
+        <Route path="reels" element={< Shortvideos />} />
         <Route path="home/search" element={<Search />} />
         <Route path="watch/:hash" element={<Videosplay />} />
         <Route path="trendsvideos" element={<Trendsvideos />} />

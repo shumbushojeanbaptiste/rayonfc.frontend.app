@@ -30,13 +30,13 @@ const MENU = [
       { to: "/finance/deposits", label: "Deposits", icon: <PiHandDeposit /> },
      // { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
       { to: "/finance/withdrawals", label: "Withdrawals", icon: <PiHandWithdraw /> },
-     // { to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
+      //{ to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
     ],
   },
   {
     title: "",
     items: [
-      //{ to: "/studio/settings", label: "Settings", icon: <HiCog /> }
+      { to: "/studio/settings", label: "Settings", icon: <HiCog /> }
     ],
   },
 ];

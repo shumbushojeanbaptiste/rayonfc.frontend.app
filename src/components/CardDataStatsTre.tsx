@@ -2,7 +2,7 @@ import React from "react";
 
 interface Props {
   id: number;
-  videoTitle: string;
+  videoTitle: string; 
   channelName: string;
   total: string;
   duration: string;
@@ -28,7 +28,7 @@ const CardDataStatsTre: React.FC<Props> = ({
   return (
     <div
       onClick={onClick}
-      className="rounded-xl cursor-pointer hover:shadow-md p-2 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+      className="rounded-xl cursor-pointer p-2 transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
     >
       <div className="relative">
         <img
@@ -37,14 +37,13 @@ const CardDataStatsTre: React.FC<Props> = ({
           className="w-full h-44 object-cover rounded-xl"
         />
 
-        {/* Duration Badge */}
-        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">
+        {/* Duration Badge (Shorts style) */}
+        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
           {duration}
         </div>
-
-        
       </div>
 
+      {/* PROFILE SECTION — UNCHANGED */}
       <div className="flex items-center gap-3 mt-2">
         <img
           src={profileImage || "/default-avatar.png"}
@@ -58,17 +57,17 @@ const CardDataStatsTre: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="text-sm flex gap-40 text-gray-400 mt-2">
+      <div className="flex gap-40 mt-2 text-sm text-gray-400">
         {total}
-          {/* Price Badge */}
+
         {isPaid && (
-          <div className=" top-2 right-2 bg-gray-800 text-white px-2 py-1 rounded text-sm">
+          <div className="bg-gray-700 text-white px-2 py-1 rounded text-xs">
             {numericPrice.toFixed(2)} RWF
           </div>
-        )}
+        )} 
       </div>
-    </div>
+    </div> 
   );
 };
 
-export default CardDataStatsTre;
+export default CardDataStatsTre; 

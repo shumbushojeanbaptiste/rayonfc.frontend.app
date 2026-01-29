@@ -2,13 +2,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import api from "../api";
-import CardDataStatsTre from "../components/CardDataStatsTre";
-import CardDataStatsPur from "../components/CardDataStatsPur";
 import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
-import Noresult from '../images/no-search.png';
+import Noresult from "../images/no-search.png";
+import CardDataStatsTre from "../components/CardDataStatsTre";
 
 const PAGE_SIZE = 10;
 
@@ -23,221 +22,178 @@ const Search = () => {
   }, [location.search]);
 
   const [results, setResults] = useState<Video[]>([]);
-  const [purchasedVideos, setPurchasedVideos] = useState<number[]>([]); // IDs of purchased videos
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-  const [walletBalance, setWalletBalance] = useState<number>(0);
-  const [loadingBalance, setLoadingBalance] = useState(true);
-  const [searchAttempted, setSearchAttempted] = useState(false); // ✅ NEW
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [searchAttempted, setSearchAttempted] = useState(false);
 
-  const user = getAuthUser();
-  const ACCENT = "#05333a";
-
-  // Cache
+  const user = useMemo(() => getAuthUser(), []);
   const cacheRef = useRef<Map<string, Video[]>>(new Map());
 
-  // Highlight helper
-  const highlightText = (text: string, keyword: string) => {
-    if (!keyword) return text;
-    const regex = new RegExp(`(${keyword})`, "ig");
-    return text.split(regex).map((part, i) =>
-      part.toLowerCase() === keyword.toLowerCase() ? (
-        <mark key={i} className="bg-yellow-300">
-          {part}
-        </mark>
-      ) : (
-        part
-      )
-    );
+  const fileUrl = (path?: string) =>
+    !path || path === "null" || path === "undefined"
+      ? "/default-avatar.png"
+      : path;
+
+  // -----------------------------
+  // LOAD WALLET BALANCE (ONCE)
+  // -----------------------------
+  const refreshWallet = async () => {
+    if (!user) return;
+    try {
+      const res = await api.get(`/api/payments/balance/${user.user_id}`);
+      setWalletBalance(Number(res.data?.data?.balance || 0));
+    } catch {
+      setWalletBalance(0);
+    }
   };
 
-  // Reset on query change
+  useEffect(() => {
+    if (user) refreshWallet();
+  }, [user]);
+
+  // -----------------------------
+  // HANDLE VIDEO CLICK (NO REFRESH)
+  // -----------------------------
+  const handleVideoClick = (video: Video) => {
+    if (!user) {
+      alert("Please login first");
+      return;
+    }
+
+    if (!video.price || Number(video.price) === 0) {
+      navigate(`/watch/${encodeId(video.id)}`, {
+        state: { ...video, source: "search" },
+      });
+      return;
+    }
+
+    // 🔥 Removed refreshWallet()
+    setSelectedVideo(video);
+  };
+
+  /* -----------------------------
+     RESET ON QUERY CHANGE
+  ------------------------------*/
   useEffect(() => {
     setResults([]);
     setPage(1);
     setHasMore(true);
     setError(null);
-    setSearchAttempted(false); // ✅ reset on new query
+    setSearchAttempted(false);
   }, [query]);
 
-  // Load wallet balance
-  useEffect(() => {
-    if (!user) {
-      setWalletBalance(0);
-      setLoadingBalance(false);
-      return;
-    }
-
-    api
-      .get(`/api/payments/balance/${user.user_id}`)
-      .then((res) => setWalletBalance(Number(res.data.data?.balance || 0)))
-      .catch(() => setWalletBalance(0))
-      .finally(() => setLoadingBalance(false));
-
-    // Load purchased videos
-    api
-      .get(`/api/accessible/purchased-videos`)
-      .then((res) => {
-        const ids = (res.data.data || []).map((v: Video) => v.id);
-        setPurchasedVideos(ids);
-      })
-      .catch(() => setPurchasedVideos([]));
-  }, [user]);
-
-  // Fetch search results
+  /* -----------------------------
+     SEARCH REQUEST
+  ------------------------------*/
   useEffect(() => {
     if (!query || !hasMore) return;
 
     const cacheKey = `${query}-${page}`;
     const controller = new AbortController();
+    let active = true;
 
     if (cacheRef.current.has(cacheKey)) {
       setResults((prev) => [...prev, ...cacheRef.current.get(cacheKey)!]);
-      setSearchAttempted(true); // ✅ mark that search ran
-      return;
+      setSearchAttempted(true);
+      return () => {
+        active = false;
+      };
     }
 
     setLoading(true);
 
     api
-      .post<{ success: boolean; data: Video[] }>(
+      .post(
         "/api/videos/search",
         { keyword: query, page, limit: PAGE_SIZE },
         { signal: controller.signal }
       )
       .then((res) => {
-        const newData = res.data.data || [];
+        if (!active) return;
+
+        const newData: Video[] = res.data.data || [];
         cacheRef.current.set(cacheKey, newData);
-        setResults((prev) => [...prev, ...newData]);
+
+        setResults((prev) => {
+          const seen = new Set(prev.map((v) => v.id));
+          return [...prev, ...newData.filter((v) => !seen.has(v.id))];
+        });
+
         if (newData.length < PAGE_SIZE) setHasMore(false);
-        setSearchAttempted(true); // ✅ mark search attempted
+        setSearchAttempted(true);
       })
       .catch((err) => {
-        if (axios.isCancel(err)) return;
-        console.error(err);
-        setError("Failed to fetch results");
-        setSearchAttempted(true); // ✅ mark search attempted even on error
+        if (!axios.isCancel(err)) {
+          console.error(err);
+          setError("Failed to fetch results");
+          setSearchAttempted(true);
+        }
       })
-      .finally(() => setLoading(false));
+      .finally(() => active && setLoading(false));
 
-    return () => controller.abort();
+    return () => {
+      active = false;
+      controller.abort();
+    };
   }, [query, page, hasMore]);
 
-  // Infinite scroll observer
+  /* -----------------------------
+     INFINITE SCROLL
+  ------------------------------*/
   useEffect(() => {
     if (!observerRef.current || !hasMore) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !loading) {
-          setPage((prev) => prev + 1);
+          setPage((p) => p + 1);
         }
       },
-      { threshold: 1 }
+      { threshold: 0.5 }
     );
 
     observer.observe(observerRef.current);
     return () => observer.disconnect();
   }, [loading, hasMore]);
 
-  const fileUrl = (path?: string) => {
-    if (!path || path === "null" || path === "undefined") return "/default-avatar.png";
-    return path.includes("/") ? path : `${path}`;
-  };
-
-  const handleBuy = (video: Video) => {
-    if (!user) {
-      alert("Please login first");
-      return;
-    }
-    setSelectedVideo(video);
-  };
-
-  const handleAddMoney = () => {
-    navigate({ pathname: "/finance/deposits", search: "?deposit=true" });
-  };
-
-  const handleWatch = (video: Video) => {
-    navigate(`/watch/${encodeId(video.id)}`, { state: { ...video, source: "search" } });
-  };
-
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {results.map((video) => {
-          const numericPrice = Number(video.price || 0);
-          const isPaid = numericPrice > 0;
-          const canBuy = !loadingBalance && walletBalance >= numericPrice;
-          const isPurchased = purchasedVideos.includes(video.id);
+        {results.map((video) => (
+          <CardDataStatsTre
+            key={`video-${video.id}`}
+            id={video.id}
+            videoTitle={video.title}
+            channelName={video.owner || "Unknown Owner"}
+            total={`${video.views ?? 0} views`}
+            price={video.price}
+            duration={video.duration}
+            thumbnail={fileUrl(video.thumbnail)}
+            profileImage={fileUrl(video.profile_photo)}
+            onClick={() => handleVideoClick(video)}
+          />
+        ))}
 
-          // Already purchased videos
-          if (isPurchased) {
-            return (
-              <CardDataStatsPur
-                key={video.id}
-                id={video.id}
-                videoTitle={highlightText(video.title, query) as any}
-                channelName={video.owner || "Unknown Owner"}
-                total={`${video.views ?? 0} views`}
-                thumbnail={fileUrl(video.thumbnail)}
-                profileImage={fileUrl(video.profile_photo)}
-                onClick={() => handleWatch(video)}
-              />
-            );
-          }
-
-          // Videos not purchased
-          return (
-            <CardDataStatsTre
-              key={video.id}
-              id={video.id}
-              videoTitle={highlightText(video.title, query) as any}
-              channelName={video.owner || "Unknown Owner"}
-              total={`${video.views ?? 0} views`}
-              price={numericPrice}
-              thumbnail={fileUrl(video.thumbnail)}
-              profileImage={fileUrl(video.profile_photo)}
-              canBuy={canBuy}
-              onClick={() => !isPaid && handleWatch(video)}
-              onBuy={() => handleBuy(video)}
-              onAddMoney={handleAddMoney}
-            />
-          );
-        })}
-
-        {/* Skeleton loaders */}
         {loading &&
           Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={`skeleton-${i}`}
-              className="border rounded-lg p-4 animate-pulse"
-            >
+            <div key={i} className="border rounded-lg p-4 animate-pulse">
               <div className="h-44 bg-gray-300 rounded mb-3" />
               <div className="h-4 bg-gray-300 rounded w-3/4 mb-2" />
               <div className="h-3 bg-gray-200 rounded w-1/2" />
             </div>
           ))}
 
-        {/* No results message */}
         {!loading && searchAttempted && results.length === 0 && query && (
-          <div className="flex flex-col items-center justify-center col-span-full mt-12 px-4 sm:px-0 text-center">
-            <img
-              src={Noresult}
-              alt="No Results"
-              className="w-16 h-16 dark:filter dark:invert sm:w-20 sm:h-20 mb-4 animate-bounce-slow"
-            />
-            <p className="text-gray-500 text-base sm:text-lg md:text-xl max-w-md">
-              No videos match your search for{" "}
-              <span className="font-semibold text-gray-700 dark:text-white">{query}</span>.
-            </p>
-            <p className="text-gray-400 text-sm sm:text-base mt-2 max-w-xs sm:max-w-sm">
-              Try different keywords.
+          <div className="flex flex-col items-center justify-center col-span-full mt-12 text-center">
+            <img src={Noresult} className="w-20 mb-4" />
+            <p className="text-gray-500 text-lg">
+              No videos found for <b>{query}</b>
             </p>
           </div>
         )}
@@ -251,19 +207,14 @@ const Search = () => {
         </p>
       )}
 
-      {/* BUY VIDEO MODAL */}
       {selectedVideo && (
         <BuyVideoModal
           video={selectedVideo}
+          walletBalance={walletBalance}
           onClose={() => setSelectedVideo(null)}
           onSuccess={() => {
+            refreshWallet();
             setSelectedVideo(null);
-            if (user) {
-              api
-                .get(`/api/payments/balance/${user.user_id}`)
-                .then((res) => setWalletBalance(Number(res.data.data?.balance || 0)))
-                .catch(() => {});
-            }
           }}
         />
       )}
