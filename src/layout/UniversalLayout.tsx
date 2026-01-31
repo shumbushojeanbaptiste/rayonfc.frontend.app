@@ -6,4 +6,4 @@ const UniversalLayout = () => {
   return token ? <DefaultLayout /> : <PublicLayout />;
 };
 
-export default UniversalLayout;
+export default UniversalLayout; 

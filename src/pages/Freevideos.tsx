@@ -53,8 +53,8 @@ const Freevideos: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="Free Videos" />
-
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+     <div className="p-2 md:p-4 2xl:p-8">
+      <div className="px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {loadingVideos
           ? [...Array(6)].map((_, i) => <VideoSkeletonCard key={i} />)
           : videos.map((video: any, idx: number) => (
@@ -77,6 +77,7 @@ const Freevideos: React.FC = () => {
                 />
               </div>
             ))}
+      </div>
       </div>
     </>
   );

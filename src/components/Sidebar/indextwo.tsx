@@ -89,7 +89,7 @@ const MENU = [
     title: '',
     items: [
       { label: 'Settings', to: '/settings', icon: Settings },
-      { label: 'Help', to: '/help', icon: HeartHandshake },
+      { label: 'Help', to: 'home/help', icon: HeartHandshake },
     ],
   },
 ];
