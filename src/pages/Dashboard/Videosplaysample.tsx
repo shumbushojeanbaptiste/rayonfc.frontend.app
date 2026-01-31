@@ -48,7 +48,8 @@ const Videosplaysample: React.FC = () => {
   const getOwnerName = (v: any) =>
     v?.first_name || v?.last_name
       ? `${v.first_name || ""} ${v.last_name || ""}`.trim()
-      : v?.owner || "Unknown Owner";
+      : v?.owner || v?.owner_name || "Unknown Owner";
+  const getOwnerId = (v: any) => v?.user_id || v?.owner_id || v?.id || null;
 
   const forceScrollTop = () => {
     requestAnimationFrame(() => {
@@ -166,46 +167,6 @@ const Videosplaysample: React.FC = () => {
     }
   };
 
-  // 🔹 DISLIKE FUNCTION
-  const dislikeVideo = async () => {
-    if (liked || disliked) return; // disable if already clicked
-
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.user_id) {
-      toast.error("Login required");
-      return;
-    }
-
-    const deviceId =
-      localStorage.getItem("device_id") ||
-      (() => {
-        const id = crypto.randomUUID();
-        localStorage.setItem("device_id", id);
-        return id;
-      })();
-
-    try {
-      await api.post("/api/watching/dislikes", {
-        user_id: user.user_id,
-        video_id: getVideoId(video),
-        device_id: deviceId,
-      });
-
-      toast.success("Disliked");
-      setLiked(true);
-      setDisliked(true); // disable like as well
-    } catch (err: any) {
-      console.error("DISLIKE ERROR:", err.response?.data);
-      if (err.response?.data?.message === "Already disliked this video.") {
-        toast.info("You already disliked this video");
-      } else {
-        toast.error("Failed to dislike video");
-      }
-      setLiked(true);
-      setDisliked(true);
-    }
-  };
-
   const submitComment = async () => {
     if (!newComment.trim()) {
       toast.error("Comment cannot be empty.");
@@ -246,7 +207,7 @@ const Videosplaysample: React.FC = () => {
     if (recommended.length === 0) return;
 
     forceScrollTop();
-    navigate(`/watching/${encodeId(getVideoId(recommended[0]))}`, {
+    navigate(`home/watch/${encodeId(getVideoId(recommended[0]))}`, {
       state: recommended[0],
     });
   };
@@ -254,7 +215,7 @@ const Videosplaysample: React.FC = () => {
   if (!video) return <h2 className="p-6 text-xl text-black">Loading...</h2>;
 
   const ownerName = getOwnerName(video);
-  const shareUrl = `${window.location.origin}/watching/${encodeId(getVideoId(video))}`;
+  const shareUrl = `${window.location.origin}home/watch/${encodeId(getVideoId(video))}`;
 
   return (
     <>
@@ -274,15 +235,13 @@ const Videosplaysample: React.FC = () => {
             totallike={`${video.likes || 0}`}
             totaldislike={`${video.dislikes || 0}`}
             onLike={likeVideo}
-            onDislike={dislikeVideo}
             channelName={ownerName}
-            followers="120k"
             videoTitle={video.title}
             periode={new Date(video.created_at).toDateString()}
             rate=""
             shareUrl={shareUrl}
             liked={liked} // 🔹 pass like/dislike state
-            disliked={disliked}
+            ownerId={getOwnerId(video)} // ✅ Dynamic followers handled inside CardVideoPlay
           >
             <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
               <video
@@ -393,7 +352,7 @@ const Videosplaysample: React.FC = () => {
                 className="flex gap-3 cursor-pointer p-2 rounded-md hover:bg-gray-50 dark:hover:bg-black"
                 onClick={() => {
                   forceScrollTop();
-                  navigate(`/watching/${encodeId(getVideoId(r))}`, { state: r });
+                  navigate(`/home/watch/${encodeId(getVideoId(r))}`, { state: r });
                 }}
               >
                 <img src={fileUrl(r.thumbnail)} alt={r.title} className="w-36 h-20 object-cover rounded-md" />
@@ -412,3 +371,4 @@ const Videosplaysample: React.FC = () => {
 };
 
 export default Videosplaysample;
+ 

@@ -57,8 +57,8 @@ const Purchvideos: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="My Videos" />
-
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+      <div className="p-2 md:p-4 2xl:p-10">
+      <div className="px-0  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {/* ✅ Show skeletons while loading */}
         {loadingVideos
           ? [...Array(6)].map((_, i) => <VideoSkeletonCard key={i} />)
@@ -68,12 +68,13 @@ const Purchvideos: React.FC = () => {
                 style={{ borderLeft: "5px solid transparent" }}
               >
                 <CardDataStatsPur
-                  id={video.id}
-                  videoTitle={video.title}
+                  id={video.id} 
+                  videoTitle={video.title} 
                   channelName={video.owner || "Unknown Owner"}
                   total={`${video.views ?? 0} views`}
+                  duration={video.duration} 
                   thumbnail={fileUrl(video.thumbnail)}
-                  profileImage={fileUrl(video.profile_photo)}
+                  profileImage={fileUrl(video.profile_photo|| video.thumbnail)}
                   onClick={() =>
                     navigate(`/watch/${encodeId(video.id)}`, {
                       state: video,
@@ -82,6 +83,7 @@ const Purchvideos: React.FC = () => {
                 />
               </div>
             ))}
+      </div>
       </div>
     </>
   );

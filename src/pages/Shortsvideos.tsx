@@ -40,7 +40,7 @@ const Shortvideos: React.FC = () => {
      WATCH SHORT
   ------------------------------*/
   const handleWatch = (video: ShortVideo) => {
-    navigate(`/watching/${encodeId(video.id)}`, {
+    navigate(`/watch/${encodeId(video.id)}`, {
       state: {
         ...video,
         source: "shorts",
@@ -62,8 +62,8 @@ const Shortvideos: React.FC = () => {
   return (
     <>
       <Breadcrumb pageName="" />
-
-      <div className="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+    <div className="p-2 md:p-4 2xl:p-8">
+      <div className="px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {loading
           ? [...Array(8)].map((_, i) => <SkeletonCard key={i} />)
           : videos.map((video) => (
@@ -79,6 +79,7 @@ const Shortvideos: React.FC = () => {
                 onClick={() => handleWatch(video)}
               />
             ))}
+      </div>
       </div>
     </>
   );

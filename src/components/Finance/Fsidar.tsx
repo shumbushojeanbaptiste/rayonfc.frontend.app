@@ -36,7 +36,7 @@ const MENU = [
   {
     title: "",
     items: [
-      { to: "/studio/settings", label: "Settings", icon: <HiCog /> }
+      { to: "/settings", label: "Settings", icon: <HiCog /> }
     ],
   },
 ];

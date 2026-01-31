@@ -12,7 +12,6 @@ const Videosplay: React.FC = () => {
   const location = useLocation();
 
   const id = decodeId(hash as string);
-
   if (!id) {
     navigate("/");
     return null;
@@ -27,20 +26,13 @@ const Videosplay: React.FC = () => {
   const [newComment, setNewComment] = useState("");
   const [showMore, setShowMore] = useState(false);
 
-  // 🔹 State to disable like/dislike after click
   const [liked, setLiked] = useState(false);
-  const [disliked, setDisliked] = useState(false);
 
   const ACCENT = "#05333a";
 
   const fileUrl = (path: string) => {
-    if (!path || path === "null" || path === "undefined") {
-      return "/default-avatar.png";
-    }
-    if (!path.includes("/")) {
-      path = `${path}`;
-    }
-    return path;
+    if (!path || path === "null" || path === "undefined") return "/default-avatar.png";
+    return path.includes("/") ? path : `${path}`;
   };
 
   const getVideoId = (v: any) => v?.video_id || v?.id || id;
@@ -48,7 +40,8 @@ const Videosplay: React.FC = () => {
   const getOwnerName = (v: any) =>
     v?.first_name || v?.last_name
       ? `${v.first_name || ""} ${v.last_name || ""}`.trim()
-      : v?.owner || "Unknown Owner";
+      : v?.owner || v?.owner_name || "Unknown Owner";
+  const getOwnerId = (v: any) => v?.user_id || v?.owner_id || v?.id || null;
 
   const forceScrollTop = () => {
     requestAnimationFrame(() => {
@@ -64,6 +57,7 @@ const Videosplay: React.FC = () => {
     });
   };
 
+  // ✅ Check token expiration on load
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -73,51 +67,42 @@ const Videosplay: React.FC = () => {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
           navigate("/auth/signin");
-          return;
         }
       } catch {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         navigate("/auth/signin");
-        return;
       }
     }
   }, []);
 
   useEffect(() => {
-    if ("scrollRestoration" in window.history) {
-      window.history.scrollRestoration = "manual";
-    }
+    if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
     forceScrollTop();
 
     const token = localStorage.getItem("token");
 
+    // Load video
     if (passedVideo) {
       setVideo(passedVideo);
-      if (token) {
-        api.put(`/api/videos/addView/${getVideoId(passedVideo)}`).catch(() => {});
-      }
+      if (token) api.put(`/api/videos/addView/${getVideoId(passedVideo)}`).catch(() => {});
     } else {
       api
         .get(`/api/videos/getOne/${id}`)
         .then((res) => {
           setVideo(res.data.data);
-          if (token) {
-            api.put(`/api/videos/addView/${getVideoId(res.data.data)}`).catch(() => {});
-          }
+          if (token) api.put(`/api/videos/addView/${getVideoId(res.data.data)}`).catch(() => {});
         })
         .catch((err) => console.error("Failed to load video:", err));
     }
 
+    // Load recommended videos
     api
-      .get(
-        source === "trending"
-          ? `/api/videos/recommended/${id}`
-          : `/api/videos/recommended/${id}`
-      )
+      .get(`/api/videos/recommended/${id}`)
       .then((res) => setRecommended(res.data.data || []))
       .catch(() => setRecommended([]));
 
+    // Load comments
     api
       .get(`/api/videos/comments/${id}`)
       .then((res) => setComments(res.data.data || []))
@@ -126,9 +111,9 @@ const Videosplay: React.FC = () => {
     setTimeout(forceScrollTop, 120);
   }, [id]);
 
-  // 🔹 LIKE FUNCTION
+  // 👍 Like video
   const likeVideo = async () => {
-    if (liked || disliked) return; // disable if already clicked
+    if (liked) return;
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (!user.user_id) {
@@ -153,7 +138,6 @@ const Videosplay: React.FC = () => {
 
       toast.success("Liked");
       setLiked(true);
-      setDisliked(true); // disable dislike as well
     } catch (err: any) {
       console.error("LIKE ERROR:", err.response?.data);
       if (err.response?.data?.message === "Already liked this video.") {
@@ -162,50 +146,10 @@ const Videosplay: React.FC = () => {
         toast.error("Failed to like video");
       }
       setLiked(true);
-      setDisliked(true);
     }
   };
 
-  // 🔹 DISLIKE FUNCTION
-  const dislikeVideo = async () => {
-    if (liked || disliked) return; // disable if already clicked
-
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.user_id) {
-      toast.error("Login required");
-      return;
-    }
-
-    const deviceId =
-      localStorage.getItem("device_id") ||
-      (() => {
-        const id = crypto.randomUUID();
-        localStorage.setItem("device_id", id);
-        return id;
-      })();
-
-    try {
-      await api.post("/api/watching/dislikes", {
-        user_id: user.user_id,
-        video_id: getVideoId(video),
-        device_id: deviceId,
-      });
-
-      toast.success("Disliked");
-      setLiked(true);
-      setDisliked(true); // disable like as well
-    } catch (err: any) {
-      console.error("DISLIKE ERROR:", err.response?.data);
-      if (err.response?.data?.message === "Already disliked this video.") {
-        toast.info("You already disliked this video");
-      } else {
-        toast.error("Failed to dislike video");
-      }
-      setLiked(true);
-      setDisliked(true);
-    }
-  };
-
+  // 💬 Submit comment
   const submitComment = async () => {
     if (!newComment.trim()) {
       toast.error("Comment cannot be empty.");
@@ -242,6 +186,7 @@ const Videosplay: React.FC = () => {
     }
   };
 
+  // ▶ Auto-play next recommended video
   const handleEnded = () => {
     if (recommended.length === 0) return;
 
@@ -266,7 +211,8 @@ const Videosplay: React.FC = () => {
         pauseOnHover
         draggable
       />
-      <div className="flex flex-col lg:flex-row gap-6 p-4 max-w-[1500px] mx-auto text-black dark:text-white bg-slate-100 dark:bg-black">
+      <div className="p-2 md:p-4 2xl:p-8">
+      <div className="flex flex-col lg:flex-row gap-6 px-0 max-w-[1500px] mx-auto text-black dark:text-white bg-slate-100 dark:bg-black">
         <div className="flex-grow lg:w-[70%] xl:w-[75%]">
           <CardVideoPlay
             title="Views"
@@ -274,16 +220,15 @@ const Videosplay: React.FC = () => {
             totallike={`${video.likes || 0}`}
             totaldislike={`${video.dislikes || 0}`}
             onLike={likeVideo}
-            onDislike={dislikeVideo}
+            liked={liked}
             channelName={ownerName}
-            followers="120k"
             videoTitle={video.title}
             periode={new Date(video.created_at).toDateString()}
             rate=""
             shareUrl={shareUrl}
-            liked={liked} // 🔹 pass like/dislike state
-            disliked={disliked}
+            ownerId={getOwnerId(video)} // ✅ Dynamic followers handled inside CardVideoPlay
           >
+            {/* VIDEO PLAYER */}
             <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
               <video
                 src={fileUrl(getVideoUrl(video))}
@@ -296,6 +241,7 @@ const Videosplay: React.FC = () => {
               />
             </div>
 
+            {/* DESCRIPTION */}
             <div
               className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
               style={{ borderTop: `4px solid ${ACCENT}` }}
@@ -311,7 +257,7 @@ const Videosplay: React.FC = () => {
 
               {video.description && video.description.length > 120 && (
                 <button
-                  className="mt-3 px-4 py-2 rounded-lg text-white dark:text-gray-800 bg-slate-100 dark:bg-black font-semibold"
+                  className="mt-3 px-4 py-2 rounded-lg text-white dark:text-slate-300 bg-slate-100 dark:bg-black font-semibold"
                   onClick={() => setShowMore(!showMore)}
                 >
                   {showMore ? "Show less" : "Show more"}
@@ -320,28 +266,13 @@ const Videosplay: React.FC = () => {
             </div>
           </CardVideoPlay>
 
-          {/* Comments & channel section unchanged */}
-          <div
-            className="mt-6 p-4 shadow-sm rounded-xl flex items-center gap-4 bg-slate-100 dark:bg-black"
-            style={{ borderLeft: `6px solid ${ACCENT}` }}
-          >
-            <img
-              src="/default-avatar.png"
-              className="w-16 h-16 rounded-full object-cover bg-gray-300"
-              alt="channel"
-            />
-            <div>
-              <h3 className="text-lg font-semibold text-black dark:text-white">{ownerName}</h3>
-              <p className="text-gray-700 dark:text-white text-sm">120k followers</p>
-            </div>
-          </div>
-
+          {/* Comments Section */}
+          {/*
           <div
             className="mt-10 p-6 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
             style={{ borderTop: `4px solid ${ACCENT}` }}
           >
             <h3 className="text-xl font-semibold mb-4 text-black dark:text-white">Comments ({comments.length})</h3>
-
             <div className="flex items-center gap-3 mb-6">
               <input
                 value={newComment}
@@ -382,8 +313,10 @@ const Videosplay: React.FC = () => {
               ))}
             </div>
           </div>
+          */}
         </div>
 
+        {/* RECOMMENDED VIDEOS */}
         <aside className="w-full lg:w-[28%] xl:w-[25%]">
           <h3 className="text-xl font-semibold mb-4 text-black dark:text-white">Up next</h3>
           <div className="flex flex-col gap-4">
@@ -406,6 +339,7 @@ const Videosplay: React.FC = () => {
             ))}
           </div>
         </aside>
+      </div>
       </div>
     </>
   );

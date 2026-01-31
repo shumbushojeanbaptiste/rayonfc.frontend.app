@@ -8,6 +8,7 @@ import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
 import Noresult from "../images/no-search.png";
 import CardDataStatsTre from "../components/CardDataStatsTre";
+import { toast } from "react-toastify";
 
 const PAGE_SIZE = 10;
 
@@ -60,7 +61,7 @@ const Search = () => {
   // -----------------------------
   const handleVideoClick = (video: Video) => {
     if (!user) {
-      alert("Please login first");
+      toast.warning("Please login first");
       return;
     }
 
@@ -71,7 +72,6 @@ const Search = () => {
       return;
     }
 
-    // 🔥 Removed refreshWallet()
     setSelectedVideo(video);
   };
 
@@ -161,10 +161,10 @@ const Search = () => {
   }, [loading, hasMore]);
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="p-2 md:p-4 2xl:p-8">
       {error && <p className="text-red-500 mb-4">{error}</p>}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div className="grid px-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {results.map((video) => (
           <CardDataStatsTre
             key={`video-${video.id}`}

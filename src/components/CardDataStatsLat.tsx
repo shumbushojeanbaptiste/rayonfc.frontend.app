@@ -34,7 +34,7 @@ const CardDataStatsLat: React.FC<Props> = ({
 
   return (
     <div
-       className=" rounded-xl cursor-pointer hover:shadow-md p-2 group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+       className=" rounded-xl cursor-pointer hover:shadow-md group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}
     >
       <div className="relative"> 

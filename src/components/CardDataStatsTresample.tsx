@@ -35,7 +35,7 @@ const CardDataStatsTresample: React.FC<Props> = ({
   return (
     <div
       onClick={onClick}
-      className="rounded-xl cursor-pointer p-2 group transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
+      className="rounded-xl cursor-pointer group transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
     >
       <div className="relative">
         <img

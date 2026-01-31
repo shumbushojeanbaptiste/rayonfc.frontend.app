@@ -45,7 +45,7 @@ const PublicHeader: React.FC<HeaderProps> = ({
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/home/searching?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/home/search?q=${encodeURIComponent(searchQuery.trim())}`);
       setMobileSearchOpen(false);
       setFilteredSuggestions([]);
     }

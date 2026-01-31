@@ -6,6 +6,7 @@ interface Props {
   channelName: string;
   total: string;
   price?: number | string | null;
+  duration: string;
   thumbnail?: string;
   profileImage?: string;
   onClick?: () => void;
@@ -19,6 +20,7 @@ const CardDataStatsPur: React.FC<Props> = ({
   channelName,
   total,
   price,
+  duration,
   thumbnail,
   profileImage,
   onClick,
@@ -34,7 +36,7 @@ const CardDataStatsPur: React.FC<Props> = ({
 
   return (
     <div
-      className=" rounded-xl cursor-pointer hover:shadow-md p-2 group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+      className=" rounded-xl cursor-pointer hover:shadow-md  group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}
     >
       <div className="relative "> 
@@ -44,6 +46,10 @@ const CardDataStatsPur: React.FC<Props> = ({
           className="w-full h-44 object-cover rounded-xl "
         />
 
+        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
+          {duration}
+        </div>
+
         {isPaid && (
           <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
             {numericPrice.toFixed(2)}
@@ -52,7 +58,7 @@ const CardDataStatsPur: React.FC<Props> = ({
       </div>
 
       <div className="flex items-center gap-3 mt-2">
-        <img
+        <img 
           src={profileImage || "/default-avatar.png"}
           alt={channelName}
           className="w-10 h-10 rounded-full object-cover"

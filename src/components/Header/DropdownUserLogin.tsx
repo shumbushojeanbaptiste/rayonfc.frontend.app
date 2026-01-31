@@ -92,7 +92,7 @@ const DropdownUserLogin = () => {
           </li>
 
           <li>
-            <NavLink to="/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
+            <NavLink to="home/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
               <HelpCircle size={18} />
               Help
             </NavLink>

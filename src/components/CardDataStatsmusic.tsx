@@ -38,7 +38,7 @@ const CardDataStatsMusic: React.FC<Props> = ({
   return (
     <div
       onClick={onClick}
-      className="rounded-xl cursor-pointer hover:shadow-md p-2 transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
+      className="rounded-xl cursor-pointer hover:shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
     >
       <div className="relative">
         <img

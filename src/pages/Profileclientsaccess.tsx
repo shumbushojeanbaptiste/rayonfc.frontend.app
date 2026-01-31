@@ -14,7 +14,7 @@ const Profileclient = () => {
   // 🔹 Tabs state
   const [activeTab, setActiveTab] = useState('Home');
 
-  useEffect(() => {
+  useEffect(() => { 
     const fetchProfile = async () => {
       try {
         const response = await api.get('/api/accounts/details');

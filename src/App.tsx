@@ -34,11 +34,11 @@ import Withdraw from "./pages/Finance/Withdraw";
 import Search from "./pages/Search";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
-import Searchsample from "./pages/Searchsample";
-import Videosplaysample from "./pages/Dashboard/Videosplaysample";
 import Shortvideos from "./pages/Shortsvideos";
 import Music from "./pages/Music";
 import UniversalLayout from "./layout/UniversalLayout";
+
+
 
 /* 🔐 Auth guard */
 const RequireAuth = ({ children }: { children: JSX.Element }) => {
@@ -65,6 +65,19 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
 /* ✅ ToastContainer global import */
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Hlayout from "./components/Help/Hlayout";
+import Hdashboard from "./pages/Help/Hdashboard";
+import Hsignin from "./pages/Help/Hsignin";
+import Managment from "./pages/Help/Hmanagment";
+import PrivacyHelp from "./pages/Help/Hprivacy";
+import FinanceHelp from "./pages/Help/Hfinance";
+import VideoAudioHelp from "./pages/Help/Hvideo&audio";
+import TermsConditionsHelp from "./pages/Help/HTermsConditions";
+import Profileclient from "./pages/Profileclientsaccess";
+import Hlayoutguest from "./components/Help/Hlayoutguest";
+import Videosplaysample from "./pages/Dashboard/Videosplaysample";
+import ResetPasswordToken from "./pages/Authentication/Resetpasstoken";
+import ResetPasswordVerify from "./pages/Authentication/Resetpassverify";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -118,15 +131,31 @@ export default function App() {
           <Route path="auth/signin" element={<SignIn />} />
           <Route path="auth/signup" element={<SignUp />} />
           <Route path="auth/verify" element={<Verify />} />
-          <Route path="watching/:hash" element={<Videosplaysample />} />
-          <Route path="home/searching" element={<Searchsample />} />
+          <Route path="auth/reset-token" element={<ResetPasswordToken />} />
+          <Route path="auth/reset-password" element={<ResetPasswordVerify />} />
+
+          {/*<Route path="home/watch/:hash" element={<Videosplaysample />} />*/}
         </Route>
+
+       
+        <Route element={<Hlayoutguest />}>
+         <Route path="home/help" element={<Hdashboard />} />
+         <Route path="home/help/signin" element={<Hsignin />} />
+         <Route path="home/help/managment" element={<Managment />} />
+         <Route path="home/help/privacy" element={<PrivacyHelp />} />
+         <Route path="home/help/finance" element={<FinanceHelp/>} />
+         <Route path="home/help/video&audio" element={<VideoAudioHelp/>} />
+         <Route path="home/help/terms&condition" element={<TermsConditionsHelp/>} />
+        </Route>
+
 
         {/* 🌍 PUBLIC + AUTH (shared) */}
         <Route element={<UniversalLayout />}>
           <Route path="reels" element={<Shortvideos />} />
           <Route path="trendsvideos" element={<Trendsvideos />} />
+          <Route path="watch/:hash" element={<Videosplay />} />
           <Route path="music" element={<Music />} />
+          <Route path="home/search" element={<Search />} />
         </Route>
 
         {/* 🔐 AUTHENTICATED APP */}
@@ -140,14 +169,29 @@ export default function App() {
           <Route path="gaming" element={<Trendsvideos />} />
           <Route path="news" element={<Trendsvideos />} />
           <Route path="sports" element={<Trendsvideos />} />
-          <Route path="help" element={<Trendsvideos />} />
-          <Route path="home/search" element={<Search />} />
-          <Route path="watch/:hash" element={<Videosplay />} />
           <Route path="freevideos" element={<Freevideos />} />
           <Route path="myvideos" element={<Purchvideos />} />
           <Route path="latest" element={<Latestvideos />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="settings" element={<Trendsvideos />} />
+          <Route path="myprofile" element={<Profile />} />
+          <Route path="profile" element={<Profileclient />} />
+          <Route path="settings" element={<Settings/>} />
+        </Route>
+
+         {/* 🔐 OLEEPLAY HELP */}
+        <Route
+          element={
+            <RequireAuth>
+              <Hlayout />
+            </RequireAuth>
+          }
+        >
+         <Route path="help" element={<Hdashboard />} />
+         <Route path="help/signin" element={<Hsignin />} />
+         <Route path="help/managment" element={<Managment />} />
+         <Route path="help/privacy" element={<PrivacyHelp />} />
+         <Route path="help/finance" element={<FinanceHelp/>} />
+         <Route path="help/video&audio" element={<VideoAudioHelp/>} />
+         <Route path="help/terms&condition" element={<TermsConditionsHelp/>} />
         </Route>
 
         {/* 🔐 OLEEPLAY STUDIO */}

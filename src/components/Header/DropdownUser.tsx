@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   BadgeDollarSign,
+  HelpCircle,
 } from 'lucide-react';
 
 interface User {
@@ -112,7 +113,7 @@ const DropdownUser = () => {
             </li>
 
             <li>
-              <NavLink to="/profile" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <NavLink to="/myprofile" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <UserIcon size={18} />
                 My Profile
               </NavLink>
@@ -132,14 +133,21 @@ const DropdownUser = () => {
               </NavLink>
             </li>
 
-            {/* 
+           
             <li>
               <NavLink to="/settings" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <Settings size={18} />
                 Account Settings
               </NavLink>
             </li> 
-            */}
+            
+
+            <li>
+            <NavLink to="/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <HelpCircle size={18} />
+              Help
+            </NavLink>
+          </li>
           </ul>
 
           <div className="border-t border-gray-200 dark:border-strokedark" />

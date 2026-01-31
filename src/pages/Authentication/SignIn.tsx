@@ -102,6 +102,16 @@ const SignIn: React.FC = () => {
                   />
                 </div>
 
+                {/* 👇 Forgot password link */}
+<div className="mb-6 text-right">
+  <Link
+    to="/auth/reset-token"
+    className="text-sm text-green-950 dark:text-yellow-400 hover:underline"
+  >
+    Forgot password?
+  </Link>
+</div>
+
                 {error && (
                   <div className="mb-4 rounded bg-red-100 p-3 text-red-600">
                     {error}
