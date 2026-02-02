@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import api from '../../api';
 import { Plus } from 'lucide-react';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface Wallet {
   balance: number;
@@ -105,7 +106,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
   const handleDeposit = async () => {
     if (!amount || !phone || !paymentMethodId || !currencyId) {
-      alert('Please fill all fields');
+      toast.error('Please fill all fields');
       return;
     }
 
@@ -128,7 +129,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
       setPaymentOpen(false);
       setCurrencyOpen(false);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Deposit failed');
+      toast.error(err.response?.data?.message || 'Deposit failed');
     } finally {
       setLoading(false);
     }
@@ -136,6 +137,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
   return (
     <>
+    <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
       {/* BALANCE BAR */}
       <div
         className={

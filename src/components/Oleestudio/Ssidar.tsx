@@ -33,7 +33,7 @@ const MENU = [
     ],
   },
   {
-    title: "",
+    title: "", 
     items: [
       { to: "/settings", label: "Settings", icon: <HiCog /> }
     ],
@@ -88,7 +88,7 @@ export default function Ssidebar({
           dark:text-slate-400
           transition-[width] duration-300
           ${sidebarOpen ? "w-64" : "w-20"}
-          h-screen
+          h-[calc(100vh-64px)]
           group
         `}
       >

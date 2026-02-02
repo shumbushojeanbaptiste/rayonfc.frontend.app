@@ -8,7 +8,7 @@ import api from "../api";
 interface Props {
   title?: string;
   total?: string;
-  totallike?: string;
+  totallike?: number | string;
   totaldislike?: string;
   onLike?: () => void;
   liked?: boolean;
@@ -20,7 +20,7 @@ interface Props {
   rate?: string;
   children: React.ReactNode;
   shareUrl?: string;
-  ownerId?: number; // id of the user/channel to follow
+  ownerId?: number;
 }
 
 const CardVideoPlay: React.FC<Props> = ({
@@ -43,11 +43,27 @@ const CardVideoPlay: React.FC<Props> = ({
   const [openShare, setOpenShare] = useState(false);
   const [startAt, setStartAt] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [dynamicFollowers, setDynamicFollowers] = useState<string | null>(null);
+  const [dynamicFollowers, setDynamicFollowers] = useState<string>(followers || "0 followers");
+  const [likeAnimating, setLikeAnimating] = useState(false);
+  
 
   const isLoggedIn = !!localStorage.getItem("token");
 
-  // Fetch followers dynamically
+  // Fetch follow status
+  useEffect(() => {
+    const fetchFollowStatus = async () => {
+      if (!isLoggedIn || !ownerId) return;
+      try {
+        const res = await api.get(`/api/metadata/follow/status/${ownerId}`);
+        setIsFollowing(!!res.data.data?.isFollowing);
+      } catch {
+        setIsFollowing(false);
+      }
+    };
+    fetchFollowStatus();
+  }, [ownerId, isLoggedIn]);
+
+  // Fetch dynamic followers count
   useEffect(() => {
     const fetchFollowers = async () => {
       if (!ownerId) return;
@@ -67,7 +83,6 @@ const CardVideoPlay: React.FC<Props> = ({
     fetchFollowers();
   }, [ownerId, followers, isLoggedIn]);
 
-  // Video current timestamp
   const getCurrentTime = () => {
     const video = document.querySelector("video");
     return video ? Math.floor(video.currentTime) : 0;
@@ -98,7 +113,6 @@ const CardVideoPlay: React.FC<Props> = ({
     toast.success("Link copied to clipboard!");
   };
 
-  // Follow button logic (only prompt login if not logged in)
   const handleFollow = async () => {
     if (!isLoggedIn) {
       toast.info("Login required to follow");
@@ -123,44 +137,56 @@ const CardVideoPlay: React.FC<Props> = ({
     }
 
     try {
-      const res = await api.post("/api/metadata/following", {
-        follower_id: user.user_id,
-        following_id: ownerId,
-      });
+      if (isFollowing) {
+        // Unfollow
+        await api.delete("/api/metadata/unfollow", {
+          data: { follower_id: user.user_id, following_id: ownerId },
+        });
+        setIsFollowing(false);
+        //toast.success("Unfollowed successfully");
 
-      if (res.data.success) {
-        setIsFollowing(true);
-        toast.success(res.data.message || "Following saved successfully");
+        // Update follower count
+        setDynamicFollowers((prev) => {
+          const num = parseInt(prev.split(" ")[0] || "0");
+          return `${Math.max(0, num - 1)} followers`;
+        });
+      } else {
+        // Follow
+        const res = await api.post("/api/metadata/following", {
+          follower_id: user.user_id,
+          following_id: ownerId,
+        });
+        if (res.data.success) {
+          setIsFollowing(true);
+         // toast.success(res.data.message || "Following saved successfully");
+
+          setDynamicFollowers((prev) => {
+            const num = parseInt(prev.split(" ")[0] || "0");
+            return `${num + 1} followers`;
+          });
+        }
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Failed to follow user";
-      if (msg === "Already following this user") {
-        setIsFollowing(true);
-        toast.info("You are already following this user");
-      } else {
-        toast.error(msg);
-      }
+      const msg = err.response?.data?.message || "Action failed";
+      toast.error(msg);
     }
   };
 
   return (
     <div className="bg-white dark:bg-black shadow rounded-xl">
-      {/* VIDEO PLAYER */}
       <div className="w-full rounded-xl overflow-hidden">{children}</div>
 
-      {/* VIDEO TITLE */}
-      <h2 className="text-2xl font-semibold mt-4 leading-tight text-black dark:text-white">
+      <h2 className="px-2 text-2xl font-semibold mt-4 leading-tight text-black dark:text-white">
         {videoTitle}
       </h2>
 
-      {/* VIEWS + DATE */}
-      <div className="flex flex-wrap justify-between items-center mt-2 text-gray-600 dark:text-white">
+      <div className="px-2 flex flex-wrap justify-between items-center mt-2 text-gray-600 dark:text-white">
         <p className="text-base">{total}</p>
         <p className="text-sm">{periode}</p>
       </div>
 
-      {/* ACTION BUTTONS */}
-      <div className="flex gap-4 mt-4 border-y py-3 text-gray-700 dark:text-white">
+      {/* Like & Share */}
+      <div className="px-2 flex gap-4 mt-4 border-y py-3 text-gray-700 dark:text-white">
         <div className="flex gap-2 items-center">
           <button
             onClick={() => {
@@ -168,15 +194,26 @@ const CardVideoPlay: React.FC<Props> = ({
                 toast.info("Login required to like");
                 return;
               }
-              onLike?.();
+              if (!liked) {
+                setLikeAnimating(true);
+                setTimeout(() => setLikeAnimating(false), 400);
+              }
+              onLike?.(); // always call onLike for toggle
             }}
-            className={`flex items-center ${
-              liked ? "text-slate-300 dark:text-slate-300" : "hover:text-gray-500 dark:hover:text-slate-300"
-            }`}
+            className="relative flex items-center"
           >
-            <ThumbsUp size={18} />
+            <ThumbsUp
+              size={18}
+              fill={liked ? "currentColor" : "none"}
+              className={`transition-all duration-300 ${
+                liked ? "text-slate-300" : ""
+              } ${likeAnimating ? "scale-125 rotate-[-8deg]" : "scale-100"}`}
+            />
+            {likeAnimating && (
+              <span className="absolute inset-0 rounded-full border-2 border-slate-300 animate-ping" />
+            )}
           </button>
-          <p className="text-base">{totallike}</p>
+          <p className="text-base">{totallike?.toString() || 0}</p>
         </div>
 
         <button
@@ -188,13 +225,11 @@ const CardVideoPlay: React.FC<Props> = ({
         </button>
       </div>
 
-      {/* CHANNEL INFO */}
-      <div className="mt-4 flex items-center justify-between">
+      {/* Channel Info & Follow */}
+      <div className="mt-4 px-2 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold">{channelName}</h3>
-          {(dynamicFollowers || followers) && (
-            <p className="text-gray-500 text-sm">{dynamicFollowers || followers}</p>
-          )}
+          {dynamicFollowers && <p className="text-gray-500 text-sm">{dynamicFollowers}</p>}
           {!isLoggedIn && (
             <p className="text-xs text-gray-400 mt-1">Login to like, comment, or follow</p>
           )}
@@ -204,16 +239,15 @@ const CardVideoPlay: React.FC<Props> = ({
           onClick={handleFollow}
           className={`px-4 py-2 rounded-lg font-semibold ${
             isFollowing
-              ? "text-black dark:text-white bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
+              ? "text-black dark:text-black bg-gray-300 dark:bg-yellow-300 dark:hover:bg-yellow-400"
               : "text-white bg-green-950 hover:bg-green-900 dark:text-black dark:bg-yellow-300 dark:hover:bg-yellow-400"
           }`}
-          disabled={isFollowing}
         >
-          {isFollowing ? "Following" : "Follow"}
+          {isFollowing ? "Unfollow" : "Follow"}
         </button>
       </div>
 
-      {/* SHARE MODAL */}
+      {/* Share Modal */}
       {openShare && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
