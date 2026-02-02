@@ -34,7 +34,7 @@ const CardDataStatsPur: React.FC<Props> = ({
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
-  return (
+  return ( 
     <div
       className=" rounded-xl cursor-pointer hover:shadow-md  group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}

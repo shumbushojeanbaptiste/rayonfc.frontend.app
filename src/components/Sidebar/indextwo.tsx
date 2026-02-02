@@ -125,6 +125,14 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => 
       document.removeEventListener('mousedown', handleClickOutside);
   }, [sidebarOpen, setSidebarOpen]);
 
+  useEffect(() => {
+  if (sidebarOpen && isMobile) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}, [sidebarOpen, isMobile]);
+
   return (
     <>
       {sidebarOpen && (
@@ -136,7 +144,7 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => 
 
       <aside
         ref={sidebarRef}
-        className={`group/sidebar fixed lg:static left-0 z-50 h-screen
+        className={`group/sidebar fixed lg:static left-0 z-50 h-[calc(100vh-64px)]
         bg-white dark:bg-boxdark
         transition-[width,transform] duration-300 ease-out
         ${expanded || isMobile ? 'w-56' : 'w-20'}
@@ -145,8 +153,11 @@ const Sidebartwo = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => 
       >
         <nav
           className={`
-            px-2 pt-4 flex-1 flex flex-col overflow-y-auto scroll-smooth
-            transition-all duration-200 ease-out
+            px-2 pt-4 flex-1 flex flex-col
+            overflow-y-auto
+            overscroll-contain
+            touch-pan-y
+            lg:scroll-smooth
             ${
               !expanded && !isMobile
                 ? 'pb-24 no-scrollbar'

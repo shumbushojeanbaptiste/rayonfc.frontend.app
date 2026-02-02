@@ -75,10 +75,10 @@ const MENU = [
     title: 'You',
     items: [
       { label: 'My videos', to: '/myvideos', icon: ListVideo },
-      { label: 'Profile', to: '/profile', icon: User },
+      //{ label: 'Profile', to: '/profile', icon: User },
       { label: 'Follows', to: '/follow', icon: SubsIcon },
-      { label: 'Studio', to: '/studio', icon: Bolt },
-      { label: 'Finance', to: '/finance', icon: BadgeDollarSign },
+     // { label: 'Studio', to: '/studio', icon: Bolt },
+     // { label: 'Finance', to: '/finance', icon: BadgeDollarSign },
       //{ label: 'Library', to: '/library', icon: LibraryIcon },
       //{ label: 'History', to: '/history', icon: HistoryIcon },
       //{ label: 'Watch Later', to: '/watch-later', icon: WatchLaterIcon },
@@ -93,7 +93,7 @@ const MENU = [
       { label: 'Sports', to: '/sports', icon: SportsIcon },
     ],
   },
-  {
+  { 
     title: '',
     items: [
       { label: 'Settings', to: '/settings', icon: Settings },
@@ -133,6 +133,14 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
       document.removeEventListener('mousedown', handleClickOutside);
   }, [sidebarOpen, setSidebarOpen]);
 
+  useEffect(() => {
+  if (sidebarOpen && isMobile) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}, [sidebarOpen, isMobile]);
+
   return (
     <>
       {sidebarOpen && (
@@ -144,7 +152,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
 
       <aside
         ref={sidebarRef}
-        className={`group/sidebar fixed lg:static left-0 z-50 h-screen
+        className={`group/sidebar fixed lg:static left-0 z-50 h-[calc(100vh-64px)]
         bg-white dark:bg-boxdark
         transition-[width,transform] duration-300 ease-in-out
         ${expanded || isMobile ? 'w-56' : 'w-20'}
@@ -153,8 +161,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
       >
         <nav
           className={`
-            px-2 pt-4 flex-1 flex flex-col overflow-y-auto scroll-smooth
-            transition-all duration-200 ease-out
+            px-2 pt-4 flex-1 flex flex-col
+            overflow-y-auto
+            overscroll-contain
+            touch-pan-y
+            lg:scroll-smooth
+
             ${
               !expanded && !isMobile
                 ? 'pb-24 no-scrollbar'

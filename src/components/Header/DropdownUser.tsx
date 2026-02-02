@@ -112,26 +112,28 @@ const DropdownUser = () => {
               </NavLink>
             </li>
 
-            <li>
+            {/*<li>
               <NavLink to="/myprofile" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <UserIcon size={18} />
                 My Profile
               </NavLink>
-            </li>
+            </li>*/}
 
-            <li>
+            {/*<li>
               <NavLink to="/studio" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <LayoutDashboard size={18} />
                 Studio
               </NavLink>
-            </li>
+            </li>*/}
 
+          {/* 
             <li>
               <NavLink to="/finance" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <BadgeDollarSign size={18} />
                 Finance
               </NavLink>
             </li>
+            */}
 
            
             <li>

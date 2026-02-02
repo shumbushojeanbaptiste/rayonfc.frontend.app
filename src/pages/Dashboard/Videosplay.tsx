@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../../api";
 import CardVideoPlay from "../../components/CardsVideoPlay";
 import { decodeId, encodeId } from "../../utils/hashid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLayoutEffect } from "react";
 
 const Videosplay: React.FC = () => {
   const { hash } = useParams();
@@ -27,6 +28,14 @@ const Videosplay: React.FC = () => {
   const [showMore, setShowMore] = useState(false);
 
   const [liked, setLiked] = useState(false);
+  // ✅ Add disliked state
+const [disliked, setDisliked] = useState(false);
+// ✅ Add like count state for optimistic updates
+const [likeCount, setLikeCount] = useState<number>(0);
+
+  const recommendedRef = useRef<HTMLDivElement | null>(null);
+const activeVideoRef = useRef<HTMLDivElement | null>(null);
+
 
   const ACCENT = "#05333a";
 
@@ -76,6 +85,64 @@ const Videosplay: React.FC = () => {
     }
   }, []);
 
+ // Initialize like count once video loads
+useEffect(() => {
+  if (video) {
+    setLikeCount(video.likes || video.likes_count || 0);
+  }
+}, [video]);
+
+
+useLayoutEffect(() => {
+  const scrollToActive = () => {
+    const isMobile = window.innerWidth < 1024; // only mobile
+    if (isMobile && activeVideoRef.current && recommendedRef.current) {
+      const container = recommendedRef.current;
+      const active = activeVideoRef.current;
+
+      const containerHeight = container.clientHeight;
+      const activeOffsetTop = active.offsetTop;
+      const activeHeight = active.clientHeight;
+
+      // Center the active video
+      const scrollTop = activeOffsetTop - containerHeight / 2 + activeHeight / 2;
+
+      container.scrollTo({
+        top: scrollTop,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  scrollToActive();
+
+  window.addEventListener("resize", scrollToActive);
+  return () => window.removeEventListener("resize", scrollToActive);
+}, [video]); // ⚡ key change: depend on `video`, not `id`
+
+// 👍 Like status (on load)
+useEffect(() => {
+  const fetchLikeStatus = async () => {
+    const token = localStorage.getItem("token");
+    if (!token || !video) return;
+
+    try {
+      const res = await api.get(`/api/metadata/likes/status/${getVideoId(video)}`);
+      const isLiked = !!res.data.data?.isLiked;
+
+      setLiked(isLiked);
+      setDisliked(!isLiked); // ✅ if not liked, treat as disliked
+    } catch {
+      setLiked(false);
+      setDisliked(false); // safe default
+    }
+  };
+
+  fetchLikeStatus();
+}, [video]);
+
+
+
   useEffect(() => {
     if ("scrollRestoration" in window.history) window.history.scrollRestoration = "manual";
     forceScrollTop();
@@ -113,41 +180,52 @@ const Videosplay: React.FC = () => {
 
   // 👍 Like video
   const likeVideo = async () => {
-    if (liked) return;
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  if (!user.user_id) {
+    toast.error("Login required");
+    return;
+  }
 
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (!user.user_id) {
-      toast.error("Login required");
-      return;
-    }
+  const deviceId =
+    localStorage.getItem("device_id") ||
+    (() => {
+      const id = crypto.randomUUID();
+      localStorage.setItem("device_id", id);
+      return id;
+    })();
 
-    const deviceId =
-      localStorage.getItem("device_id") ||
-      (() => {
-        const id = crypto.randomUUID();
-        localStorage.setItem("device_id", id);
-        return id;
-      })();
-
-    try {
+  try {
+    if (!liked) {
+      // 👍 LIKE
       await api.post("/api/watching/likes", {
         user_id: user.user_id,
         video_id: getVideoId(video),
         device_id: deviceId,
       });
 
-      toast.success("Liked");
+      //toast.success("Liked");
       setLiked(true);
-    } catch (err: any) {
-      console.error("LIKE ERROR:", err.response?.data);
-      if (err.response?.data?.message === "Already liked this video.") {
-        toast.info("You already liked this video");
-      } else {
-        toast.error("Failed to like video");
-      }
-      setLiked(true);
+      setDisliked(false);
+      setLikeCount((c) => c + 1); // ✅ increment like count
+    } else {
+      // 👎 CHANGE LIKE → DISLIKE
+      await api.post("/api/watching/dislikes", {
+        user_id: user.user_id,
+        video_id: getVideoId(video),
+        device_id: deviceId,
+      });
+
+      //toast.info("Changed to dislike");
+      setLiked(false);
+      setDisliked(true);
+      setLikeCount((c) => Math.max(0, c - 1)); // ✅ decrement like count
     }
-  };
+  } catch (err: any) {
+    console.error("LIKE/DISLIKE ERROR:", err.response?.data);
+    toast.error("Action failed");
+  }
+};
+
 
   // 💬 Submit comment
   const submitComment = async () => {
@@ -217,13 +295,13 @@ const Videosplay: React.FC = () => {
           <CardVideoPlay
             title="Views"
             total={`${video.views_count || video.views || 0} views`}
-            totallike={`${video.likes || 0}`}
-            totaldislike={`${video.dislikes || 0}`}
+            totallike={`${likeCount}`} // ✅ dynamic like count
+            totaldislike={`${video.dislikes || 0}`} // you can later track dislike count if needed
             onLike={likeVideo}
             liked={liked}
             channelName={ownerName}
             videoTitle={video.title}
-            periode={new Date(video.created_at).toDateString()}
+            periode={new Date(video.created_at).toDateString()} 
             rate=""
             shareUrl={shareUrl}
             ownerId={getOwnerId(video)} // ✅ Dynamic followers handled inside CardVideoPlay
@@ -317,25 +395,64 @@ const Videosplay: React.FC = () => {
         </div>
 
         {/* RECOMMENDED VIDEOS */}
-        <aside className="w-full lg:w-[28%] xl:w-[25%]">
+          <aside
+           ref={recommendedRef}
+           className="w-full lg:w-[28%] xl:w-[25%] lg:sticky lg:top-4 h-[calc(100vh-2rem)] overflow-y-auto scroll-hover"
+           >
+
+
           <h3 className="text-xl font-semibold mb-4 text-black dark:text-white">Up next</h3>
           <div className="flex flex-col gap-4">
             {recommended.map((r: any) => (
               <div
-                key={getVideoId(r)}
-                className="flex gap-3 cursor-pointer p-2 rounded-md hover:bg-gray-50 dark:hover:bg-black"
-                onClick={() => {
-                  forceScrollTop();
-                  navigate(`/watch/${encodeId(getVideoId(r))}`, { state: r });
-                }}
-              >
-                <img src={fileUrl(r.thumbnail)} alt={r.title} className="w-36 h-20 object-cover rounded-md" />
-                <div className="flex-1">
-                  <h4 className="font-medium line-clamp-2 text-black dark:text-white">{r.title}</h4>
-                  <p className="text-sm text-gray-600 dark:text-slate-200">{r.first_name || r.owner || ""} {r.last_name || ""}</p>
-                  <p className="text-sm text-gray-600 dark:text-slate-200">{r.views_count || r.views || 0} views</p>
-                </div>
-              </div>
+  key={getVideoId(r)}
+  ref={getVideoId(r) === getVideoId(video) ? activeVideoRef : null}
+  className={`upnext-card group flex gap-3 cursor-pointer p-2 rounded-md
+    ${getVideoId(r) === getVideoId(video) ? "upnext-active" : ""}
+  `}
+  onClick={() => {
+    forceScrollTop();
+    navigate(`/watch/${encodeId(getVideoId(r))}`, { state: r });
+    setTimeout(() => {
+    activeVideoRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 100); // small delay to wait for render
+  }}
+>
+
+  {/* Thumbnail */}
+  <div className="relative w-36 h-20 overflow-hidden rounded-md">
+    <img
+      src={fileUrl(r.thumbnail)}
+      alt={r.title}
+      className="upnext-thumb w-full h-full object-cover"
+    />
+
+    {/* Overlay */}
+    <div className="upnext-overlay absolute inset-0 bg-black/30 flex items-center justify-center">
+      <svg
+        className="upnext-play w-8 h-8 text-white"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="M8 5v14l11-7z" />
+      </svg>
+    </div>
+  </div>
+
+  {/* Text */}
+  <div className="flex-1">
+    <h4 className="font-medium line-clamp-2 text-black dark:text-white">
+      {r.title}
+    </h4>
+    <p className="text-sm text-gray-600 dark:text-slate-200">
+      {r.first_name || r.owner || ""} {r.last_name || ""}
+    </p>
+    <p className="text-sm text-gray-600 dark:text-slate-200">
+      {r.views_count || r.views || 0} views
+    </p>
+  </div>
+</div>
+
             ))}
           </div>
         </aside>

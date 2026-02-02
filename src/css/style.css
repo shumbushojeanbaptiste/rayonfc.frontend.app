@@ -22,6 +22,112 @@
     scrollbar-width: none; /* Firefox */
   }
 
+  /* Hide scrollbar by default */
+.scroll-hover {
+  scrollbar-width: none; /* Firefox */
+}
+
+.scroll-hover::-webkit-scrollbar {
+  width: 0;
+}
+
+/* Show scrollbar on hover */
+.scroll-hover:hover {
+  scrollbar-width: thin;
+}
+
+.scroll-hover:hover::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-hover:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.6);
+  border-radius: 6px;
+}
+
+.scroll-hover:hover::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+
+/* Up Next hover card */
+.upnext-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.upnext-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* Thumbnail zoom */
+.upnext-thumb {
+  transition: transform 0.25s ease;
+}
+
+.upnext-card:hover .upnext-thumb {
+  transform: scale(1.05);
+}
+
+/* Dark overlay */
+.upnext-overlay {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.upnext-card:hover .upnext-overlay {
+  opacity: 1;
+}
+
+/* Play icon */
+.upnext-play {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.upnext-card:hover .upnext-play {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+/* Selected (currently playing) video */
+.upnext-active {
+  background-color: rgba(5, 51, 58, 0.08); /* matches your ACCENT */
+  border-left: 4px solid #05333a;
+}
+
+/* Dark mode tweak */
+.dark .upnext-active {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-left-color: #facc15; /* soft yellow accent */
+}
+
+/* Highlight the currently playing video */
+.upnext-active {
+  @apply bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 dark:border-blue-400;
+}
+
+/* Hover effect on recommended videos */
+.upnext-card:hover {
+  @apply bg-gray-100 dark:bg-gray-800/50 shadow-sm transform scale-105 transition-all duration-200;
+}
+
+/* Play overlay visible only on hover */
+.upnext-overlay {
+  @apply opacity-0 transition-opacity duration-200;
+}
+.upnext-card:hover .upnext-overlay {
+  @apply opacity-100;
+}
+
+/* Smooth scroll container for mobile */
+.scroll-hover {
+  @apply overflow-y-auto scroll-smooth;
+}
+
+
   .chat-height {
     @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
   }
