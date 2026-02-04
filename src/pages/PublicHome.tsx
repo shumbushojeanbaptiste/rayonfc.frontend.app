@@ -10,8 +10,8 @@ import Trendsvideossample from "./Trendsvideossample";
    
       <div className="">
         <Categories />
-        <Shortvideos />
         <Trendsvideos />
+        <Shortvideos />
        {/*<Trendsvideossample/>*/}
        
        

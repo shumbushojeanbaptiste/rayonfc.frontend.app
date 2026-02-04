@@ -7,7 +7,7 @@ import { FaLinkedin } from 'react-icons/fa';
 import { FaXTwitter, FaFacebookF, FaInstagram } from "react-icons/fa6";
 import api from '../api';
 
-const Profile = () => {
+const Profile = () => { 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 

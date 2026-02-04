@@ -30,7 +30,7 @@ const CardDataStatsTre: React.FC<Props> = ({
       onClick={onClick}
       className="rounded-xl cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
     >
-      <div className="relative">
+      <div className="relative"> 
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}

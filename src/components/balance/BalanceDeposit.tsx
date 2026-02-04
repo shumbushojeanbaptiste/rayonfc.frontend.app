@@ -120,6 +120,8 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
         currency: Number(currencyId),
       });
 
+      toast.success('Deposit initiated successfully');
+
       await loadBalance();
       setShowDeposit(false);
       setAmount('');
@@ -152,7 +154,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="hidden sm:inline-block bg-[#FFFF00] px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-black hover:bg-[#D1D100] transition"
+          className="hidden sm:inline-block bg-yellow-400 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-black hover:bg-yellow-400 transition"
         >
           DEPOSIT
         </button>
@@ -160,7 +162,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
         <button
           onClick={() => setShowDeposit(true)}
           aria-label="Deposit"
-          className="inline-flex sm:hidden items-center justify-center rounded-full bg-[#FFFF00] w-8 h-8 text-black hover:bg-[#D1D100] transition shadow"
+          className="inline-flex sm:hidden items-center justify-center rounded-full bg-yellow-400 w-8 h-8 text-black hover:bg-yellow-400 transition shadow"
         >
           <Plus size={20} />
         </button>
@@ -270,7 +272,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition"
+                className="px-4 py-2 text-sm bg-gray-800 rounded  text-slate-300 hover:text-slate-100 transition"
               >
                 Cancel
               </button>
@@ -278,7 +280,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
               <button
                 onClick={handleDeposit}
                 disabled={loading}
-                className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50"
+                className="bg-yellow-500 text-slate-900 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
               >
                 {loading ? 'Processing…' : 'Deposit'}
               </button>

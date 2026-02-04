@@ -20,6 +20,7 @@ import {
   Settings,
   HeartHandshake,
   Clapperboard,
+  Music4,
 } from 'lucide-react';
 
 /* ICON PROPS */

@@ -17,7 +17,7 @@ const Trendsvideos: React.FC = () => {
 
   const navigate = useNavigate();
   const user = getAuthUser();
-
+ 
   const fileUrl = (path?: string) =>
     path && path !== "null" && path !== "undefined"
       ? path
@@ -81,7 +81,8 @@ const Trendsvideos: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Trending Videos" />
+    
+      <Breadcrumb pageName="" />
       <div className="p-2 md:p-4 2xl:p-8">
       <div className="px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {loadingVideos
@@ -94,7 +95,7 @@ const Trendsvideos: React.FC = () => {
                 channelName={video.owner || "Unknown Owner"}
                 total={`${video.views ?? 0} views`}
                 price={video.price}
-                duration={video.duration}
+                duration={video.duration} 
                 thumbnail={fileUrl(video.thumbnail)}
                 profileImage={fileUrl(video.profile_photo || video.thumbnail)}
                 onClick={() => handleVideoClick(video)}

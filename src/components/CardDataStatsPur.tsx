@@ -28,7 +28,7 @@ const CardDataStatsPur: React.FC<Props> = ({
   onAddMoney,
   canBuy = false,
 }) => {
-  
+   
 
 
   const numericPrice = Number(price || 0);
@@ -39,7 +39,7 @@ const CardDataStatsPur: React.FC<Props> = ({
       className=" rounded-xl cursor-pointer hover:shadow-md  group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       onClick={onClick}
     >
-      <div className="relative "> 
+      <div className="relative ">  
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
