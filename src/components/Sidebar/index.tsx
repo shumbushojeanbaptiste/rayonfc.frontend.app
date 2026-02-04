@@ -22,6 +22,7 @@ import {
   BadgeDollarSign,
   ListVideo,
   Clapperboard,
+  Music4,
 } from 'lucide-react';
 
 /* ICON PROPS */
@@ -69,6 +70,13 @@ const MENU = [
       { label: 'Trending', to: '/Trendsvideos', icon: ChartIcon },
       { label: 'Latest', to: '/latest', icon: LatestIcon },
       { label: 'Free Videos', to: '/freevideos', icon: PlusIcon },
+    ],
+  },
+    {
+    title: 'Artists',
+    items: [
+      { label: 'Music Artists', to: '/musicart', icon: Music4 },
+     
     ],
   },
   {

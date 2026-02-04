@@ -78,6 +78,8 @@ import Hlayoutguest from "./components/Help/Hlayoutguest";
 import Videosplaysample from "./pages/Dashboard/Videosplaysample";
 import ResetPasswordToken from "./pages/Authentication/Resetpasstoken";
 import ResetPasswordVerify from "./pages/Authentication/Resetpassverify";
+import ArtistsList from "./pages/Artists/ArtistsList";
+import ArtistProfile from "./pages/Artists/ArtistProfile";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -156,6 +158,7 @@ export default function App() {
           <Route path="watch/:hash" element={<Videosplay />} />
           <Route path="music" element={<Music />} />
           <Route path="home/search" element={<Search />} />
+          <Route path="/musicart" element={<ArtistsList />} />
         </Route>
 
         {/* 🔐 AUTHENTICATED APP */}
@@ -174,6 +177,7 @@ export default function App() {
           <Route path="latest" element={<Latestvideos />} />
           <Route path="myprofile" element={<Profile />} />
           <Route path="profile" element={<Profileclient />} />
+          <Route path="/profile/:artistId" element={<ArtistProfile />} />
           <Route path="settings" element={<Settings/>} />
         </Route>
 

@@ -51,7 +51,7 @@ const Purchvideos: React.FC = () => {
         <div className="h-3 bg-gray-200 rounded w-1/4" />
         <div className="h-3 bg-gray-200 rounded w-1/6" />
       </div>
-    </div>
+    </div> 
   );
 
   return (
