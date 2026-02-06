@@ -75,11 +75,11 @@ import VideoAudioHelp from "./pages/Help/Hvideo&audio";
 import TermsConditionsHelp from "./pages/Help/HTermsConditions";
 import Profileclient from "./pages/Profileclientsaccess";
 import Hlayoutguest from "./components/Help/Hlayoutguest";
-import Videosplaysample from "./pages/Dashboard/Videosplaysample";
 import ResetPasswordToken from "./pages/Authentication/Resetpasstoken";
 import ResetPasswordVerify from "./pages/Authentication/Resetpassverify";
 import ArtistsList from "./pages/Artists/ArtistsList";
 import ArtistProfile from "./pages/Artists/ArtistProfile";
+import ChangePassword from "./pages/Authentication/ChangePassword";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -176,9 +176,11 @@ export default function App() {
           <Route path="myvideos" element={<Purchvideos />} />
           <Route path="latest" element={<Latestvideos />} />
           <Route path="myprofile" element={<Profile />} />
-          <Route path="profile" element={<Profileclient />} />
-          <Route path="/profile/:artistId" element={<ArtistProfile />} />
+          {/*<Route path="profile" element={<Profileclient />} />*/}
+          <Route path="/profile" element={<ArtistProfile />} />
+          <Route path="/profile/::hash" element={<ArtistProfile />} />
           <Route path="settings" element={<Settings/>} />
+          <Route path="/change-password" element={<ChangePassword />} />
         </Route>
 
          {/* 🔐 OLEEPLAY HELP */}

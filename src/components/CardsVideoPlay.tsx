@@ -15,12 +15,14 @@ interface Props {
   disliked?: boolean;
   videoTitle: string;
   channelName: string;
+  profileImage?: string;
   followers?: string;
   periode: string;
   rate?: string;
   children: React.ReactNode;
   shareUrl?: string;
   ownerId?: number;
+  onChannelClick?: () => void;
 }
 
 const CardVideoPlay: React.FC<Props> = ({
@@ -28,17 +30,19 @@ const CardVideoPlay: React.FC<Props> = ({
   total,
   totallike,
   totaldislike,
-  onLike,
+  onLike, 
   liked,
   disliked,
   videoTitle,
   channelName,
+  profileImage,
   followers,
   periode,
   rate,
   children,
   shareUrl,
   ownerId,
+  onChannelClick,
 }) => {
   const [openShare, setOpenShare] = useState(false);
   const [startAt, setStartAt] = useState(false);
@@ -66,7 +70,7 @@ const CardVideoPlay: React.FC<Props> = ({
   // Fetch dynamic followers count
   useEffect(() => {
     const fetchFollowers = async () => {
-      if (!ownerId) return;
+      if (!ownerId) return; 
 
       if (!isLoggedIn) {
         setDynamicFollowers(followers || "0 followers");
@@ -83,6 +87,9 @@ const CardVideoPlay: React.FC<Props> = ({
     fetchFollowers();
   }, [ownerId, followers, isLoggedIn]);
 
+
+
+  
   const getCurrentTime = () => {
     const video = document.querySelector("video");
     return video ? Math.floor(video.currentTime) : 0;
@@ -227,12 +234,31 @@ const CardVideoPlay: React.FC<Props> = ({
 
       {/* Channel Info & Follow */}
       <div className="mt-4 px-2 flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">{channelName}</h3>
+        <div className="flex items-center gap-3 mt-2">
+          <img
+            src={profileImage || "/default-avatar.png"}
+            alt={channelName}
+            className="w-10 h-10 rounded-full object-cover cursor-pointer"
+            onClick={(e) => {
+                    e.stopPropagation();
+                    onChannelClick?.();
+                    }}
+          />
+          <div>
+          <h3 
+            className="text-lg font-semibold cursor-pointer"
+            onClick={(e) => {
+                  e.stopPropagation();
+                  onChannelClick?.();
+                  }}
+            >
+            {channelName}
+          </h3>
           {dynamicFollowers && <p className="text-gray-500 text-sm">{dynamicFollowers}</p>}
           {!isLoggedIn && (
             <p className="text-xs text-gray-400 mt-1">Login to like, comment, or follow</p>
           )}
+          </div>
         </div>
 
         <button

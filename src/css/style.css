@@ -24,8 +24,30 @@
 
   /* Hide scrollbar by default */
 .scroll-hover {
-  scrollbar-width: none; /* Firefox */
-}
+    @apply overflow-y-auto scroll-smooth;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scroll-hover::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .scroll-hover:hover {
+    scrollbar-width: thin;
+  }
+
+  .scroll-hover:hover::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scroll-hover:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 100, 100, 0.6);
+    border-radius: 6px;
+  }
+
+  .scroll-hover:hover::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
 .scroll-hover::-webkit-scrollbar {
   width: 0;
@@ -68,6 +90,7 @@
 .scroll-hover:hover::-webkit-scrollbar-track {
   background: transparent;
 }
+
 
 
 /* Up Next hover card */
