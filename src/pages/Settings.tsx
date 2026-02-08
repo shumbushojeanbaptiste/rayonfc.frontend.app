@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Breadcrumb from "../components/Breadcrumbs/Breadcrumb";
 import userThree from "../images/user/user-03.png";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -15,8 +17,10 @@ const Settings = () => {
         <div className="">
           {/* LEFT PANEL */}
           <div className="col-span-5 xl:col-span-3 space-y-8">
+           
+           
             {/* Personal Information */}
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+           {/* <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
                   Personal Information
@@ -34,7 +38,7 @@ const Settings = () => {
                       </label>
                       <div className="relative">
                         <span className="absolute left-4.5 top-4 text-gray-400">
-                          {/* User Icon */}
+                          
                           <svg
                             className="fill-current"
                             width="20"
@@ -78,7 +82,7 @@ const Settings = () => {
                       </label>
                       <div className="relative">
                         <span className="absolute left-4.5 top-4 text-gray-400">
-                          {/* User Icon */}
+                         
                           <svg
                             className="fill-current"
                             width="20"
@@ -146,10 +150,6 @@ const Settings = () => {
                     />
                   </div>
 
-                
-
-               
-
                   <div className="flex justify-end gap-4.5">
                     <button className="flex justify-center rounded border border-stroke py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white">
                       Cancel
@@ -161,6 +161,7 @@ const Settings = () => {
                 </form>
               </div>
             </div>
+            */}
 
             {/* Security Settings */}
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -170,15 +171,17 @@ const Settings = () => {
                 </h3>
               </div>
               <div className="p-7 space-y-5">
-                <button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
+                <button 
+                  onClick={() => navigate("/change-password")}
+                  className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   Change Password
                 </button>
-                <button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
+                {/*<button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   Enable Two-Factor Authentication
                 </button>
                 <button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   View Active Sessions
-                </button>
+                </button>*/}
               </div>
             </div>
 

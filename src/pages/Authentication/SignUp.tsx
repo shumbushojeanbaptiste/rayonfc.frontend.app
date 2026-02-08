@@ -6,6 +6,8 @@ import LogoDark from '../../images/logo/logo2.png';
 import Logo from '../../images/logo/logo2.png';
 import { User, Mail } from "lucide-react";
 import api from "../../api";
+import { toast } from "react-toastify";
+
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -58,9 +60,13 @@ const SignUp: React.FC = () => {
       // 👉 Redirect to Verify page after successful registration
       navigate(`/auth/verify?email=${encodeURIComponent(textFields.email)}`);
     } catch (error: any) {
-      console.error(error);
-      alert(error?.response?.data?.message || "Something went wrong.");
-    } finally {
+           console.error(error);
+           toast.error(
+           error?.response?.data?.message || "Something went wrong."
+           );
+}
+
+    finally {
       setLoading(false);
     }
   };

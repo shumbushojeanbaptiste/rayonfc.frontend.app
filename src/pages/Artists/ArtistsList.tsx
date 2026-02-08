@@ -8,6 +8,8 @@ interface Artist {
   artist_id: number;
   name: string;
   avatar?: string;
+  created_at: string;
+  following: number;
 }
 
 const ArtistsList = () => {
@@ -26,6 +28,8 @@ const ArtistsList = () => {
           artist_id: artist.user_id,
           name: [artist.first_name, artist.last_name].filter(Boolean).join(' '),
           avatar: artist.profile_photo,
+          created_at:artist.created_at,
+          following:artist.following,
         }));
 
         setArtists(mappedArtists);
@@ -68,17 +72,44 @@ const ArtistsList = () => {
             {artist.name}
           </h3>
 
+         {/* <p className="mt-3 text-sm sm:text-base leading-relaxed">
+              Account created on{' '}
+              <span className="font-medium">
+                {new Date(artist.created_at).toDateString()}
+              </span>
+            </p>
+             */}
+
           {/* Optional description or stats */}
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             {/* You can add followers, balance, etc. here */}
           </p>
 
           {/* Donate Button */}
-          <Donation artistId={artist.artist_id} /> 
+         <Donation artistId={artist.artist_id} />  
 
 {/* Profile Button */}
 <button
-  onClick={() => navigate(`/profile/${artist.artist_id}`)}
+  onClick={() => {
+    const artistProfile = {
+      artist_id: artist.artist_id,
+      name: artist.name,
+      avatar: artist.avatar,
+      created_at: artist.created_at,
+      following: artist.following,
+    };
+
+    // ✅ store artist for refresh support
+    sessionStorage.setItem(
+      'artist_profile',
+      JSON.stringify(artistProfile)
+    );
+
+    // ✅ navigate without ID in URL
+    navigate('/profile', {
+      state: artistProfile,
+    });
+  }}
   className="mt-3 w-full rounded-full border border-yellow-400 px-4 py-2 text-sm font-medium text-yellow-500 transition hover:bg-yellow-400 hover:text-black"
 >
   View Profile

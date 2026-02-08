@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import api from '../../api';
 import toast, { Toaster } from 'react-hot-toast';
+import { publicApi } from '../../publicApi';
 
 interface PaymentMethod {
   id: number;
@@ -42,7 +42,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
   const [curOpen, setCurOpen] = useState(false);
 
   useEffect(() => {
-    api.get('/api/settings/paymentMethods').then((res) => {
+    publicApi.get('/api/settings/paymentMethods').then((res) => {
       const raw: RawPaymentMethod[] = res.data?.data || [];
 
       setPaymentMethods(
@@ -55,7 +55,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
       );
     });
 
-    api.get('/api/currencies/all').then((res) => {
+    publicApi.get('/api/currencies/all').then((res) => {
       setCurrencies(res.data?.data || []);
     });
   }, []);
@@ -99,7 +99,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
     try {
       setLoading(true);
 
-      const res = await api.post('/api/payments/init-sponsorship', {
+      const res = await publicApi.post('/api/payments/init-sponsorship', {
         artist_id: Number(artistId),
         payment_methods: Number(paymentMethodId),
         amount: Number(trimmedAmount),
@@ -305,7 +305,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
                 disabled={loading}
                 className="bg-yellow-500 text-slate-900 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
               >
-                {loading ? 'Processing…' : 'Donate'}
+                {loading ? 'Processing…' : 'Bless'}
               </button>
             </div>
           </div>

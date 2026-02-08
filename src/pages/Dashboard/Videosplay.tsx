@@ -18,6 +18,7 @@ const Videosplay: React.FC = () => {
     return null;
   }
 
+  
   const passedVideo = location.state;
   const source = passedVideo?.source || "all";
 
@@ -37,12 +38,17 @@ const [likeCount, setLikeCount] = useState<number>(0);
 const activeVideoRef = useRef<HTMLDivElement | null>(null);
 
 
-  const ACCENT = "#05333a";
+  const ACCENT = "#05333a"; 
 
   const fileUrl = (path: string) => {
     if (!path || path === "null" || path === "undefined") return "/default-avatar.png";
     return path.includes("/") ? path : `${path}`;
   };
+  const goToProfile = (ownerId: number | null) => {
+  if (!ownerId) return;
+  navigate(`/profile/${encodeId(ownerId)}`);
+};
+
 
   const getVideoId = (v: any) => v?.video_id || v?.id || id;
   const getVideoUrl = (v: any) => v?.url || v?.video_url || v?.videoPath || "";
@@ -300,11 +306,13 @@ useEffect(() => {
             onLike={likeVideo}
             liked={liked}
             channelName={ownerName}
+            profileImage={fileUrl(video.profile_photo || video.thumbnail )}
             videoTitle={video.title}
             periode={new Date(video.created_at).toDateString()} 
             rate=""
             shareUrl={shareUrl}
             ownerId={getOwnerId(video)} // ✅ Dynamic followers handled inside CardVideoPlay
+            onChannelClick={() => goToProfile(getOwnerId(video))}
           >
             {/* VIDEO PLAYER */}
             <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
@@ -324,7 +332,6 @@ useEffect(() => {
               className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
               style={{ borderTop: `4px solid ${ACCENT}` }}
             >
-              <h3 className="text-lg font-semibold mb-2 text-black dark:text-slate-100">{ownerName}</h3>
               <p
                 className={`text-gray-800 dark:text-slate-100 whitespace-pre-line transition-all duration-300 ${
                   showMore ? "" : "line-clamp-3"

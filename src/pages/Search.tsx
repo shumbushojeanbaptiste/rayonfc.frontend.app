@@ -6,7 +6,7 @@ import BuyVideoModal from "../components/BuyVideoModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
-import Noresult from "../images/no-search.png";
+import Noresult from "../images/nosearchsix.png";
 import CardDataStatsTre from "../components/CardDataStatsTre";
 import { toast } from "react-toastify";
 
@@ -191,7 +191,7 @@ const Search = () => {
 
         {!loading && searchAttempted && results.length === 0 && query && (
           <div className="flex flex-col items-center justify-center col-span-full mt-12 text-center">
-            <img src={Noresult} className="w-20 mb-4" />
+            <img src={Noresult} className="w-100 h-100 mb-4" />
             <p className="text-gray-500 text-lg">
               No videos found for <b>{query}</b>
             </p>

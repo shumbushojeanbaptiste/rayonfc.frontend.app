@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* -----------------------------
    Accordion Item (local)
@@ -9,9 +10,12 @@ function AccordionItem({
 }: {
   title: string;
   children: React.ReactNode;
-}) {
-  const [open, setOpen] = useState(false);
+}) 
 
+{
+  
+  const [open, setOpen] = useState(false);
+ 
   return (
     <div className="border border-gray-200 dark:border-gray-800 rounded mb-3">
       <button
@@ -37,6 +41,8 @@ function AccordionItem({
 export default function Managment() {
   // Replace later with real user role from auth
   const [role, setRole] = useState<"user" | "admin">("user");
+  const navigate = useNavigate();
+
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -66,10 +72,16 @@ export default function Managment() {
 
         {/* ACTION BUTTONS */}
         <div className="flex gap-3 mt-5">
-          <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded">
+           <button
+              onClick={() => navigate("/settings")}
+              className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded"
+            >
             Update Profile
-          </button>
-          <button className="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded">
+           </button>
+
+          <button
+           onClick={() => navigate("/change-password")}
+           className="px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded">
             Change Password
           </button>
         </div>

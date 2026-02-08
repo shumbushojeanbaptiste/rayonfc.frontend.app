@@ -1,9 +1,9 @@
 // src/pages/PublicHome.tsx 
 
 import Categories from "../components/categories/Categories";
+import ArtistsList from "./Artists/ArtistsList";
 import Shortvideos from "./Shortsvideos";
 import Trendsvideos from "./Trendsvideos";
-import Trendsvideossample from "./Trendsvideossample";
 
  const PublicHome: React.FC = () => {
   return (
@@ -11,9 +11,9 @@ import Trendsvideossample from "./Trendsvideossample";
       <div className="">
         <Categories />
         <Trendsvideos />
+        <ArtistsList />
         <Shortvideos />
-       {/*<Trendsvideossample/>*/}
-       
+   
        
        
       </div>

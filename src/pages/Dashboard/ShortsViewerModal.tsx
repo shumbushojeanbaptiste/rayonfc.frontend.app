@@ -42,7 +42,8 @@ const ShortsViewerModal: React.FC<Props> = ({
 
   const [isFollowing, setIsFollowing] = useState(false);
   const [followerCount, setFollowerCount] = useState(0);
-
+  const [isLoading, setIsLoading] = useState(true);
+ 
   const [openShare, setOpenShare] = useState(false);
   const [startAt, setStartAt] = useState(false);
 
@@ -51,7 +52,8 @@ const ShortsViewerModal: React.FC<Props> = ({
 
   type FloatingHeart = { id: number; x: number; y: number };
   const [hearts, setHearts] = useState<FloatingHeart[]>([]);
-  const tapTimeout = useRef<NodeJS.Timeout | null>(null);
+  const tapTimeout = useRef<number | null>(null);
+
   /* ===== ADDITIONS END ===== */
 
   const touchStartY = useRef(0);
@@ -71,18 +73,27 @@ const ShortsViewerModal: React.FC<Props> = ({
   };
 
   /* ===== ADDITIONS START ===== */
-  const togglePlay = () => {
-    const v = videoRefs.current[index];
-    if (!v) return;
+const togglePlay = () => {
+  const v = videoRefs.current[index];
+  if (!v) return;
 
-    if (v.paused) {
-      v.play().catch(() => {});
-      setIsPlaying(true);
-    } else {
-      v.pause();
-      setIsPlaying(false);
-    }
-  };
+  if (v.paused) {
+    // 🔊 unmute via state
+    setMuted(false);
+    v.muted = false;
+
+    v.play()
+      .then(() => {
+        setIsPlaying(true);
+      })
+      .catch(() => {});
+  } else {
+    v.pause();
+    setIsPlaying(false);
+  }
+};
+
+
 
   const spawnHeart = (x: number, y: number) => {
     const id = Date.now();
@@ -106,12 +117,18 @@ const ShortsViewerModal: React.FC<Props> = ({
       spawnHeart(point.x, point.y);
       handleLike();
     } else {
-      tapTimeout.current = setTimeout(() => {
-        togglePlay();
-        tapTimeout.current = null;
-      }, 250);
+     tapTimeout.current = window.setTimeout(() => {
+  togglePlay();
+  tapTimeout.current = null;
+}, 250);
+
     }
   };
+
+  useEffect(() => {
+  setIsLoading(true);
+}, [index]);
+
   /* ===== ADDITIONS END ===== */
 
   // ---------- sync active index ----------
@@ -164,13 +181,23 @@ const ShortsViewerModal: React.FC<Props> = ({
   const clampIndex = (i: number) =>
     Math.max(0, Math.min(i, shorts.length - 1));
 
-  const snapTo = (next: number) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setIndex(clampIndex(next));
-    setProgress(0);
-    setTimeout(() => setIsAnimating(false), ANIMATION_DURATION);
-  };
+ const snapTo = (next: number) => {
+  if (isAnimating) return;
+
+  const current = videoRefs.current[index];
+  if (current) {
+    current.pause();
+    current.muted = true;
+    current.currentTime = 0;
+  }
+
+  setIsAnimating(true);
+  setIndex(clampIndex(next));
+  setProgress(0);
+
+  setTimeout(() => setIsAnimating(false), ANIMATION_DURATION);
+};
+
 
   const goNext = () => snapTo(index + 1);
   const goPrev = () => snapTo(index - 1);
@@ -199,17 +226,25 @@ const ShortsViewerModal: React.FC<Props> = ({
   };
 
   // autoplay
-  useEffect(() => {
-    videoRefs.current.forEach((v, i) => {
-      if (!v) return;
-      if (i === index) {
-        v.play().catch(() => {});
+ useEffect(() => {
+  videoRefs.current.forEach((v, i) => {
+    if (!v) return;
+
+    if (i === index) {
+      v.muted = muted;
+      v.currentTime = 0;
+      v.play().then(() => {
         setIsPlaying(true);
-      } else {
-        v.pause();
-      }
-    });
-  }, [index]);
+      }).catch(() => {});
+    } else {
+      v.pause();
+      v.currentTime = 0;
+      v.muted = true;   //  REQUIRED ON iOS
+      v.load();         //  HARD STOP AUDIO
+    }
+  });
+}, [index, muted]);
+
 
   // ---------- like ----------
   const handleLike = async () => {
@@ -322,23 +357,45 @@ const ShortsViewerModal: React.FC<Props> = ({
             className="h-screen w-full relative flex items-center justify-center"
           >
             <div className="relative h-[90vh] aspect-[9/16] max-w-[420px] w-full bg-black rounded-xl overflow-hidden shadow-xl">
-              <video
-                ref={(el) => (videoRefs.current[i] = el!)}
-                src={short.video_url}
-                className="w-full h-full object-cover"
-                autoPlay
-                muted={muted}
-                loop
-                playsInline
-                onClick={handleVideoTap}
-                onTouchStart={handleVideoTap}
-                onTimeUpdate={(e) => {
-                  const v = e.currentTarget;
-                  setProgress((v.currentTime / v.duration) * 100);
-                }}
-              />
+  
+  {/* TAP OVERLAY (IMPORTANT FOR iOS) */}
+  <div
+    className="absolute inset-0 z-20"
+    onClick={handleVideoTap}
+    onTouchStart={handleVideoTap}
+  />
 
-              {!isPlaying && i === index && (
+  <video
+  ref={(el) => (videoRefs.current[i] = el!)}
+  src={short.video_url}
+  className="w-full h-full object-cover"
+  muted={muted}
+  loop
+  playsInline
+  webkit-playsinline="true"
+  preload="auto"
+  onWaiting={() => i === index && setIsLoading(true)}
+  onCanPlay={() => i === index && setIsLoading(false)}
+  onPlaying={() => i === index && setIsLoading(false)}
+  onTimeUpdate={(e) => {
+  if (i !== index) return;
+
+  const video = e.currentTarget;
+  if (!video.duration) return;
+
+  setProgress((video.currentTime / video.duration) * 100);
+}}
+
+/>
+
+{isLoading && i === index && (
+  <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/40">
+    <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+  </div>
+)}
+
+
+              {!isPlaying && !isLoading && i === index && (
                 <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none animate-fade-in">
                   <div className="bg-black/50 rounded-full p-6">
                     <Play size={48} className="text-white" />
