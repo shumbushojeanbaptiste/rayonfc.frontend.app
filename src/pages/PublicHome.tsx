@@ -13,8 +13,8 @@ import Trendsvideos from "./Trendsvideos";
       <div className="">
         <Categories />
         <Trendsvideos />
-        <Menplayers />
-        <Womenplayers />
+        {/*<Menplayers />
+        <Womenplayers />*/}
         <Shortvideos />
    
        

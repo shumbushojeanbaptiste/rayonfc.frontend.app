@@ -83,13 +83,7 @@ const MENU = [
       { label: 'Traings', to: '/traings', icon: RunIcon },
     ],
   },
-    {
-    title: 'Players',
-    items: [
-      { label: 'Men', to: '/mensplayers', icon: Men },
-      { label: 'Women', to: '/womensplayers', icon: Women  },
-    ],
-  },
+   
 
  
 

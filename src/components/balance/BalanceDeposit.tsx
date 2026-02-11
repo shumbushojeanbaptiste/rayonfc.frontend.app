@@ -154,7 +154,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="hidden sm:inline-block bg-yellow-400 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-black hover:bg-yellow-400 transition"
+          className="hidden sm:inline-block bg-blue-600 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-slate-200 hover:bg-blue-700 transition"
         >
           DEPOSIT
         </button>
@@ -162,7 +162,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
         <button
           onClick={() => setShowDeposit(true)}
           aria-label="Deposit"
-          className="inline-flex sm:hidden items-center justify-center rounded-full bg-yellow-400 w-8 h-8 text-black hover:bg-yellow-400 transition shadow"
+          className="inline-flex sm:hidden items-center justify-center rounded-full bg-blue-600 w-8 h-8 text-slate-200 hover:bg-blue-700 transition shadow"
         >
           <Plus size={20} />
         </button>

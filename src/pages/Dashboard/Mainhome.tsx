@@ -18,8 +18,8 @@ const Mainhome: React.FC = () => {
       {/*<Allvideos />*/}
       {/*<Purchvideos/>*/}
       <Trendsvideos/>
-      <Menplayers />
-      <Womenplayers />
+      {/*<Menplayers />
+      <Womenplayers />*/}
       <Shortvideos />
       {/*<Freevideos />*/}
       {/*<Latestvideos />*/}

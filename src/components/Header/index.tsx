@@ -227,7 +227,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/*<DarkModeSwitcher />*/}
           <DropdownNotification />
-          {/*<BalanceDeposit />*/}
+          <BalanceDeposit />
           <DropdownUser />
         </div>
       </div>

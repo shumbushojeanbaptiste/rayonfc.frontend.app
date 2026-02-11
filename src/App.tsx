@@ -160,8 +160,8 @@ export default function App() {
           <Route path="watch/:hash" element={<Videosplay />} />
           {/*<Route path="music" element={<Music />} />*/}
           <Route path="home/search" element={<Search />} />
-          <Route path="/mensplayers" element={<Menplayers />} />
-          <Route path="/womensplayers" element={<Womenplayers />} />
+          {/*<Route path="/mensplayers" element={<Menplayers />} />
+          <Route path="/womensplayers" element={<Womenplayers />} />*/}
         </Route>
 
         {/* 🔐 AUTHENTICATED APP */}

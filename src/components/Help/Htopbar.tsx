@@ -220,7 +220,7 @@ const Htopbar: React.FC<HeaderProps> = ({
 
           {/*<DarkModeSwitcher />*/}
           <DropdownNotification />
-          {/*<BalanceDeposit />*/}
+          <BalanceDeposit />
           <DropdownUser />
         </div>
       </div>

@@ -89,14 +89,7 @@ const MENU = [
     ],
   },
   
-   {
-    title: 'Players',
-    items: [
-      { label: 'Men', to: '/mensplayers', icon: Men },
-      { label: 'Women', to: '/womensplayers', icon: Women  },
-    ],
-  },
-
+  
   {
     title: '',
     items: [
