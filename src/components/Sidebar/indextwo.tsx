@@ -21,10 +21,21 @@ import {
   HeartHandshake,
   Clapperboard,
   Music4,
+  Tv,
+  MicVocal,
 } from 'lucide-react';
+import { GrRun } from 'react-icons/gr';
+import { GiMicrophone } from "react-icons/gi";
+import { CgGirl } from 'react-icons/cg';
+import { TbMoodBoy } from 'react-icons/tb';
 
 /* ICON PROPS */
 const iconClass = 'w-5 h-5';
+const iconClas = 'w-6 h-6';
+const RunIcon = () => <GrRun className={iconClas} />;
+const InterviewIcon = () => <GiMicrophone className={iconClas} />;
+const Men = () => <TbMoodBoy className={iconClas} />;
+const Women = () => <CgGirl className={iconClas} />;
 
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
@@ -64,10 +75,10 @@ const MENU = [
     title: '',
     items: [
       { label: 'Home', to: '/', icon: HomeIcon },
-      { label: 'Reels', to: '/reels', icon: Clapperboard },
-      { label: 'Trending', to: '/Trendsvideos', icon: ChartIcon },
-      { label: 'Latest', to: '/latest', icon: LatestIcon },
-      { label: 'Free Videos', to: '/freevideos', icon: PlusIcon },
+      //{ label: 'Reels', to: '/reels', icon: Clapperboard },
+         { label: 'Highlights', to: '/highlights', icon: Tv },
+         { label: 'Interviews', to: '/interviews', icon: InterviewIcon },
+         { label: 'Traings', to: '/traings', icon: RunIcon },
     ],
   },
   {
@@ -77,15 +88,15 @@ const MENU = [
       { label: 'Sign-Up', to: '/auth/signup', icon: WatchLaterIcon },
     ],
   },
-  {
-    title: 'Explore',
+  
+   {
+    title: 'Players',
     items: [
-      { label: 'Music', to: '/music', icon: MusicIcon },
-      { label: 'Gaming', to: '/gaming', icon: GamingIcon },
-      { label: 'News', to: '/news', icon: NewsIcon },
-      { label: 'Sports', to: '/sports', icon: SportsIcon },
+      { label: 'Men', to: '/mensplayers', icon: Men },
+      { label: 'Women', to: '/womensplayers', icon: Women  },
     ],
   },
+
   {
     title: '',
     items: [

@@ -1,7 +1,9 @@
 // src/pages/PublicHome.tsx 
 
 import Categories from "../components/categories/Categories";
-import ArtistsList from "./Artists/ArtistsList";
+import Menplayers from "./Players/Menplayers";
+import ArtistsList from "./Players/Menplayers";
+import Womenplayers from "./Players/Womeplayers";
 import Shortvideos from "./Shortsvideos";
 import Trendsvideos from "./Trendsvideos";
 
@@ -11,7 +13,8 @@ import Trendsvideos from "./Trendsvideos";
       <div className="">
         <Categories />
         <Trendsvideos />
-        <ArtistsList />
+        <Menplayers />
+        <Womenplayers />
         <Shortvideos />
    
        

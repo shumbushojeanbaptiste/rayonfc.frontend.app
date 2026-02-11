@@ -13,7 +13,7 @@ const Videosplay: React.FC = () => {
   const location = useLocation();
 
   const id = decodeId(hash as string);
-  if (!id) {
+  if (!id) { 
     navigate("/");
     return null;
   }
@@ -306,7 +306,7 @@ useEffect(() => {
             onLike={likeVideo}
             liked={liked}
             channelName={ownerName}
-            profileImage={fileUrl(video.profile_photo || video.thumbnail )}
+            //profileImage={fileUrl(video.profile_photo || video.thumbnail )}
             videoTitle={video.title}
             periode={new Date(video.created_at).toDateString()} 
             rate=""

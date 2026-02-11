@@ -84,9 +84,9 @@ const Shortvideos: React.FC = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center px-2">
-        <img src="/shorts1.png" alt="" width="50" height="60" />
-        <span className="text-title-lg font-bold -ml-2">eels</span>
+      <div className="flex items-center px-6">
+        {/*<img src="/shorts1.png" alt="" width="50" height="60" />*/}
+        <span className="text-title-lg font-bold ">Reels</span>
       </div>
 
       <Breadcrumb pageName="" />

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import DropdownUser from './DropdownUser';
 import LogoIcon from '../../images/logo/logo2.png';
-import DarkModeSwitcher from './DarkModeSwitcher';
+import DarkModeSwitcher from './DarkModeSwitcher'; 
 import DropdownNotification from './DropdownNotification';
 import BalanceDeposit from '../balance/BalanceDeposit';
 
@@ -227,7 +227,7 @@ const Header: React.FC<HeaderProps> = ({
 
           {/*<DarkModeSwitcher />*/}
           <DropdownNotification />
-          <BalanceDeposit />
+          {/*<BalanceDeposit />*/}
           <DropdownUser />
         </div>
       </div>

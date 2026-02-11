@@ -1,10 +1,12 @@
 import Categories from "../../components/categories/Categories";
-import ArtistsList from "../Artists/ArtistsList";
+import ArtistsList from "../Players/Menplayers";
 import Freevideos from "../Freevideos";
 import Latestvideos from "../Latestvideos";
 import Purchvideos from "../Purchasedvideos";
 import Shortvideos from "../Shortsvideos";
 import Trendsvideos from "../Trendsvideos";
+import Menplayers from "../Players/Menplayers";
+import Womenplayers from "../Players/Womeplayers";
 //import Allvideos from "../Videos";
 
 const Mainhome: React.FC = () => {
@@ -16,7 +18,8 @@ const Mainhome: React.FC = () => {
       {/*<Allvideos />*/}
       {/*<Purchvideos/>*/}
       <Trendsvideos/>
-      <ArtistsList />
+      <Menplayers />
+      <Womenplayers />
       <Shortvideos />
       {/*<Freevideos />*/}
       {/*<Latestvideos />*/}

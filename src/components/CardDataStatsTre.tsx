@@ -40,20 +40,20 @@ const CardDataStatsTre: React.FC<Props> = ({
         {/* Duration Badge (Shorts style) */}
         <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
           {duration}
-        </div>
+        </div> 
       </div>
 
       {/* PROFILE SECTION — UNCHANGED */}
       <div className="flex items-center gap-3 mt-2">
-        <img
+        {/*<img
           src={profileImage || "/default-avatar.png"}
           alt={channelName}
           className="w-10 h-10 rounded-full object-cover"
-        />
+        />*/}
 
         <div className="flex-1">
           <h3 className="font-semibold line-clamp-1">{videoTitle}</h3>
-          <p className="text-sm text-gray-400 line-clamp-1">{channelName}</p>
+          {/*<p className="text-sm text-gray-400 line-clamp-1">{channelName}</p>*/}
         </div>
       </div>
 

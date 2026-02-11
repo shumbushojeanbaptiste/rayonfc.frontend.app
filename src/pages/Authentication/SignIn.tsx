@@ -4,6 +4,7 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo2.png';
 import Logo from '../../images/logo/logo2.png';
 import { motion } from "framer-motion";
+import api from '../../api';
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
@@ -13,38 +14,39 @@ const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError(null);
+  setLoading(true);
 
-    try {
-      const response = await fetch('https://olee.maafricapay.com/api/accounts/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const response = await api.post("/api/accounts/login", {
+      email,
+      password,
+    });
 
-      const result = await response.json();
+    const result = response.data;
 
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Login failed');
-      }
-
-      // ✅ Save JWT & user info to localStorage for persistent login
-      localStorage.setItem('token', result.data.jwt);
-      localStorage.setItem('user', JSON.stringify(result.data));
-
-      // ✅ Redirect to unified home page
-      navigate('/', { replace: true });
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (!result.success) {
+      throw new Error(result.message || "Login failed");
     }
-  };
+
+    // ✅ Save JWT & user info
+    localStorage.setItem("token", result.data.jwt);
+    localStorage.setItem("user", JSON.stringify(result.data));
+
+    navigate("/", { replace: true });
+
+  } catch (err: any) {
+    setError(
+      err.response?.data?.message || err.message || "Login failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <>
@@ -106,7 +108,7 @@ const SignIn: React.FC = () => {
 <div className="mb-6 text-right">
   <Link
     to="/auth/reset-token"
-    className="text-sm text-green-950 dark:text-yellow-400 hover:underline"
+    className="text-sm text-green-950 dark:text-blue-600 hover:underline"
   >
     Forgot password?
   </Link>
@@ -124,7 +126,7 @@ const SignIn: React.FC = () => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-lg bg-green-950 dark:bg-yellow-400 p-4 text-white dark:text-green-950 hover:bg-opacity-90 disabled:opacity-50"
+                    className="w-full rounded-lg bg-green-950 dark:bg-blue-600 p-4 text-white  hover:bg-opacity-90 disabled:opacity-50"
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </motion.button>

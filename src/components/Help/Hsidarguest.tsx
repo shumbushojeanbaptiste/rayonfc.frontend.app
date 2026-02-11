@@ -27,12 +27,12 @@ const MENU = [
   {
     title: "",
     items: [
-      { to: "home/help", label: "Oleeplay Features", icon: <HiHome /> },
+      { to: "home/help", label: "Rayonsports Features", icon: <HiHome /> },
       { to: "home/help/signin", label: "Sign-In recovery security", icon: <KeyRound /> },
       { to: "home/help/managment", label: "Manage your account", icon: <User /> },
       { to: "home/help/privacy", label: "Privacy & Reporting", icon: <LockKeyhole /> },
-      { to: "home/help/finance", label: "Finance managment", icon: <BadgeDollarSign /> },
-      { to: "home/help/video&audio", label: "Videos & Audio", icon: <Play /> },
+      //{ to: "home/help/finance", label: "Finance managment", icon: <BadgeDollarSign /> },
+      //{ to: "home/help/video&audio", label: "Videos & Audio", icon: <Play /> },
       { to: "home/help/terms&condition", label: "Terms & Conditions", icon: <Handshake /> },
 
     ],

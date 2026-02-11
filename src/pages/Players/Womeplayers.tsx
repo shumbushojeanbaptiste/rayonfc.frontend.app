@@ -12,7 +12,7 @@ interface Artist {
   following: number;
 }
 
-const ArtistsList = () => {
+const Womenplayers = () => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -47,9 +47,9 @@ const ArtistsList = () => {
   return (
     <>
      <div className="flex items-center px-6 gap-0.5 my-2">
-    <img src="/artisttwo.png" alt="" width="35" height="45" className="block" />
-      <span className="text-title-lg font-bold leading-none -ml-0 mt-1">
-        rtists
+    {/*<img src="/artisttwo.png" alt="" width="35" height="45" className="block" />*/}
+      <span className="text-title-lg font-bold leading-none ">
+        Women Players
       </span>
    </div>
     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 p-6">
@@ -63,7 +63,7 @@ const ArtistsList = () => {
             <img
               src={artist.avatar || '/avatar.png'}
               alt={artist.name}
-              className="w-full h-full rounded-full object-cover border-4 border-yellow-400"
+              className="w-full h-full rounded-full object-cover border-4 border-blue-600"
             />
           </div>
 
@@ -110,7 +110,7 @@ const ArtistsList = () => {
       state: artistProfile,
     });
   }}
-  className="mt-3 w-full rounded-full border border-yellow-400 px-4 py-2 text-sm font-medium text-yellow-500 transition hover:bg-yellow-400 hover:text-black"
+  className="mt-3 w-full rounded-full border border-blue-500 px-4 py-2 text-sm font-medium text-blue-600 transition hover:bg-blue-500 hover:text-white"
 >
   View Profile
 </button>
@@ -122,4 +122,4 @@ const ArtistsList = () => {
   );
 };
 
-export default ArtistsList;
+export default Womenplayers;

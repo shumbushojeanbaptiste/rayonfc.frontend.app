@@ -74,14 +74,18 @@ export default function Categories() {
   const handleCategoryClick = (category: Category) => {
     setActive(category.category_name);
 
-    if (category.category_name.toLowerCase() === "music") {
-      navigate("/music"); // redirect to Music page
+    if (category.category_name.toLowerCase() === "Highlights") {
+      navigate("/highlights"); // redirect to Music page
     }
-    {/* else if (category.category_id !== 0) {
+    else if (category.category_name.toLowerCase() === "Interview") {
+      navigate("/interviews"); // redirect to Music page
+    }
+    
+    else if (category.category_id !== 0) {
       navigate(`/category/${category.category_id}`); // optional dynamic category page
     } else {
       navigate("/"); // All categories
-    } */}
+    } 
   };
 
   return (

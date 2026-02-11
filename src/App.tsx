@@ -77,9 +77,11 @@ import Profileclient from "./pages/Profileclientsaccess";
 import Hlayoutguest from "./components/Help/Hlayoutguest";
 import ResetPasswordToken from "./pages/Authentication/Resetpasstoken";
 import ResetPasswordVerify from "./pages/Authentication/Resetpassverify";
-import ArtistsList from "./pages/Artists/ArtistsList";
-import ArtistProfile from "./pages/Artists/ArtistProfile";
+import ArtistsList from "./pages/Players/Menplayers";
+import ArtistProfile from "./pages/Players/ArtistProfile";
 import ChangePassword from "./pages/Authentication/ChangePassword";
+import Menplayers from "./pages/Players/Menplayers";
+import Womenplayers from "./pages/Players/Womeplayers";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -154,11 +156,12 @@ export default function App() {
         {/* 🌍 PUBLIC + AUTH (shared) */}
         <Route element={<UniversalLayout />}>
           <Route path="reels" element={<Shortvideos />} />
-          <Route path="trendsvideos" element={<Trendsvideos />} />
+          <Route path="highlights" element={<Trendsvideos />} />
           <Route path="watch/:hash" element={<Videosplay />} />
-          <Route path="music" element={<Music />} />
+          {/*<Route path="music" element={<Music />} />*/}
           <Route path="home/search" element={<Search />} />
-          <Route path="/musicart" element={<ArtistsList />} />
+          <Route path="/mensplayers" element={<Menplayers />} />
+          <Route path="/womensplayers" element={<Womenplayers />} />
         </Route>
 
         {/* 🔐 AUTHENTICATED APP */}
@@ -172,10 +175,10 @@ export default function App() {
           <Route path="gaming" element={<Trendsvideos />} />
           <Route path="news" element={<Trendsvideos />} />
           <Route path="sports" element={<Trendsvideos />} />
-          <Route path="freevideos" element={<Freevideos />} />
-          <Route path="myvideos" element={<Purchvideos />} />
-          <Route path="latest" element={<Latestvideos />} />
-          <Route path="myprofile" element={<Profile />} />
+          <Route path="traings" element={<Freevideos />} />
+          {/*<Route path="myvideos" element={<Purchvideos />} />*/}
+          <Route path="interviews" element={<Latestvideos />} />
+          {/*<Route path="myprofile" element={<Profile />} />/}
           {/*<Route path="profile" element={<Profileclient />} />*/}
           <Route path="/profile" element={<ArtistProfile />} />
           <Route path="/profile/::hash" element={<ArtistProfile />} />

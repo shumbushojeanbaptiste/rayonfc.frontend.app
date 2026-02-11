@@ -74,7 +74,7 @@ export default function Managment() {
         <div className="flex gap-3 mt-5">
            <button
               onClick={() => navigate("/settings")}
-              className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-black rounded"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded"
             >
             Update Profile
            </button>

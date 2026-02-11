@@ -145,7 +145,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
       <button
         type="button"
         onClick={() => setShow(true)}
-        className="bg-yellow-400 px-4 py-2 rounded font-bold text-black hover:bg-yellow-300 transition cursor-pointer"
+        className="bg-blue-600 px-4 py-2 rounded font-bold text-white hover:bg-blue-600 transition cursor-pointer"
         aria-haspopup="dialog"
         aria-expanded={show}
         aria-controls="donation-modal"
@@ -303,7 +303,7 @@ const Donation: React.FC<DonationProps> = ({ artistId }) => {
                 type="button"
                 onClick={handleDonate}
                 disabled={loading}
-                className="bg-yellow-500 text-slate-900 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
+                className="bg-blue-600 text-slate-300 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
               >
                 {loading ? 'Processing…' : 'Bless'}
               </button>
