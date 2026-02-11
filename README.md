@@ -1,6 +1,5 @@
-# OleePlay — Media Streaming Frontend
+# Rayon — Media processes UI
 
-**OleePlay** is a lightweight, responsive frontend for streaming and selling media — videos, films, and songs.
 
 ## Quick Start
 

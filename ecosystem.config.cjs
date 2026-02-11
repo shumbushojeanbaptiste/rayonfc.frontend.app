@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "oleeplay-frontend",
+      name: "Rayon-frontend",
       script: "npm",
       args: "run start",
       cwd: "/home/oleeplay/htdocs/www.oleeplay.com/oleeplay-frontend-web",

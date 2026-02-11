@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://olee.maafricapay.com",
+  baseURL: "https://rayon.maafricapay.com",
   timeout: 60000,
 });
 
