@@ -68,7 +68,7 @@ const Verify = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="p-10 bg-green-950 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
+        className="p-10 bg-slate-100 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-6 text-center dark:text-slate-300">
           Verify Your Account
@@ -122,7 +122,7 @@ const Verify = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-yellow-500 text-black p-4 rounded-lg disabled:opacity-60"
+            className="w-full bg-blue-900 text-slate-200 dark:text-black p-4 rounded-lg disabled:opacity-60"
           >
             {loading ? "Confirming..." : "Confirm & Activate Account"}
           </motion.button>

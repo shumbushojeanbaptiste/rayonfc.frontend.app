@@ -74,13 +74,9 @@ export default function Categories() {
   const handleCategoryClick = (category: Category) => {
     setActive(category.category_name);
 
-    if (category.category_name.toLowerCase() === "Highlights") {
-      navigate("/highlights"); // redirect to Music page
+    if (category.category_name === "Highlights") {
+      navigate("/highlights"); 
     }
-    else if (category.category_name.toLowerCase() === "Interview") {
-      navigate("/interviews"); // redirect to Music page
-    }
-    
     else if (category.category_id !== 0) {
       navigate(`/category/${category.category_id}`); // optional dynamic category page
     } else {
@@ -121,7 +117,7 @@ export default function Categories() {
               font-medium transition
               ${
                 active === category.category_name
-                  ? "bg-black text-white"
+                  ? "bg-blue-900 text-white"
                   : "bg-gray-200 text-gray-950 hover:bg-gray-300 dark:text-white dark:bg-gray-800"
               }
             `}

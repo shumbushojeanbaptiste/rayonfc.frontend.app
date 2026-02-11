@@ -144,17 +144,17 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
       <div
         className={
           variant === 'inline'
-            ? 'inline-flex items-center rounded-md bg-[#2b2f33] text-xs sm:text-[13px]'
-            : 'flex items-center justify-between rounded-md bg-[#2b2f33] px-2 py-1 sm:px-3 sm:py-2'
+            ? 'inline-flex items-center rounded-md bg-slate-200 text-xs sm:text-[13px]'
+            : 'flex items-center justify-between rounded-md bg-slate-200 px-2 py-1 sm:px-3 sm:py-2'
         }
       >
-        <div className="px-2 py-1 font-semibold rounded-md text-white sm:px-3 sm:py-1.5">
+        <div className="px-2 py-1 font-semibold rounded-md text-slate-800 sm:px-3 sm:py-1.5">
           {(wallet?.balance || 0).toLocaleString()} RWF
         </div>
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="hidden sm:inline-block bg-blue-600 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-slate-200 hover:bg-blue-700 transition"
+          className="hidden sm:inline-block bg-blue-900 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-slate-200 hover:bg-blue-700 transition"
         >
           DEPOSIT
         </button>
@@ -162,7 +162,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
         <button
           onClick={() => setShowDeposit(true)}
           aria-label="Deposit"
-          className="inline-flex sm:hidden items-center justify-center rounded-full bg-blue-600 w-8 h-8 text-slate-200 hover:bg-blue-700 transition shadow"
+          className="inline-flex sm:hidden items-center justify-center rounded-full bg-blue-900 w-8 h-8 text-slate-200 hover:bg-blue-700 transition shadow"
         >
           <Plus size={20} />
         </button>
@@ -272,7 +272,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeposit(false)}
-                className="px-4 py-2 text-sm bg-gray-800 rounded  text-slate-300 hover:text-slate-100 transition"
+                className="px-4 py-2 text-sm bg-gray-300 rounded  text-slate-700 hover:text-slate-600 transition"
               >
                 Cancel
               </button>
@@ -280,7 +280,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
               <button
                 onClick={handleDeposit}
                 disabled={loading}
-                className="bg-yellow-500 text-slate-900 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
+                className="bg-blue-900 text-slate-200 hover:text-slate-700 px-4 py-2 rounded transition disabled:opacity-50"
               >
                 {loading ? 'Processing…' : 'Deposit'}
               </button>

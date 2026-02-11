@@ -4,7 +4,7 @@ interface Props {
   id: number;
   videoTitle: string;
   channelName: string;
-  total: string;
+  total: string; 
   duration: string;
   price?: number | string | null;
   thumbnail?: string;

@@ -1,10 +1,14 @@
 const Loader = () => {
   return (
-    <div className="flex h-screen items-center justify-center bg-white">
-      <div className="h-16 w-16 animate-spin rounded-full border-4 border-solid border-[#05333a] border-t-transparent"></div>
+    <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+      <img
+        src="/rayonblue.png"
+        alt="Raysport Logo"
+        className="w-28 h-28 animate-pulse"
+      />
     </div>
   );
 };
 
 export default Loader;
- 
+

@@ -108,7 +108,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 <div className="mb-6 text-right">
   <Link
     to="/auth/reset-token"
-    className="text-sm text-green-950 dark:text-blue-600 hover:underline"
+    className="text-sm text-blue-900 dark:text-blue-600 hover:underline"
   >
     Forgot password?
   </Link>
@@ -126,7 +126,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-lg bg-green-950 dark:bg-blue-600 p-4 text-white  hover:bg-opacity-90 disabled:opacity-50"
+                    className="w-full rounded-lg bg-blue-900 dark:bg-blue-600 p-4 text-white  hover:bg-opacity-90 disabled:opacity-50"
                   >
                     {loading ? 'Signing in...' : 'Sign In'}
                   </motion.button>
@@ -135,7 +135,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <div className="mt-6 text-center">
                   <p>
                     Don’t have an account?{' '}
-                    <Link to="/auth/signup" className="text-green-950 dark:text-gray-200">
+                    <Link to="/auth/signup" className="text-blue-900 dark:text-gray-200">
                       Sign Up
                     </Link>
                   </p>

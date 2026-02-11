@@ -8,9 +8,9 @@ import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
 import CardDataStatsMusic from "../components/CardDataStatsmusic";
 
-const MUSIC_CATEGORY_ID = 1;
+const CATEGORY_ID = 1;
 
-const Music: React.FC = () => {
+const Highlights: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
@@ -28,7 +28,7 @@ const Music: React.FC = () => {
 
     api
       .post("/api/videos/by_category", {
-        category_id: MUSIC_CATEGORY_ID, // ✅ backend expects category_id
+        category_id: CATEGORY_ID, // ✅ backend expects category_id
       })
       .then((res) => setVideos(res.data.data || []))
       .catch((err) => console.error("FAILED TO LOAD MUSIC VIDEOS:", err))
@@ -87,7 +87,7 @@ const Music: React.FC = () => {
 
       if (hasAccess) {
         navigate(`/watch/${encodeId(video.id)}`, {
-          state: { ...video, source: "music" },
+          state: { ...video, source: "Highlights" },
         });
       } else {
         setSelectedVideo(video);
@@ -126,14 +126,15 @@ const Music: React.FC = () => {
             <CardDataStatsMusic
               key={video.id}
               id={video.id}
-              videoTitle={video.title}
+              videoTitle={video.title} 
               channelName={video.owner || "Unknown Artist"}
               total={`${video.views ?? 0} views`}
               price={video.price}
               duration={video.duration || "--"}
               thumbnail={fileUrl(video.thumbnail)}
               profileImage={fileUrl(video.profile_photo || video.thumbnail)} // ✅ fallback
-              onClick={() => handleVideoClick(video)}
+              //onClick={() => handleVideoClick(video)}
+              onClick={() =>  navigate(`/watch/${encodeId(video.id)}`, { state: video })}
             />
           ))
         )}
@@ -157,4 +158,4 @@ const Music: React.FC = () => {
   );
 };
 
-export default Music;
+export default Highlights;
