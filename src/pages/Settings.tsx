@@ -176,10 +176,12 @@ const Settings = () => {
                   className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   Change Password
                 </button>
-                {/*<button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
+                <button 
+                  onClick={() => navigate("/auth/reset-token")}
+                  className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   Enable Two-Factor Authentication
                 </button>
-                <button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
+               {/* <button className="w-full rounded border border-stroke py-2 px-6 text-black dark:border-strokedark dark:text-white hover:bg-gray-100 dark:hover:bg-meta-3">
                   View Active Sessions
                 </button>*/}
               </div>

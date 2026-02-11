@@ -23,11 +23,22 @@ import {
   ListVideo,
   Clapperboard,
   Music4,
+  Tv,
+  MicVocal,
 } from 'lucide-react';
+
+import { CgGirl } from "react-icons/cg";
+import { TbMoodBoy } from "react-icons/tb";
+import { GrRun } from "react-icons/gr";
+import { GiMicrophone } from 'react-icons/gi';
 
 /* ICON PROPS */
 const iconClass = 'w-5 h-5';
-
+const iconClas = 'w-6 h-6';
+const RunIcon = () => <GrRun className={iconClas} />;
+const InterviewIcon = () => <GiMicrophone className={iconClas} />;
+const Men = () => <TbMoodBoy className={iconClas} />;
+const Women = () => <CgGirl className={iconClas} />;
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -66,41 +77,16 @@ const MENU = [
     title: '',
     items: [
       { label: 'Home', to: '/', icon: HomeIcon },
-      { label: 'Reels', to: '/reels', icon: Clapperboard },
-      { label: 'Trending', to: '/Trendsvideos', icon: ChartIcon },
-      { label: 'Latest', to: '/latest', icon: LatestIcon },
-      { label: 'Free Videos', to: '/freevideos', icon: PlusIcon },
+      //{ label: 'Reels', to: '/reels', icon: Clapperboard },
+      { label: 'Highlights', to: '/highlights', icon: Tv },
+      { label: 'Interviews', to: '/interviews', icon: InterviewIcon },
+      { label: 'Traings', to: '/traings', icon: RunIcon },
     ],
   },
-    {
-    title: 'Artists',
-    items: [
-      { label: 'Music Artists', to: '/musicart', icon: Music4 },
-     
-    ],
-  },
-  {
-    title: 'You',
-    items: [
-      { label: 'My videos', to: '/myvideos', icon: ListVideo },
-      //{ label: 'Profile', to: '/profile', icon: User },
-      { label: 'Follows', to: '/follow', icon: SubsIcon },
-     // { label: 'Studio', to: '/studio', icon: Bolt },
-     // { label: 'Finance', to: '/finance', icon: BadgeDollarSign },
-      //{ label: 'Library', to: '/library', icon: LibraryIcon },
-      //{ label: 'History', to: '/history', icon: HistoryIcon },
-      //{ label: 'Watch Later', to: '/watch-later', icon: WatchLaterIcon },
-    ],
-  },
-  {
-    title: 'Explore',
-    items: [
-      { label: 'Music', to: '/music', icon: MusicIcon },
-      { label: 'Gaming', to: '/gaming', icon: GamingIcon },
-      { label: 'News', to: '/news', icon: NewsIcon },
-      { label: 'Sports', to: '/sports', icon: SportsIcon },
-    ],
-  },
+   
+
+ 
+
   { 
     title: '',
     items: [

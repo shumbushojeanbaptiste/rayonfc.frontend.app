@@ -9,7 +9,7 @@ import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
 import { toast } from "react-toastify"; // ✅ import toast
 
-const Trendsvideos: React.FC = () => {
+  const Trendsvideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [walletBalance, setWalletBalance] = useState<number>(0);
@@ -94,15 +94,19 @@ const Trendsvideos: React.FC = () => {
                 videoTitle={video.title}
                 channelName={video.owner || "Unknown Owner"}
                 total={`${video.views ?? 0} views`}
-                price={video.price}
+                //price={video.price}
                 duration={video.duration} 
                 thumbnail={fileUrl(video.thumbnail)}
-                profileImage={fileUrl(video.profile_photo || video.thumbnail)}
-                onClick={() => handleVideoClick(video)}
+               // profileImage={fileUrl(video.profile_photo || video.thumbnail)}
+                //onClick={() => handleVideoClick(video)}
+                 onClick={() => 
+                  navigate(`/watch/${encodeId(video.id)}`, { state: video })
+                        }
               />
             ))}
       </div>
 
+     {/*
       {selectedVideo && (
         <BuyVideoModal
           video={selectedVideo}
@@ -115,6 +119,7 @@ const Trendsvideos: React.FC = () => {
           }}
         />
       )}
+      */}
       </div>
     </>
   );

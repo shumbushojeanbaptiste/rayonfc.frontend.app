@@ -235,6 +235,7 @@ const CardVideoPlay: React.FC<Props> = ({
       {/* Channel Info & Follow */}
       <div className="mt-4 px-2 flex items-center justify-between">
         <div className="flex items-center gap-3 mt-2">
+         {/*
           <img
             src={profileImage || "/default-avatar.png"}
             alt={channelName}
@@ -244,7 +245,9 @@ const CardVideoPlay: React.FC<Props> = ({
                     onChannelClick?.();
                     }}
           />
+        
           <div>
+        
           <h3 
             className="text-lg font-semibold cursor-pointer"
             onClick={(e) => {
@@ -254,13 +257,18 @@ const CardVideoPlay: React.FC<Props> = ({
             >
             {channelName}
           </h3>
+          
+
           {dynamicFollowers && <p className="text-gray-500 text-sm">{dynamicFollowers}</p>}
           {!isLoggedIn && (
             <p className="text-xs text-gray-400 mt-1">Login to like, comment, or follow</p>
           )}
           </div>
+         */}
+         
         </div>
-
+       
+       {/*}
         <button
           onClick={handleFollow}
           className={`px-4 py-2 rounded-lg font-semibold ${
@@ -271,6 +279,7 @@ const CardVideoPlay: React.FC<Props> = ({
         >
           {isFollowing ? "Unfollow" : "Follow"}
         </button>
+        */}
       </div>
 
       {/* Share Modal */}

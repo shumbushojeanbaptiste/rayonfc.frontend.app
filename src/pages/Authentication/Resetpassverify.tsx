@@ -124,7 +124,7 @@ const ResetPasswordVerify = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-yellow-500 text-black p-4 rounded-lg disabled:opacity-60"
+            className="w-full bg-blue-600 text-white p-4 rounded-lg disabled:opacity-60"
           >
             {loading ? "Resetting..." : "Reset Password"}
           </motion.button>

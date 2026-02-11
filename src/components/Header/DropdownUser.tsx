@@ -144,12 +144,13 @@ const DropdownUser = () => {
             </li> 
             
 
-            <li>
+          <li>
             <NavLink to="/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
               <HelpCircle size={18} />
               Help
             </NavLink>
           </li>
+
           </ul>
 
           <div className="border-t border-gray-200 dark:border-strokedark" />
