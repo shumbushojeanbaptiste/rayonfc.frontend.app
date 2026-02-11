@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../api";
 import { toast } from "react-toastify";
@@ -47,13 +47,13 @@ const ResetPasswordToken = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="p-10 bg-green-950 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
+        className="p-10 bg-slate-100 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
       >
         <h1 className="text-2xl font-bold mb-6 text-center dark:text-slate-300">
           Reset Your Password
         </h1>
 
-        <p className="text-sm text-center mb-6 text-slate-300">
+        <p className="text-sm text-center mb-6 text-slate-500">
           Enter your email address and we’ll send you a reset code.
         </p>
 
@@ -82,6 +82,15 @@ const ResetPasswordToken = () => {
           >
             {loading ? "Sending..." : "Send Reset Token"}
           </motion.button>
+
+              <div className="mt-6 text-center">
+                  <p>
+                    Already have an account?{" "}
+                    <Link to="/auth/signin" className="text-blue-900 dark:text-gray-200">
+                    Sign In
+                    </Link>
+                    </p>
+                    </div>
         </form>
       </motion.div>
     </div>

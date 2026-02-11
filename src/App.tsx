@@ -35,7 +35,7 @@ import Search from "./pages/Search";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Shortvideos from "./pages/Shortsvideos";
-import Music from "./pages/Music";
+import Music from "./pages/Highlights";
 import UniversalLayout from "./layout/UniversalLayout";
 
 
@@ -82,6 +82,7 @@ import ArtistProfile from "./pages/Players/ArtistProfile";
 import ChangePassword from "./pages/Authentication/ChangePassword";
 import Menplayers from "./pages/Players/Menplayers";
 import Womenplayers from "./pages/Players/Womeplayers";
+import Highlights from "./pages/Highlights";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -156,9 +157,9 @@ export default function App() {
         {/* 🌍 PUBLIC + AUTH (shared) */}
         <Route element={<UniversalLayout />}>
           <Route path="reels" element={<Shortvideos />} />
-          <Route path="highlights" element={<Trendsvideos />} />
+          <Route path="trends" element={<Trendsvideos />} />
           <Route path="watch/:hash" element={<Videosplay />} />
-          {/*<Route path="music" element={<Music />} />*/}
+          <Route path="highlights" element={<Highlights />} />
           <Route path="home/search" element={<Search />} />
           {/*<Route path="/mensplayers" element={<Menplayers />} />
           <Route path="/womensplayers" element={<Womenplayers />} />*/}
@@ -172,12 +173,12 @@ export default function App() {
             </RequireAuth>
           }
         >
-          <Route path="gaming" element={<Trendsvideos />} />
+          {/*<Route path="gaming" element={<Trendsvideos />} />
           <Route path="news" element={<Trendsvideos />} />
-          <Route path="sports" element={<Trendsvideos />} />
-          <Route path="traings" element={<Freevideos />} />
+          <Route path="sports" element={<Trendsvideos />} />*/}
+          <Route path="videos" element={<Freevideos />} />
           {/*<Route path="myvideos" element={<Purchvideos />} />*/}
-          <Route path="interviews" element={<Latestvideos />} />
+          <Route path="last" element={<Latestvideos />} />
           {/*<Route path="myprofile" element={<Profile />} />/}
           {/*<Route path="profile" element={<Profileclient />} />*/}
           <Route path="/profile" element={<ArtistProfile />} />

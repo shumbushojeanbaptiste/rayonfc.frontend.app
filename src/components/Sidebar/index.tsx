@@ -78,9 +78,9 @@ const MENU = [
     items: [
       { label: 'Home', to: '/', icon: HomeIcon },
       //{ label: 'Reels', to: '/reels', icon: Clapperboard },
-      { label: 'Highlights', to: '/highlights', icon: Tv },
-      { label: 'Interviews', to: '/interviews', icon: InterviewIcon },
-      { label: 'Traings', to: '/traings', icon: RunIcon },
+      { label: 'Trending', to: '/trends', icon: ChartIcon },
+      { label: 'Last Videos', to: '/last', icon: LatestIcon },
+      //{ label: 'Free videos', to: '/videos', icon: RunIcon },
     ],
   },
    

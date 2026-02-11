@@ -147,7 +147,7 @@ const SignUp: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-950 dark:bg-blue-600 text-white  p-4 rounded-lg mt-4 disabled:opacity-60"
+                  className="w-full bg-blue-900 dark:bg-blue-600 text-white  p-4 rounded-lg mt-4 disabled:opacity-60"
                 >
                   {loading ? "Creating..." : "Create Account"}
                 </motion.button>
@@ -155,7 +155,7 @@ const SignUp: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Already have an account?{" "}
-                    <Link to="/auth/signin" className="text-green-950 dark:text-gray-200">
+                    <Link to="/auth/signin" className="text-blue-900 dark:text-gray-200">
                       Sign In
                     </Link>
                   </p>
