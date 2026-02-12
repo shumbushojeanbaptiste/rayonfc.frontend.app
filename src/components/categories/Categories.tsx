@@ -77,6 +77,21 @@ export default function Categories() {
     if (category.category_name === "Highlights") {
       navigate("/highlights"); 
     }
+    else if (category.category_name === "Training") {
+      navigate("/trainings"); 
+    }
+     else if (category.category_name === "Operations") {
+      navigate("/operations"); 
+    }
+     else if (category.category_name === "Interview") {
+      navigate("/interviews"); 
+    }
+     else if (category.category_name === "Press Conference") {
+      navigate("/pconference"); 
+    }
+     else if (category.category_name === "Behind the Scenes") {
+      navigate("/bscenes"); 
+    }
     else if (category.category_id !== 0) {
       navigate(`/category/${category.category_id}`); // optional dynamic category page
     } else {
