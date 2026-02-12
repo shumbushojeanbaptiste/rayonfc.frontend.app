@@ -10,6 +10,7 @@ import {
   BadgeDollarSign,
   HelpCircle,
 } from 'lucide-react';
+import { CiMoneyCheck1 } from 'react-icons/ci';
 
 interface User {
   first_name?: string;
@@ -119,12 +120,12 @@ const DropdownUser = () => {
               </NavLink>
             </li>*/}
 
-            {/*<li>
-              <NavLink to="/studio" className={itemClass} onClick={() => setDropdownOpen(false)}>
-                <LayoutDashboard size={18} />
-                Studio
+            <li>
+              <NavLink to="/plans" className={itemClass} onClick={() => setDropdownOpen(false)}>
+                <CiMoneyCheck1 size={18} />
+                Plans
               </NavLink>
-            </li>*/}
+            </li>
 
           {/* 
             <li>
