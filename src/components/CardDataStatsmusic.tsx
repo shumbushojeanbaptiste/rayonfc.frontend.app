@@ -54,30 +54,30 @@ const CardDataStatsMusic: React.FC<Props> = ({
       </div>
 
       <div className="flex items-center gap-3 mt-2">
-        <img
+       {/*  <img
           src={safeProfileImage}
           alt={channelName || "Channel"}
           className="w-10 h-10 rounded-full object-cover"
-        />
+        />*/}
 
         <div className="flex-1">
           <h3 className="font-semibold line-clamp-1">
             {videoTitle || "Untitled Video"}
           </h3>
-          <p className="text-sm text-gray-400 line-clamp-1">
+         {/*  <p className="text-sm text-gray-400 line-clamp-1">
             {channelName || "Unknown Artist"}
-          </p>
+          </p>*/}
         </div>
       </div>
 
       <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
         <span>{total}</span>
 
-        {isPaid && (
+       {/*  {isPaid && (
           <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs">
             {numericPrice.toFixed(2)} RWF
           </span>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ const Highlights: React.FC = () => {
         category_id: CATEGORY_ID, // ✅ backend expects category_id
       })
       .then((res) => setVideos(res.data.data || []))
-      .catch((err) => console.error("FAILED TO LOAD MUSIC VIDEOS:", err))
+      .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err))
       .finally(() => setLoadingVideos(false));
   }, []);
 
@@ -114,12 +114,12 @@ const Highlights: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Music Videos" />
+      <Breadcrumb pageName="Highlights" />
     <div className="p-2 md:p-4 2xl:p-8">
       <div className="px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {loadingVideos ? (
           <p className="col-span-full text-center text-gray-500">
-            Loading music videos...
+            Loading videos...
           </p>
         ) : (
           videos.map((video) => (

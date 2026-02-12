@@ -83,6 +83,11 @@ import ChangePassword from "./pages/Authentication/ChangePassword";
 import Menplayers from "./pages/Players/Menplayers";
 import Womenplayers from "./pages/Players/Womeplayers";
 import Highlights from "./pages/Highlights";
+import Training from "./pages/Training";
+import Operations from "./pages/Operations";
+import Interview from "./pages/Interview";
+import Pressconference from "./pages/Pressconference";
+import Behind from "./pages/Behindscenes";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -160,6 +165,11 @@ export default function App() {
           <Route path="trends" element={<Trendsvideos />} />
           <Route path="watch/:hash" element={<Videosplay />} />
           <Route path="highlights" element={<Highlights />} />
+          <Route path="trainings" element={<Training />} />
+          <Route path="operations" element={<Operations />} />
+          <Route path="interviews" element={<Interview />} />
+          <Route path="pconference" element={<Pressconference />} />
+          <Route path="bscenes" element={<Behind />} />
           <Route path="home/search" element={<Search />} />
           {/*<Route path="/mensplayers" element={<Menplayers />} />
           <Route path="/womensplayers" element={<Womenplayers />} />*/}

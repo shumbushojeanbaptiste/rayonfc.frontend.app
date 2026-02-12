@@ -25,20 +25,26 @@ import {
   Music4,
   Tv,
   MicVocal,
+  Handshake,
 } from 'lucide-react';
 
 import { CgGirl } from "react-icons/cg";
 import { TbMoodBoy } from "react-icons/tb";
 import { GrRun } from "react-icons/gr";
 import { GiMicrophone } from 'react-icons/gi';
+import { FcConferenceCall } from "react-icons/fc";
+import { RiMovieAiLine } from 'react-icons/ri';
+import { CiVideoOn } from "react-icons/ci";
 
 /* ICON PROPS */
 const iconClass = 'w-5 h-5';
 const iconClas = 'w-6 h-6';
 const RunIcon = () => <GrRun className={iconClas} />;
 const InterviewIcon = () => <GiMicrophone className={iconClas} />;
-const Men = () => <TbMoodBoy className={iconClas} />;
-const Women = () => <CgGirl className={iconClas} />;
+const Operation = () => <Handshake className={iconClass} />;
+const Conference = () => <FcConferenceCall className={iconClas} />;
+const Highlights = () => <CiVideoOn className={iconClas} />;
+const Scenes = () => <RiMovieAiLine className={iconClas} />;
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -84,7 +90,17 @@ const MENU = [
     ],
   },
    
-
+ {
+    title: 'Explore',
+    items: [
+      { label: 'Highlights', to: '/highlights', icon: Highlights },
+      { label: 'Training', to: '/trainings', icon: RunIcon },
+      { label: 'Operations', to: '/operations', icon: Operation },
+      { label: 'Interview', to: '/interviews', icon: InterviewIcon },
+      { label: 'Press Conference', to: '/pconference', icon: Conference },
+      { label: 'Behind the Scenes', to: '/bscenes', icon: Scenes },
+    ],
+  },
  
 
   { 
