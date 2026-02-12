@@ -88,7 +88,7 @@ import Operations from "./pages/Operations";
 import Interview from "./pages/Interview";
 import Pressconference from "./pages/Pressconference";
 import Behind from "./pages/Behindscenes";
-import Plans from "./components/balance/Plans";
+import Plans from "./components/balance/plans/Plans";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
