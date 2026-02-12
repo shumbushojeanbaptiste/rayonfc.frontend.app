@@ -30,7 +30,7 @@ import { GiMicrophone } from "react-icons/gi";
 import { CgGirl } from 'react-icons/cg';
 import { TbMoodBoy } from 'react-icons/tb';
 import { FcConferenceCall } from 'react-icons/fc';
-import { CiVideoOn } from 'react-icons/ci';
+import { CiMoneyCheck1, CiVideoOn } from 'react-icons/ci';
 import { RiMovieAiLine } from 'react-icons/ri';
 
 /* ICON PROPS */
@@ -42,7 +42,7 @@ const Operation = () => <Handshake className={iconClass} />;
 const Conference = () => <FcConferenceCall className={iconClas} />;
 const Highlights = () => <CiVideoOn className={iconClas} />;
 const Scenes = () => <RiMovieAiLine className={iconClas} />;
-
+const Plan = () => <CiMoneyCheck1 className={iconClas} />;
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -87,6 +87,15 @@ const MENU = [
       //{ label: 'Free videos', to: '/videos', icon: RunIcon },
     ],
   },
+
+  {
+    title: 'Plans',
+    items: [
+      { label: 'Choose a Plan', to: '/plans', icon: Plan },
+     
+    ],
+  },
+
   {
     title: 'You',
     items: [

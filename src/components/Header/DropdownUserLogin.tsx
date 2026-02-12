@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import { Home, Settings, HelpCircle, LogIn } from 'lucide-react';
+import { CiMoneyCheck1 } from 'react-icons/ci';
 
 interface User {
   first_name?: string;
@@ -83,6 +84,12 @@ const DropdownUserLogin = () => {
               Home
             </NavLink>
           </li>
+          <li>
+              <NavLink to="/plans" className={itemClass} onClick={() => setDropdownOpen(false)}>
+                <CiMoneyCheck1 size={18} />
+                Plans
+              </NavLink>
+            </li>
 
           <li>
             <NavLink to="/settings" className={itemClass} onClick={() => setDropdownOpen(false)}>

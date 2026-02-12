@@ -88,6 +88,7 @@ import Operations from "./pages/Operations";
 import Interview from "./pages/Interview";
 import Pressconference from "./pages/Pressconference";
 import Behind from "./pages/Behindscenes";
+import Plans from "./components/balance/Plans";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -170,6 +171,7 @@ export default function App() {
           <Route path="interviews" element={<Interview />} />
           <Route path="pconference" element={<Pressconference />} />
           <Route path="bscenes" element={<Behind />} />
+          <Route path="/plans" element={<Plans />} />
           <Route path="home/search" element={<Search />} />
           {/*<Route path="/mensplayers" element={<Menplayers />} />
           <Route path="/womensplayers" element={<Womenplayers />} />*/}
