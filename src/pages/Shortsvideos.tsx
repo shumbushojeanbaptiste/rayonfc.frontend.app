@@ -77,7 +77,7 @@ const Shortvideos: React.FC = () => {
 
   const ShortsSkeleton = () => (
     <div className="w-full max-w-[170px] animate-pulse">
-      <div className="aspect-[9/16] rounded-xl bg-gray-300 dark:bg-gray-700" />
+      <div className="aspect-[9/16] rounded-xl bg-gray-2 dark:bg-gray-700" />
     </div>
   );
 
