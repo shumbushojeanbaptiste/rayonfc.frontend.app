@@ -4,7 +4,7 @@ import axios from "axios";
 import api from "../api";
 import CardDataStatsTre from "../components/CardDataStatsTre";
 import CardDataStatsPur from "../components/CardDataStatsPur";
-import BuyVideoModal from "../components/BuyVideoModal";
+import BuyVideoModal from "../components/SubscribePlanModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";

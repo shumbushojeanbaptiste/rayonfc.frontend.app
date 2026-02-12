@@ -10,7 +10,7 @@ import { toast } from "react-toastify"; // ✅ import toast
 import { useNavigate } from "react-router-dom";
 import { getAuthUser } from '../../utils/auth';
 import { encodeId } from '../../utils/hashid';
-import BuyVideoModal from '../../components/BuyVideoModal';
+import BuyVideoModal from '../../components/SubscribePlanModal';
 import Donation from '../../components/balance/Donation';
 
 interface Comment {

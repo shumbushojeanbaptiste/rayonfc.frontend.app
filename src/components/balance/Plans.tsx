@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import api from "../../api";
+import SubscribePlanModal from "../../components/SubscribePlanModal";
 
 interface Plan {
   plan_id: number;
@@ -14,28 +16,64 @@ interface Plan {
 const Plans: React.FC = () => {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
 
-  useEffect(() => {
-    const fetchPlans = async () => {
-      try {
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // ------------------------------------------
+  // FETCH PLANS
+  // ------------------------------------------
+  const fetchPlans = async () => {
+    try {
+      if (token) {
+        const response = await api.get("/api/accessible/subscription-status");
+
+        if (response.data.success) {
+          setSubscriptionStatus(response.data.data.subscription_status);
+          setPlans(response.data.data.available_plans);
+        }
+      } else {
         const response = await api.get("/api/settings/planList");
+
         if (response.data.success) {
           setPlans(response.data.data.filter((p: Plan) => p.status === 1));
         }
-      } catch (error) {
-        console.error("Failed to fetch plans");
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch plans");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPlans();
-  }, []);
+  }, [token]);
 
-  // 👇 make monthly plan popular automatically
   const isPopular = (name: string) =>
     name.toLowerCase() === "monthly";
 
+  // ------------------------------------------
+  // HANDLE PLAN CLICK
+  // ------------------------------------------
+  const handleSelectPlan = (plan: Plan) => {
+    if (!token) {
+      navigate("/auth/signin", { state: { from: "/plans" } });
+      return;
+    }
+
+    if (subscriptionStatus === "active") {
+      return;
+    }
+
+    setSelectedPlan(plan); // 🔥 Open modal instead of navigating
+  };
+
+  // ------------------------------------------
+  // RENDER
+  // ------------------------------------------
   return (
     <div className="py-16 px-6 bg-gray-50 dark:bg-boxdark min-h-screen">
       <div className="text-center mb-12">
@@ -65,7 +103,6 @@ const Plans: React.FC = () => {
                 }
               `}
             >
-              {/* MOST POPULAR Badge */}
               {isPopular(plan.name) && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-4 py-1 rounded-full">
                   MOST POPULAR
@@ -96,19 +133,42 @@ const Plans: React.FC = () => {
               </ul>
 
               <button
+                onClick={() => handleSelectPlan(plan)}
+                disabled={subscriptionStatus === "active"}
                 className={`mt-8 w-full rounded-lg py-3 text-white transition
                   ${
                     isPopular(plan.name)
                       ? "bg-blue-600 hover:bg-blue-700"
                       : "bg-gray-800 hover:bg-black"
                   }
+                  ${
+                    subscriptionStatus === "active"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
                 `}
               >
-                Choose Plan
+                {!token
+                  ? "Sign in to Choose"
+                  : subscriptionStatus === "active"
+                  ? "Already Subscribed"
+                  : "Choose Plan"}
               </button>
             </motion.div>
           ))}
         </div>
+      )}
+
+      {/* 🔥 SUBSCRIBE MODAL */}
+      {selectedPlan && (
+        <SubscribePlanModal
+          plan={selectedPlan}
+          onClose={() => setSelectedPlan(null)}
+          onSuccess={() => {
+            setSelectedPlan(null);
+            fetchPlans(); // refresh subscription status
+          }}
+        />
       )}
     </div>
   );

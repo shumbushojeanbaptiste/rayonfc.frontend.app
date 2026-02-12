@@ -223,31 +223,31 @@ export default function Deposit() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-slate-50 dark:bg-gray-700 p-4 rounded shadow-5">
             <p className="text-sm text-gray-400">Available Balance</p>
-            <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-700">
+            <p className="flex gap-1 text-2xl font-bold text-blue-600 dark:text-blue-600">
               <h4>{balance.toLocaleString()}</h4>
               <p className="text-sm mt-2">RWF</p>
             </p>
           </div>
 
-          <div className="bg-slate-50 dark:bg-gray-700 p-4 rounded shadow-5">
+         {/* <div className="bg-slate-50 dark:bg-gray-700 p-4 rounded shadow-5">
             <p className="text-sm text-gray-400">Total Income</p>
             <p className="flex gap-1 text-2xl font-bold text-green-800 dark:text-green-700">
               <h4>{balance.toLocaleString()}</h4>
               <p className="text-sm mt-2">RWF</p>
             </p>
-          </div>
+          </div>*/}
         </div>
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="px-4 py-2 bg-green-600 text-white rounded"
+          className="px-4 py-2 bg-blue-900 text-white rounded"
         >
           Deposit
         </button>
       </div>
 
       {/* DEPOSIT HISTORY TABLE */}
-      <div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
+      {/*<div className="bg-white dark:bg-gray-900 p-4 rounded shadow">
         <h3 className="font-semibold mb-4">Deposit History</h3>
 
         <table className="w-full text-left border-collapse">
@@ -294,7 +294,7 @@ export default function Deposit() {
           </tbody>
         </table>
 
-        {/* Pagination */}
+        
         <div className="flex justify-between mt-2">
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
@@ -314,7 +314,7 @@ export default function Deposit() {
             Next
           </button>
         </div>
-      </div>
+      </div>*/}
 
       {/* DEPOSIT MODAL */}
       {showDeposit && (
@@ -414,7 +414,7 @@ export default function Deposit() {
               <button
                 onClick={handleDeposit}
                 disabled={depositLoading}
-                className="px-4 py-2 bg-green-600 text-white rounded"
+                className="px-4 py-2 bg-blue-900 text-white rounded"
               >
                 {depositLoading ? "Processing…" : "Deposit"}
               </button>

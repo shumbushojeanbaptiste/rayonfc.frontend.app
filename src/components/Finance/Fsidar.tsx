@@ -26,10 +26,10 @@ const MENU = [
   {
     title: "",
     items: [
-      { to: "/finance", label: "Dashboard", icon: <HiHome /> },
+      //{ to: "/finance", label: "Dashboard", icon: <HiHome /> },
       { to: "/finance/deposits", label: "Deposits", icon: <PiHandDeposit /> },
      // { to: "/finance/transfer", label: "Internal transfer", icon: <HiRefresh /> },
-      { to: "/finance/withdrawals", label: "Withdrawals", icon: <PiHandWithdraw /> },
+      //{ to: "/finance/withdrawals", label: "Withdrawals", icon: <PiHandWithdraw /> },
       //{ to: "/finance/payments", label: "Payments", icon: <HiCreditCard /> },
     ],
   },
