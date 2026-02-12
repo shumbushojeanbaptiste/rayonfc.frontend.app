@@ -144,8 +144,8 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
       <div
         className={
           variant === 'inline'
-            ? 'inline-flex items-center rounded-md bg-slate-200 text-xs sm:text-[13px]'
-            : 'flex items-center justify-between rounded-md bg-slate-200 px-2 py-1 sm:px-3 sm:py-2'
+            ? 'inline-flex items-center rounded-2xl bg-slate-200 text-xs sm:text-[13px]'
+            : 'flex items-center justify-between rounded-2xl bg-slate-200 px-2 py-1 sm:px-3 sm:py-2'
         }
       >
         <div className="px-2 py-1 font-semibold rounded-md text-slate-800 sm:px-3 sm:py-1.5">
@@ -154,7 +154,7 @@ const BalanceDeposit: React.FC<BalanceDepositProps> = ({ variant = 'inline' }) =
 
         <button
           onClick={() => setShowDeposit(true)}
-          className="hidden sm:inline-block bg-blue-900 px-2 py-1 text-xs rounded-md sm:px-3 sm:py-1.5 sm:text-sm font-bold text-slate-200 hover:bg-blue-700 transition"
+          className="hidden sm:inline-block bg-blue-900 px-2 py-1 text-xs rounded-2xl sm:px-3 sm:py-1.5 sm:text-sm font-bold text-slate-200 hover:bg-blue-700 transition"
         >
           DEPOSIT
         </button>

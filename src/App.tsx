@@ -240,9 +240,9 @@ export default function App() {
             </RequireAuth>
           }
         >
-          <Route path="finance" element={<Fdashboard />} />
+         <Route path="finance" element={<Deposit />} />
+           {/*<Route path="finance/withdrawals" element={<Withdraw />} />*/}
           <Route path="finance/deposits" element={<Deposit />} />
-          <Route path="finance/withdrawals" element={<Withdraw />} />
         </Route>
       </Routes>
     </>

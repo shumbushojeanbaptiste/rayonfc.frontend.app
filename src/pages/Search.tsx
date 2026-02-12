@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import api from "../api";
-import BuyVideoModal from "../components/BuyVideoModal";
+import BuyVideoModal from "../components/SubscribePlanModal";
 import { getAuthUser } from "../utils/auth";
 import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
