@@ -89,6 +89,10 @@ import Interview from "./pages/Interview";
 import Pressconference from "./pages/Pressconference";
 import Behind from "./pages/Behindscenes";
 import Plans from "./components/balance/plans/Plans";
+import Eshop from "./pages/Shop/Eshop";
+import ProductDetails from "./pages/Shop/ProductDetails";
+import Checkout from "./pages/Shop/Checkout";
+import { CartProvider } from "./pages/Shop/context/CartContext";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -106,6 +110,7 @@ export default function App() {
   if (loading) return <Loader />;
 
   return (
+    <CartProvider>
     <>
       {/* 🔹 Global ToastContainer for all pages */}
       <ToastContainer
@@ -175,6 +180,10 @@ export default function App() {
           <Route path="home/search" element={<Search />} />
           {/*<Route path="/mensplayers" element={<Menplayers />} />
           <Route path="/womensplayers" element={<Womenplayers />} />*/}
+          <Route path="/shop" element={<Eshop />} />
+          <Route path="/shop/:id" element={<ProductDetails />} />
+          
+
         </Route>
 
         {/* 🔐 AUTHENTICATED APP */}
@@ -192,11 +201,12 @@ export default function App() {
           {/*<Route path="myvideos" element={<Purchvideos />} />*/}
           <Route path="last" element={<Latestvideos />} />
           {/*<Route path="myprofile" element={<Profile />} />/}
-          {/*<Route path="profile" element={<Profileclient />} />*/}
+          {/*<Route path="profile" element={<Profileclient />} />
           <Route path="/profile" element={<ArtistProfile />} />
-          <Route path="/profile/::hash" element={<ArtistProfile />} />
+          <Route path="/profile/:hash" element={<ArtistProfile />} />*/}
           <Route path="settings" element={<Settings/>} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Route>
 
          {/* 🔐 OLEEPLAY HELP */}
@@ -246,5 +256,6 @@ export default function App() {
         </Route>
       </Routes>
     </>
+    </CartProvider>
   );
 }
