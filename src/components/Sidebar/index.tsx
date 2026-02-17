@@ -34,7 +34,7 @@ import { GrRun } from "react-icons/gr";
 import { GiMicrophone } from 'react-icons/gi';
 import { FcConferenceCall } from "react-icons/fc";
 import { RiMovieAiLine } from 'react-icons/ri';
-import { CiMoneyCheck1, CiVideoOn } from "react-icons/ci";
+import { CiMoneyCheck1, CiShoppingCart, CiVideoOn } from "react-icons/ci";
 
 /* ICON PROPS */
 const iconClass = 'w-5 h-5';
@@ -46,6 +46,7 @@ const Conference = () => <FcConferenceCall className={iconClas} />;
 const Highlights = () => <CiVideoOn className={iconClas} />;
 const Scenes = () => <RiMovieAiLine className={iconClas} />;
 const Plan = () => <CiMoneyCheck1 className={iconClas} />;
+const Shop = () => <CiShoppingCart className={iconClas} />;
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -92,9 +93,17 @@ const MENU = [
   },
   
    {
-    title: 'Plans',
+    title: 'Plans ',
     items: [
       { label: 'Update your Plan', to: '/plans', icon: Plan },
+     
+    ],
+  },
+
+  {
+    title: 'E-Shop',
+    items: [
+      { label: 'E-Shop', to: '/shop', icon: Shop },
      
     ],
   },
