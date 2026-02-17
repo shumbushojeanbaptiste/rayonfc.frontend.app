@@ -10,7 +10,7 @@ import {
   BadgeDollarSign,
   HelpCircle,
 } from 'lucide-react';
-import { CiMoneyCheck1 } from 'react-icons/ci';
+import { CiMoneyCheck1, CiShoppingCart } from 'react-icons/ci';
 
 interface User {
   first_name?: string;
@@ -124,6 +124,13 @@ const DropdownUser = () => {
               <NavLink to="/plans" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <CiMoneyCheck1 size={18} />
                 Plans
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/shop" className={itemClass} onClick={() => setDropdownOpen(false)}>
+                <CiShoppingCart size={18} />
+                E-Shop
               </NavLink>
             </li>
 

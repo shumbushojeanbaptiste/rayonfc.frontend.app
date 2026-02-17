@@ -30,7 +30,7 @@ import { GiMicrophone } from "react-icons/gi";
 import { CgGirl } from 'react-icons/cg';
 import { TbMoodBoy } from 'react-icons/tb';
 import { FcConferenceCall } from 'react-icons/fc';
-import { CiMoneyCheck1, CiVideoOn } from 'react-icons/ci';
+import { CiMoneyCheck1, CiShoppingCart, CiVideoOn } from 'react-icons/ci';
 import { RiMovieAiLine } from 'react-icons/ri';
 
 /* ICON PROPS */
@@ -43,6 +43,7 @@ const Conference = () => <FcConferenceCall className={iconClas} />;
 const Highlights = () => <CiVideoOn className={iconClas} />;
 const Scenes = () => <RiMovieAiLine className={iconClas} />;
 const Plan = () => <CiMoneyCheck1 className={iconClas} />;
+const Shop = () => <CiShoppingCart className={iconClas} />;
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -101,6 +102,14 @@ const MENU = [
     items: [
       { label: 'Sign-In', to: '/auth/signin', icon: User },
       { label: 'Sign-Up', to: '/auth/signup', icon: WatchLaterIcon },
+    ],
+  },
+
+   {
+    title: 'E-Shop',
+    items: [
+      { label: 'E-Shop', to: '/shop', icon: Shop },
+     
     ],
   },
   
