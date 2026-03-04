@@ -12,7 +12,7 @@ export interface Video {
   first_name?: string;
   last_name?: string;
   created_at?: string;
-  
+  preview?: string;
 }
 
 export interface User {

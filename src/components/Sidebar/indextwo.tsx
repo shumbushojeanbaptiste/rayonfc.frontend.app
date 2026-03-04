@@ -32,6 +32,7 @@ import { TbMoodBoy } from 'react-icons/tb';
 import { FcConferenceCall } from 'react-icons/fc';
 import { CiMoneyCheck1, CiShoppingCart, CiVideoOn } from 'react-icons/ci';
 import { RiMovieAiLine } from 'react-icons/ri';
+import { IoRadioOutline } from 'react-icons/io5';
 
 /* ICON PROPS */
 const iconClass = 'w-5 h-5';
@@ -44,6 +45,11 @@ const Highlights = () => <CiVideoOn className={iconClas} />;
 const Scenes = () => <RiMovieAiLine className={iconClas} />;
 const Plan = () => <CiMoneyCheck1 className={iconClas} />;
 const Shop = () => <CiShoppingCart className={iconClas} />;
+const Live = () => (
+<div className="flex items-center gap-1 text-red  rounded-md">
+    <IoRadioOutline className="w-6 h-6" />
+</div>
+);
 /* ICON WRAPPERS */
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
@@ -82,7 +88,7 @@ const MENU = [
     title: '',
     items: [
        { label: 'Home', to: '/', icon: HomeIcon },
-      //{ label: 'Reels', to: '/reels', icon: Clapperboard },
+       { label: 'Live', to: '/live', icon: Live },
       { label: 'Trending', to: '/trends', icon: ChartIcon },
       { label: 'Last Videos', to: '/last', icon: LatestIcon },
       //{ label: 'Free videos', to: '/videos', icon: RunIcon },

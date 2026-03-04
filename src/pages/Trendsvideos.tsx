@@ -82,7 +82,7 @@ import { toast } from "react-toastify"; // ✅ import toast
   return (
     <>
     
-      <Breadcrumb pageName="" />
+      <Breadcrumb pageName=" Trending Videos" />
       <div className="p-2 md:p-4 2xl:p-8">
       <div className="px-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
         {loadingVideos
@@ -97,7 +97,7 @@ import { toast } from "react-toastify"; // ✅ import toast
                 //price={video.price}
                 duration={video.duration} 
                 thumbnail={fileUrl(video.thumbnail)}
-               // profileImage={fileUrl(video.profile_photo || video.thumbnail)}
+                profileImage={fileUrl(video.profile_photo || video.thumbnail)}
                 //onClick={() => handleVideoClick(video)}
                  onClick={() => 
                   navigate(`/watch/${encodeId(video.id)}`, { state: video })

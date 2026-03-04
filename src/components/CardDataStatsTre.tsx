@@ -26,15 +26,16 @@ const CardDataStatsTre: React.FC<Props> = ({
   const isPaid = numericPrice > 0;
 
   return (
+    <div className="hover:bg-blue-100 rounded-xl p-3 transition-colors duration-200">
     <div
-      onClick={onClick}
-      className="rounded-xl cursor-pointer transition-all duration-300 hover:shadow-md hover:-translate-y-1 hover:scale-[1.02]"
-    >
-      <div className="relative"> 
+  onClick={onClick}
+  className="group rounded-xl cursor-pointer transition duration-200 "
+  >
+      <div className="relative overflow-hidden rounded-xl"> 
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
-          className="w-full h-44 object-cover rounded-xl"
+          className="w-full h-44 object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Duration Badge (Shorts style) */}
@@ -44,20 +45,21 @@ const CardDataStatsTre: React.FC<Props> = ({
       </div>
 
       {/* PROFILE SECTION — UNCHANGED */}
-      <div className="flex items-center gap-3 mt-2">
-        {/*<img
+      <div className="flex items-start gap-3 mt-3">
+      <div className="relative w-10 h-10">
+        <img
           src={profileImage || "/default-avatar.png"}
           alt={channelName}
           className="w-10 h-10 rounded-full object-cover"
-        />*/}
+        />
 
-        <div className="flex-1">
-          <h3 className="font-semibold line-clamp-1">{videoTitle}</h3>
-          {/*<p className="text-sm text-gray-400 line-clamp-1">{channelName}</p>*/}
-        </div>
+        
       </div>
 
-      <div className="flex gap-40 mt-2 text-sm text-gray-400">
+      <div className="flex-1">
+          <h3 className="font-semibold line-clamp-1">{videoTitle}</h3>
+          <p className="text-sm text-gray-400 line-clamp-1">{channelName}</p>
+          <div className="flex gap-40 mt-2 text-sm text-gray-400">
         {total}
 
         {isPaid && (
@@ -66,7 +68,11 @@ const CardDataStatsTre: React.FC<Props> = ({
           </div>
         )} 
       </div>
+        </div>
+     </div>
+      
     </div> 
+    </div>
   );
 };
 

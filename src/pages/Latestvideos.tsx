@@ -62,7 +62,7 @@ const Latestvideos: React.FC = () => {
                 key={`${video.id}-${idx}`}
                 style={{ borderLeft: "5px solid transparent" }}
               >
-                <CardDataStatsLat
+                <CardDataStatsLat 
                   id={video.id}
                   videoTitle={video.title}
                   channelName={video.owner_name || "Unknown Owner"}

@@ -3,7 +3,7 @@ import React from "react";
 interface Props {
   id: number;
   videoTitle: string;
-  //channelName: string;
+  channelName: string;
   total: string;
   price?: number | string | null;
   thumbnail?: string;
@@ -16,7 +16,7 @@ interface Props {
 
 const CardDataStatsFree: React.FC<Props> = ({
   videoTitle,
- // channelName,
+ channelName,
   total,
   price,
   thumbnail,
@@ -54,16 +54,16 @@ const CardDataStatsFree: React.FC<Props> = ({
       <div className="flex items-center gap-3 mt-2">
         <img
           src={profileImage || "/default-avatar.png"}
-         // alt={channelName}
+          alt={channelName}
           className="w-10 h-10 rounded-full object-cover"
         />
         <div className="flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">
             {videoTitle}
           </h3>
-         {/* <p className="text-sm text-gray-600 dark:text-white line-clamp-1">
+         <p className="text-sm text-gray-600 dark:text-white line-clamp-1">
             {channelName}
-          </p>*/}
+          </p>
         </div>
       </div>
 

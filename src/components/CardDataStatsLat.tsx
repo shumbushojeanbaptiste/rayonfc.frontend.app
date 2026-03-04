@@ -33,15 +33,16 @@ const CardDataStatsLat: React.FC<Props> = ({
   const isPaid = numericPrice > 0;
 
   return (
+      <div className="hover:bg-blue-100 rounded-xl p-3 transition-colors duration-200">
     <div
-       className=" rounded-xl cursor-pointer hover:shadow-md group transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
-      onClick={onClick}
-    >
+  onClick={onClick}
+  className="group rounded-xl cursor-pointer transition duration-200 "
+  >
       <div className="relative"> 
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
-          className="w-full h-44 object-cover rounded-xl"
+          className="w-full h-44 object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
         />
 
         {isPaid && (
@@ -51,61 +52,28 @@ const CardDataStatsLat: React.FC<Props> = ({
         )}
       </div>
 
-      <div className="flex items-center gap-3 mt-2">
-        {/*<img
+     <div className="flex items-start gap-3 mt-3">
+      <div className="relative w-10 h-10">
+        <img
           src={profileImage || "/default-avatar.png"}
           alt={channelName}
           className="w-10 h-10 rounded-full object-cover"
-        />*/}
-        <div className="flex-1">
+        />
+       
+      </div>
+
+       <div className="flex-1">
           <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">
             {videoTitle}
           </h3>
-          {/*<p className="text-sm text-gray-600 dark:text-white line-clamp-1">
+          <p className="text-sm text-gray-600 dark:text-white line-clamp-1">
             {channelName}
-          </p>*/}
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center mt-2">
+          </p>
+           <div className="flex justify-between items-center mt-2">
         <p className="text-sm text-gray-600 dark:text-white">{total}</p>
-
-        {/* ACTION BUTTON */}
-       {/* {isPaid ? (
-          canBuy ? (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onBuy?.();
-              }}
-              className="px-3 py-1 rounded-lg text-white dark:text-[#05333a]  font-semibold bg-[#05333a] dark:bg-[#e0e327]"
-              
-            >
-              Buy
-            </button>
-          ) : (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAddMoney?.();
-              }}
-              className="px-3 py-1 rounded-lg text-white font-semibold bg-orange-600 hover:bg-orange-700"
-            >
-              Top Up
-            </button>
-          )
-        ) : (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onClick?.();
-            }}
-            className="px-3 py-1 rounded-lg text-white  dark:text-[#05333a] bg-[#05333a] dark:bg-[#e0e327] font-semibold"
-            
-          >
-            Watch
-          </button>
-        )}*/}
+      </div>
+      </div>
+      </div>
       </div>
     </div>
   );
