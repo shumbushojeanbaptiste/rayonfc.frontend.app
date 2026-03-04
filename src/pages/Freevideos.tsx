@@ -65,6 +65,7 @@ const Freevideos: React.FC = () => {
                 <CardDataStatsFree
                   id={video.video_id}
                   videoTitle={video.title}
+                  channelName={video.owner || "Unknown Owner"}
                   total={`${video.views_count ?? 0} views`}
                   price={video.price}
                   thumbnail={fileUrl(video.thumbnail)}

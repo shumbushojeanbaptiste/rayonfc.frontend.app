@@ -93,6 +93,8 @@ import Eshop from "./pages/Shop/Eshop";
 import ProductDetails from "./pages/Shop/ProductDetails";
 import Checkout from "./pages/Shop/Checkout";
 import { CartProvider } from "./pages/Shop/context/CartContext";
+import Livevideos from "./pages/Livevideos";
+import VideosplayLive from "./pages/Dashboard/LiveVideosplay";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -169,7 +171,9 @@ export default function App() {
         <Route element={<UniversalLayout />}>
           <Route path="reels" element={<Shortvideos />} />
           <Route path="trends" element={<Trendsvideos />} />
+          <Route path="live" element={<Livevideos />} />
           <Route path="watch/:hash" element={<Videosplay />} />
+          <Route path="live/watch/:hash" element={<VideosplayLive />} />
           <Route path="highlights" element={<Highlights />} />
           <Route path="trainings" element={<Training />} />
           <Route path="operations" element={<Operations />} />

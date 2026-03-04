@@ -21,7 +21,7 @@ const Pressconference: React.FC = () => {
   const user = getAuthUser();
 
   /* ===============================
-     LOAD MUSIC VIDEOS
+     LOAD PRESSCONF VIDEOS
   ================================ */
   useEffect(() => {
     setLoadingVideos(true);
@@ -140,7 +140,7 @@ const Pressconference: React.FC = () => {
         )}
       </div>
 
-      {/* BUY MODAL */}
+      {/* BUY MODAL 
       {selectedVideo && (
         <BuyVideoModal
           video={selectedVideo}
@@ -151,7 +151,7 @@ const Pressconference: React.FC = () => {
             refreshWallet();
           }}
         />
-      )}
+      )}*/}
 
       </div>
     </>

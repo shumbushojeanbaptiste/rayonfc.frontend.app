@@ -92,11 +92,15 @@ export default function Categories() {
      else if (category.category_name === "Behind the Scenes") {
       navigate("/bscenes"); 
     }
+     else if (category.category_name === "Live") {
+      navigate("/live"); 
+    }
     else if (category.category_id !== 0) {
       navigate(`/category/${category.category_id}`); // optional dynamic category page
     } else {
       navigate("/"); // All categories
     } 
+    
   };
 
   return (

@@ -36,15 +36,17 @@ const CardDataStatsMusic: React.FC<Props> = ({
       : safeThumbnail;
 
   return (
+    <div className="hover:bg-blue-100 rounded-xl p-3 transition-colors duration-200">
     <div
-      onClick={onClick}
-      className="rounded-xl cursor-pointer hover:shadow-md transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02]"
-    >
+  onClick={onClick}
+  className="group rounded-xl cursor-pointer transition duration-200 "
+  >
+   
       <div className="relative">
         <img
           src={safeThumbnail}
           alt={videoTitle || "Video thumbnail"}
-          className="w-full h-44 object-cover rounded-xl"
+          className="w-full h-44 object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Duration */}
@@ -53,32 +55,29 @@ const CardDataStatsMusic: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 mt-2">
-       {/*  <img
+      <div className="flex items-start gap-3 mt-3">
+      <div className="relative w-10 h-10">
+       <img
           src={safeProfileImage}
           alt={channelName || "Channel"}
           className="w-10 h-10 rounded-full object-cover"
-        />*/}
+        />
+      </div>
 
         <div className="flex-1">
           <h3 className="font-semibold line-clamp-1">
             {videoTitle || "Untitled Video"}
           </h3>
-         {/*  <p className="text-sm text-gray-400 line-clamp-1">
+         <p className="text-sm text-gray-400 line-clamp-1">
             {channelName || "Unknown Artist"}
-          </p>*/}
-        </div>
-      </div>
-
-      <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
+          </p>
+        <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
         <span>{total}</span>
-
-       {/*  {isPaid && (
-          <span className="bg-gray-800 text-white px-2 py-1 rounded text-xs">
-            {numericPrice.toFixed(2)} RWF
-          </span>
-        )} */}
       </div>
+     </div>
+    </div>
+    </div>
+    
     </div>
   );
 };

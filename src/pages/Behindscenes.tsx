@@ -140,7 +140,7 @@ const Behind: React.FC = () => {
         )}
       </div>
 
-      {/* BUY MODAL */}
+      {/* BUY MODAL 
       {selectedVideo && (
         <BuyVideoModal
           video={selectedVideo}
@@ -151,7 +151,7 @@ const Behind: React.FC = () => {
             refreshWallet();
           }}
         />
-      )}
+      )}*/}
 
       </div>
     </>
