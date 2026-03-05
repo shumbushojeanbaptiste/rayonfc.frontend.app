@@ -181,7 +181,7 @@ const CardVideoPlayLive: React.FC<Props> = ({
 
   return (
     
-    <div className="bg-white dark:bg-black shadow rounded-xl">
+    <div className="  rounded-xl">
       <div className="w-full rounded-xl overflow-hidden">{children}</div>
 
       <h2 className="px-2 text-2xl font-semibold mt-4 leading-tight text-black dark:text-white">
