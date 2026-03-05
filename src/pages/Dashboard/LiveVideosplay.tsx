@@ -317,15 +317,28 @@ useEffect(() => {
           >
             {/* VIDEO PLAYER */}
             <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-              <video
-                src={fileUrl(getVideoUrl(video))}
-                controls
-                autoPlay
-                onEnded={handleEnded}
-                style={{ width: "100%", height: "auto", maxHeight: "80vh", backgroundColor: "black" }}
-                playsInline
-                webkit-playsinline="true"
-              />
+              {getVideoUrl(video).includes("youtube") || getVideoUrl(video).includes("youtu.be") ? (
+  <iframe
+    className="w-full aspect-video"
+    src={`https://www.youtube.com/embed/${getVideoUrl(video)
+      .split("v=")[1]
+      ?.split("&")[0]}`}
+    title="YouTube video player"
+    frameBorder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+) : (
+  <video
+    src={fileUrl(getVideoUrl(video))}
+    controls
+    autoPlay
+    onEnded={handleEnded}
+    className="w-full"
+    style={{ maxHeight: "80vh", backgroundColor: "black" }}
+    playsInline
+  />
+)}
             </div>
 
             {/* DESCRIPTION */}
