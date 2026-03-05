@@ -8,7 +8,6 @@ import { encodeId } from "../utils/hashid";
 import { toast } from "react-toastify";
 import CardLive from "../components/CardLive";
 
-const CATEGORY_ID = 7;
 
 const Livevideos: React.FC = () => {
 
@@ -25,36 +24,6 @@ const Livevideos: React.FC = () => {
       ? path
       : "/default-avatar.png";
 
-  // LOAD WALLET
-  const refreshWallet = async () => {
-    if (!user) return;
-
-    try {
-      const res = await api.get(`/api/payments/balance/${user.user_id}`);
-      setWalletBalance(Number(res.data?.data?.balance || 0));
-    } catch {
-      setWalletBalance(0);
-    }
-  };
-
-    /* ===============================
-       LOAD LIVE VIDEOS
-    ================================ */
-    useEffect(() => {
-      setLoadingVideos(true);
-  
-      api
-        .post("/api/videos/by_category", {
-          category_id: CATEGORY_ID, // ✅ backend expects category_id
-        })
-        .then((res) => setVideos(res.data.data || []))
-        .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err))
-        .finally(() => setLoadingVideos(false));
-    }, []);
-
-  useEffect(() => {
-    if (user) refreshWallet();
-  }, [user]);
 
   // CLICK VIDEO
   const handleVideoClick = (video: Video) => {
@@ -126,20 +95,6 @@ const Livevideos: React.FC = () => {
 
         </div>
 
-        {/*
-        {selectedVideo && (
-          <BuyVideoModal
-            video={selectedVideo}
-            walletBalance={walletBalance}
-            onClose={() => setSelectedVideo(null)}
-            onSuccess={() => {
-              refreshWallet();
-              setSelectedVideo(null);
-              toast.success("Video purchased successfully!");
-            }}
-          />
-        )}
-        */}
 
       </div>
     </>
