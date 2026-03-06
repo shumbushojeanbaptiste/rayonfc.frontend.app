@@ -1,7 +1,7 @@
 # Rayon — Digital UI
 
 
-## Quick Start
+## Quick Start and guide
 
 **Prerequisites:** Node.js >= 14 and npm (or yarn).
 
