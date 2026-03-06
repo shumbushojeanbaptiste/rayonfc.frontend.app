@@ -375,7 +375,7 @@ useEffect(() => {
     autoPlay
     className="w-full accent-blue-500"
     style={{ maxHeight: "80vh", backgroundColor: "black" }}
-  />
+  /> 
 
 )}
 
