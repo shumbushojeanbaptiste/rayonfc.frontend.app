@@ -4,6 +4,7 @@ import api from "../../api";
 import CardVideoPlay from "../../components/CardsVideoPlay";
 import { decodeId, encodeId } from "../../utils/hashid";
 import { toast, ToastContainer } from "react-toastify";
+import Hls from "hls.js";
 import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
 import CardVideoPlayLive from "../../components/CardsVideoPlayLive";
@@ -35,13 +36,11 @@ const [disliked, setDisliked] = useState(false);
 // ✅ Add like count state for optimistic updates
 const [likeCount, setLikeCount] = useState<number>(0);
 
-  const recommendedRef = useRef<HTMLDivElement | null>(null);
+const recommendedRef = useRef<HTMLDivElement | null>(null);
 const activeVideoRef = useRef<HTMLDivElement | null>(null);
-
-
-  const ACCENT = "#05333a"; 
-
-  const fileUrl = (path: string) => {
+const videoRef = useRef<HTMLVideoElement>(null);
+const ACCENT = "#05333a"; 
+const fileUrl = (path: string) => {
     if (!path || path === "null" || path === "undefined") return "/default-avatar.png";
     return path.includes("/") ? path : `${path}`;
   };
@@ -148,6 +147,26 @@ useEffect(() => {
   fetchLikeStatus();
 }, [video]);
 
+//live streaming 
+useEffect(() => {
+  const url = getVideoUrl(video);
+
+  if (!url || !videoRef.current) return;
+
+  if (url.includes(".m3u8")) {
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(videoRef.current);
+    } 
+    
+    else if (videoRef.current.canPlayType("application/vnd.apple.mpegurl")) {
+      videoRef.current.src = url;
+    }
+
+  }
+}, [video]);
 
 
   useEffect(() => {
@@ -315,31 +334,52 @@ useEffect(() => {
             ownerId={getOwnerId(video)} // ✅ Dynamic followers handled inside CardVideoPlay
             onChannelClick={() => goToProfile(getOwnerId(video))}
           >
-            {/* VIDEO PLAYER */}
-            <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-              {getVideoUrl(video).includes("youtube") || getVideoUrl(video).includes("youtu.be") ? (
+  {/* VIDEO PLAYER */}
+  <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
+
+{getVideoUrl(video).includes("youtube") || getVideoUrl(video).includes("youtu.be") ? (
+
   <iframe
     className="w-full aspect-video"
     src={`https://www.youtube.com/embed/${getVideoUrl(video)
       .split("v=")[1]
       ?.split("&")[0]}`}
-    title="YouTube video player"
     frameBorder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allow="autoplay; encrypted-media"
     allowFullScreen
   />
+
+) : getVideoUrl(video).includes("twitch") ? (
+
+  <iframe
+    src={getVideoUrl(video)}
+    className="w-full aspect-video"
+    allowFullScreen
+  />
+
+) : getVideoUrl(video).includes(".m3u8") ? (
+
+  <video
+    ref={videoRef}
+    controls
+    autoPlay
+    className="w-full accent-blue-500"
+    style={{ maxHeight: "80vh", backgroundColor: "black" }}
+  />
+
 ) : (
+
   <video
     src={fileUrl(getVideoUrl(video))}
     controls
     autoPlay
-    onEnded={handleEnded}
-    className="w-full"
+    className="w-full accent-blue-500"
     style={{ maxHeight: "80vh", backgroundColor: "black" }}
-    playsInline
   />
+
 )}
-            </div>
+
+</div>
 
             {/* DESCRIPTION */}
             <div
