@@ -1,4 +1,4 @@
-# Rayon — Digital processes UI
+# Rayon — Digital UI
 
 
 ## Quick Start
