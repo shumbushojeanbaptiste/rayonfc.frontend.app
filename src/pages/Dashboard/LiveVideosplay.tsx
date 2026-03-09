@@ -8,6 +8,8 @@ import Hls from "hls.js";
 import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
 import CardVideoPlayLive from "../../components/CardsVideoPlayLive";
+import UniversalPlayer from "../../components/MediaPlayer/UniversalPlayer";
+
 
 const VideosplayLive: React.FC = () => {
   const { hash } = useParams();
@@ -335,56 +337,18 @@ useEffect(() => {
             onChannelClick={() => goToProfile(getOwnerId(video))}
           >
   {/* VIDEO PLAYER */}
-  <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-
-{getVideoUrl(video).includes("youtube") || getVideoUrl(video).includes("youtu.be") ? (
-
-  <iframe
-    className="w-full aspect-video"
-    src={`https://www.youtube.com/embed/${getVideoUrl(video)
-      .split("v=")[1]
-      ?.split("&")[0]}`}
-    frameBorder="0"
-    allow="autoplay; encrypted-media"
-    allowFullScreen
-  />
-
-) : getVideoUrl(video).includes("twitch") ? (
-
-  <iframe
+<div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
+  <UniversalPlayer
     src={getVideoUrl(video)}
-    className="w-full aspect-video"
-    allowFullScreen
+    live={true}
+    viewers={video.views_count || 0}
   />
-
-) : getVideoUrl(video).includes(".m3u8") ? (
-
-  <video
-    ref={videoRef}
-    controls
-    autoPlay
-    className="w-full accent-blue-500"
-    style={{ maxHeight: "80vh", backgroundColor: "black" }}
-  />
-
-) : (
-
-  <video
-    src={fileUrl(getVideoUrl(video))}
-    controls
-    autoPlay
-    className="w-full accent-blue-500"
-    style={{ maxHeight: "80vh", backgroundColor: "black" }}
-  /> 
-
-)}
-
 </div>
 
             {/* DESCRIPTION */}
             <div
-              className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
-              style={{ borderTop: `4px solid ${ACCENT}` }}
+              className="mt-4 p-4 rounded-xl shadow-sm bg-blue-50 dark:bg-black"
+              style={{ borderTop: `0px solid ${ACCENT}` }}
             >
               <p
                 className={`text-gray-800 dark:text-slate-100 whitespace-pre-line transition-all duration-300 ${
@@ -466,8 +430,8 @@ useEffect(() => {
 
   {/* COMMENTS / LIVE CHAT */}
   <div
-    className="flex flex-col rounded-xl shadow-sm bg-slate-100 dark:bg-black h-[40vh] overflow-hidden"
-    style={{ borderTop: `4px solid ${ACCENT}` }}
+    className="flex flex-col border rounded-xl shadow-sm bg-slate-100 dark:bg-black h-[40vh] overflow-hidden"
+    //style={{ borderTop: `0px solid ${ACCENT}` }}
   >
     <h3 className="text-lg font-semibold p-3 border-b dark:border-slate-700">
       Live chat ({comments.length})
