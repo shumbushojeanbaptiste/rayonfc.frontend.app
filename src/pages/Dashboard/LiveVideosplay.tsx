@@ -340,9 +340,11 @@ useEffect(() => {
   {/* VIDEO PLAYER */}
 <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
   <UniversalPlayer
-    src={getVideoUrl(video)}
-    live={true}
-    viewers={video.views_count || 0}
+    src={getVideoUrl(video) || ""}
+    live={video?.is_live ?? false}
+    viewers={video?.views_count ?? 0}
+    autoPlay={false}   // safer (avoid browser blocking)
+    muted={false}      // change to true ONLY if autoplay = true
   />
 </div>
 

@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import Plyr from "plyr";
+import React, { useEffect, useMemo, useRef } from "react";
+import Plyr, { Options } from "plyr";
 import Hls from "hls.js";
 import "plyr/dist/plyr.css";
 
@@ -7,60 +7,31 @@ interface Props {
   src: string;
   live?: boolean;
   viewers?: number;
-  onEnded?: () => void;
-  poster?: string;
-  muted?: boolean;
   autoPlay?: boolean;
+  muted?: boolean;
+  poster?: string;
+  className?: string;
 }
 
 const UniversalPlayer: React.FC<Props> = ({
   src,
   live = false,
   viewers,
-  onEnded,
-  poster,
+  autoPlay = false,
   muted = false,
-  autoPlay = true,
+  poster,
+  className = "",
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerRef = useRef<Plyr | null>(null);
   const hlsRef = useRef<Hls | null>(null);
 
-  const [playerError, setPlayerError] = useState<string>("");
+  const isYoutube = useMemo(() => /youtube\.com|youtu\.be/.test(src), [src]);
+  const isTwitch = useMemo(() => /twitch\.tv/.test(src), [src]);
+  const isVimeo = useMemo(() => /vimeo\.com/.test(src), [src]);
+  const isHls = useMemo(() => /\.m3u8($|\?)/.test(src), [src]);
 
-  const cleanSrc = useMemo(() => (src || "").trim(), [src]);
-
-  const isYoutube = /youtube\.com|youtu\.be/.test(cleanSrc);
-  const isTwitch = /twitch/.test(cleanSrc);
-  const isVimeo = /vimeo/.test(cleanSrc);
-  const isHls = /\.m3u8($|\?)/i.test(cleanSrc);
-
-  const getYoutubeId = (url: string) => {
-    try {
-      if (url.includes("youtu.be/")) {
-        return url.split("youtu.be/")[1]?.split("?")[0];
-      }
-
-      if (url.includes("watch?v=")) {
-        return url.split("watch?v=")[1]?.split("&")[0];
-      }
-
-      if (url.includes("/embed/")) {
-        return url.split("/embed/")[1]?.split("?")[0];
-      }
-
-      return "";
-    } catch {
-      return "";
-    }
-  };
-
-  useEffect(() => {
-    if (!videoRef.current || isYoutube || isTwitch || isVimeo || !cleanSrc) return;
-
-    const video = videoRef.current;
-    setPlayerError("");
-
+  const destroyAll = () => {
     if (playerRef.current) {
       playerRef.current.destroy();
       playerRef.current = null;
@@ -71,179 +42,251 @@ const UniversalPlayer: React.FC<Props> = ({
       hlsRef.current = null;
     }
 
-    video.pause();
-    video.removeAttribute("src");
-    video.load();
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.removeAttribute("src");
+      videoRef.current.load();
+    }
+  };
+
+  const getYoutubeEmbedUrl = (url: string) => {
+    try {
+      if (url.includes("youtu.be/")) {
+        const id = url.split("youtu.be/")[1]?.split("?")[0];
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+      }
+
+      const parsed = new URL(url);
+      const id = parsed.searchParams.get("v");
+      if (id) {
+        return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+      }
+
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
+  const getVimeoEmbedUrl = (url: string) => {
+    try {
+      const match = url.match(/vimeo\.com\/(\d+)/);
+      if (match?.[1]) {
+        return `https://player.vimeo.com/video/${match[1]}`;
+      }
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
+  const getTwitchEmbedUrl = (url: string) => {
+    try {
+      const parsed = new URL(url);
+
+      // Example:
+      // https://www.twitch.tv/channelname
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      const channel = parts[0];
+
+      // IMPORTANT:
+      // Replace "localhost" with your real domain in production
+      const parent =
+        typeof window !== "undefined"
+          ? window.location.hostname
+          : "localhost";
+
+      if (channel) {
+        return `https://player.twitch.tv/?channel=${channel}&parent=${parent}`;
+      }
+
+      return url;
+    } catch {
+      return url;
+    }
+  };
+
+  useEffect(() => {
+    if (!videoRef.current || isYoutube || isTwitch || isVimeo) return;
+
+    const video = videoRef.current;
+
+    destroyAll();
+
+    const plyrOptions: Options = {
+      controls: [
+        "play-large",
+        "play",
+        "progress",
+        "current-time",
+        "mute",
+        "volume",
+        "settings",
+        "pip",
+        "airplay",
+        "fullscreen",
+      ],
+      autoplay: autoPlay,
+      muted,
+      resetOnEnd: false,
+      clickToPlay: true,
+      keyboard: { focused: true, global: false },
+    };
+
+    const initPlyr = () => {
+      if (!videoRef.current) return;
+
+      playerRef.current = new Plyr(videoRef.current, plyrOptions);
+
+      if (autoPlay) {
+        const playPromise = videoRef.current.play();
+        if (playPromise) {
+          playPromise.catch((err) => {
+            console.warn("Autoplay blocked by browser:", err);
+          });
+        }
+      }
+    };
 
     if (isHls) {
       if (Hls.isSupported()) {
         const hls = new Hls({
           enableWorker: true,
-          lowLatencyMode: true,
+          lowLatencyMode: live,
           backBufferLength: 90,
         });
 
         hlsRef.current = hls;
 
-        hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-          console.log("HLS media attached");
-        });
+        hls.loadSource(src);
+        hls.attachMedia(video);
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          console.log("HLS manifest parsed");
-          if (autoPlay) {
-            video.play().catch((err) => {
-              console.warn("Autoplay failed:", err);
-            });
-          }
+          initPlyr();
         });
 
         hls.on(Hls.Events.ERROR, (_event, data) => {
           console.error("HLS error:", data);
 
-          if (data?.fatal) {
+          if (!hlsRef.current) return;
+
+          if (data.fatal) {
             switch (data.type) {
               case Hls.ErrorTypes.NETWORK_ERROR:
-                setPlayerError("Network error while loading live stream.");
-                hls.startLoad();
+                console.warn("Fatal network error. Trying to recover...");
+                hlsRef.current.startLoad();
                 break;
 
               case Hls.ErrorTypes.MEDIA_ERROR:
-                setPlayerError("Media error while playing stream.");
-                hls.recoverMediaError();
+                console.warn("Fatal media error. Trying to recover...");
+                hlsRef.current.recoverMediaError();
                 break;
 
               default:
-                setPlayerError("Unable to play this stream.");
-                hls.destroy();
+                console.warn("Unrecoverable HLS error. Destroying...");
+                hlsRef.current.destroy();
                 hlsRef.current = null;
                 break;
             }
           }
         });
-
-        hls.loadSource(cleanSrc);
-        hls.attachMedia(video);
       } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = cleanSrc;
+        // Safari native HLS support
+        video.src = src;
+        video.addEventListener(
+          "loadedmetadata",
+          () => {
+            initPlyr();
+          },
+          { once: true }
+        );
       } else {
-        setPlayerError("This browser does not support HLS playback.");
+        console.error("This browser does not support HLS.");
       }
     } else {
-      video.src = cleanSrc;
+      video.src = src;
+      video.addEventListener(
+        "loadedmetadata",
+        () => {
+          initPlyr();
+        },
+        { once: true }
+      );
     }
 
-    const player = new Plyr(video, {
-      controls: live
-        ? ["play", "mute", "volume", "settings", "fullscreen"]
-        : ["play", "progress", "current-time", "mute", "volume", "settings", "fullscreen"],
-      autoplay: autoPlay,
-      muted,
-      fullscreen: { enabled: true, fallback: true, iosNative: true },
-      youtube: { noCookie: true, rel: 0 },
-    });
-
-    playerRef.current = player;
-
-    const handleNativeError = () => {
-      const mediaError = video.error;
-      if (!mediaError) return;
-
-      console.error("Native video error:", mediaError);
-      setPlayerError("Video failed to load.");
-    };
-
-    video.addEventListener("error", handleNativeError);
-
     return () => {
-      video.removeEventListener("error", handleNativeError);
-
-      if (playerRef.current) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
-
-      if (hlsRef.current) {
-        hlsRef.current.destroy();
-        hlsRef.current = null;
-      }
+      destroyAll();
     };
-  }, [cleanSrc, isYoutube, isTwitch, isVimeo, isHls, autoPlay, muted, live]);
+  }, [src, autoPlay, muted, live, isYoutube, isTwitch, isVimeo, isHls]);
 
-  if (!cleanSrc) {
+  if (isYoutube) {
     return (
-      <div className="w-full aspect-video flex items-center justify-center bg-black text-white">
-        No video source provided.
+      <div className={`relative w-full ${className}`}>
+        <iframe
+          className="w-full aspect-video rounded-xl"
+          src={getYoutubeEmbedUrl(src)}
+          title="YouTube player"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+        />
       </div>
     );
   }
 
-  if (isYoutube) {
-    const id = getYoutubeId(cleanSrc);
-
-    if (!id) {
-      return (
-        <div className="w-full aspect-video flex items-center justify-center bg-black text-white">
-          Invalid YouTube URL.
-        </div>
-      );
-    }
-
+  if (isVimeo) {
     return (
-      <iframe
-        className="w-full aspect-video"
-        src={`https://www.youtube.com/embed/${id}`}
-        title="YouTube video player"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowFullScreen
-      />
+      <div className={`relative w-full ${className}`}>
+        <iframe
+          className="w-full aspect-video rounded-xl"
+          src={getVimeoEmbedUrl(src)}
+          title="Vimeo player"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
     );
   }
 
-  if (isTwitch || isVimeo) {
+  if (isTwitch) {
     return (
-      <iframe
-        src={cleanSrc}
-        className="w-full aspect-video"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowFullScreen
-        title="Embedded player"
-      />
+      <div className={`relative w-full ${className}`}>
+        <iframe
+          className="w-full aspect-video rounded-xl"
+          src={getTwitchEmbedUrl(src)}
+          title="Twitch player"
+          allowFullScreen
+        />
+      </div>
     );
   }
 
   return (
-    <div className="relative w-full bg-black rounded-xl overflow-hidden">
+    <div className={`relative w-full ${className}`}>
       {live && (
-        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">
-          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+        <div className="absolute top-3 left-3 z-10 flex items-center gap-2 rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-white" />
           LIVE
         </div>
       )}
 
       {live && viewers !== undefined && (
-        <div className="absolute top-3 right-3 z-10 bg-black/70 text-white px-2 py-1 rounded text-xs">
+        <div className="absolute top-3 right-3 z-10 rounded bg-black/70 px-2 py-1 text-xs text-white">
           👁 {viewers}
         </div>
       )}
 
       <video
         ref={videoRef}
-        className="plyr w-full"
+        className="plyr w-full aspect-video rounded-xl bg-black"
         playsInline
         controls
         autoPlay={autoPlay}
         muted={muted}
         poster={poster}
-        onEnded={onEnded}
+        preload="metadata"
+        crossOrigin="anonymous"
         onContextMenu={(e) => e.preventDefault()}
       />
-
-      {playerError && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-white text-sm px-4 text-center">
-          {playerError}
-        </div>
-      )}
     </div>
   );
 };
