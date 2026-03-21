@@ -1,23 +1,7 @@
 @import "plyr/dist/plyr.css";
-
-:root {
-  --plyr-color-main: #3b82f6;
-}
-
-/* Buffer bar */
-.plyr__progress__buffer {
-  color: rgba(59,130,246,0.45);
-}
-
-/* Progress bar */
-.plyr__progress input[type="range"] {
-  color: #3b82f6;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 
 @layer base {
   body {
@@ -409,4 +393,30 @@ span.flatpickr-weekday,
 
 .logo-animate {
   animation: logoBounce 1.5s ease-in-out infinite;
+}
+
+/* VIDEO PLAYER COLORS */
+
+video {
+  accent-color: #3b82f6;
+}
+
+video::-webkit-media-controls-play-progress {
+  background-color: #3b82f6;
+}
+
+video::-webkit-media-controls-buffered {
+  background-color: rgba(59,130,246,0.5);
+}
+
+video::-webkit-media-controls-timeline {
+  background-color: rgba(255,255,255,0.2);
+}
+
+video::-moz-range-progress {
+  background-color: #3b82f6;
+}
+
+:root {
+  --plyr-color-main: #3b82f6;
 }
