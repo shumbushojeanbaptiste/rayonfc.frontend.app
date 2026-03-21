@@ -188,15 +188,15 @@ const CardVideoPlayLive: React.FC<Props> = ({
         {videoTitle}
       </h2>
 
-      <div className="px-2 flex flex-wrap justify-between items-center mt-2 text-gray-600 dark:text-white">
+      {/*<div className="px-2 flex flex-wrap justify-between items-center mt-2 text-gray-600 dark:text-white">
             <span className="flex items-center gap-1">
               <span className="w-4 h-4 bg-red-500 rounded-full animate-pulse"></span>
               {total}
             </span>
         <p className="text-sm">{periode}</p>
-      </div>
+      </div>*/}
 
-      {/* Like & Share */}
+      {/* Like & Share 
       <div className="px-2 flex gap-4 mt-4 border-y py-3 text-gray-700 dark:text-white">
         <div className="flex gap-2 items-center">
           <button
@@ -235,8 +235,10 @@ const CardVideoPlayLive: React.FC<Props> = ({
           <Share2 size={18} /> Share
         </button>
       </div>
+*/}
 
-      {/* Channel Info & Follow */}
+
+      {/* Channel Info & Follow 
       <div className=" p-2 flex items-center justify-between">
         <div className="flex items-center gap-3 mt-2">
         
@@ -259,17 +261,16 @@ const CardVideoPlayLive: React.FC<Props> = ({
             {channelName}
           </h3>
           
-          {/*
+         
           {dynamicFollowers && <p className="text-gray-500 text-sm">{dynamicFollowers}</p>}
           {!isLoggedIn && (
             <p className="text-xs text-gray-400 mt-1">Login to like, comment, or follow</p>
-          )}*/}
+          )}
           </div>
          
          
         </div>
        
-       {/*
         <button
           onClick={handleFollow}
           className={`px-4 py-2 rounded-lg font-semibold ${
@@ -280,8 +281,10 @@ const CardVideoPlayLive: React.FC<Props> = ({
         >
           {isFollowing ? "Unfollow" : "Follow"}
         </button>
-        */}
-      </div>
+        
+      </div>*/}
+
+
 
       {/* Share Modal */}
       {openShare && (
