@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
 import CardVideoPlayLive from "../../components/CardsVideoPlayLive";
 
+
 const VideosplayLive: React.FC = () => {
   const { hash } = useParams();
   const navigate = useNavigate();
@@ -383,8 +384,8 @@ useEffect(() => {
 
             {/* DESCRIPTION */}
             <div
-              className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
-              style={{ borderTop: `4px solid ${ACCENT}` }}
+              className="mt-4 p-4 rounded-xl shadow-sm bg-blue-50 dark:bg-black"
+              style={{ borderTop: `0px solid ${ACCENT}` }}
             >
               <p
                 className={`text-gray-800 dark:text-slate-100 whitespace-pre-line transition-all duration-300 ${
@@ -466,8 +467,8 @@ useEffect(() => {
 
   {/* COMMENTS / LIVE CHAT */}
   <div
-    className="flex flex-col rounded-xl shadow-sm bg-slate-100 dark:bg-black h-[40vh] overflow-hidden"
-    style={{ borderTop: `4px solid ${ACCENT}` }}
+    className="flex flex-col border rounded-xl shadow-sm bg-slate-100 dark:bg-black h-[40vh] overflow-hidden"
+    //style={{ borderTop: `0px solid ${ACCENT}` }}
   >
     <h3 className="text-lg font-semibold p-3 border-b dark:border-slate-700">
       Live chat ({comments.length})

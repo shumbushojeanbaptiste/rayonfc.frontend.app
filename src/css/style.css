@@ -1,3 +1,4 @@
+@import "plyr/dist/plyr.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,6 +11,8 @@
 
 @layer components {
 }
+
+
 
 @layer utilities {
   /* Chrome, Safari and Opera */
@@ -412,4 +415,8 @@ video::-webkit-media-controls-timeline {
 
 video::-moz-range-progress {
   background-color: #3b82f6;
+}
+
+:root {
+  --plyr-color-main: #3b82f6;
 }

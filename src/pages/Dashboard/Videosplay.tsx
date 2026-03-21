@@ -329,8 +329,8 @@ useEffect(() => {
 
             {/* DESCRIPTION */}
             <div
-              className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
-              style={{ borderTop: `4px solid ${ACCENT}` }}
+              className="mt-4 p-4 rounded-xl shadow-sm bg-blue-50 dark:bg-black"
+              style={{ borderTop: `0px solid ${ACCENT}` }}
             >
               <p
                 className={`text-gray-800 dark:text-slate-100 whitespace-pre-line transition-all duration-300 ${
