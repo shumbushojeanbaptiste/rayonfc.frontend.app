@@ -2,6 +2,7 @@
 
 import Plans from "../components/balance/plans/Plans";
 import Categories from "../components/categories/Categories";
+import Livevideos from "./Livevideos";
 import Menplayers from "./Players/Menplayers";
 import ArtistsList from "./Players/Menplayers";
 import Womenplayers from "./Players/Womeplayers";
@@ -14,8 +15,9 @@ import Trendsvideos from "./Trendsvideos";
       <div className="">
         <Categories />
         {/*<Plans />*/}
-        <Trendsvideos />
-        {/*<Menplayers />
+        <Livevideos />
+        {/*<Trendsvideos />
+        <Menplayers />
         <Womenplayers />*/}
         <Shortvideos />
    

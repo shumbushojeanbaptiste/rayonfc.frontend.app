@@ -102,12 +102,12 @@ const DropdownUserLogin = () => {
             </NavLink>
           </li>
 
-          <li>
+          {/*<li>
             <NavLink to="/shop" className={itemClass} onClick={() => setDropdownOpen(false)}>
               <CiShoppingCart size={18} />
               E-Shop
             </NavLink>
-          </li>
+          </li> */}
 
          {/* <li>
             <NavLink to="/settings" className={itemClass} onClick={() => setDropdownOpen(false)}>

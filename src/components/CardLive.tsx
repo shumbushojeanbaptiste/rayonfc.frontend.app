@@ -81,10 +81,10 @@ const CardLive: React.FC<Props> = ({
 
           {/* LIVE VIEWERS */}
           <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
+            {/*<span className="flex items-center gap-1">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
               {total}
-            </span>
+            </span>*/}
 
             {isPaid && (
               <span className="bg-gray-700 text-white px-2 py-1 rounded text-xs">

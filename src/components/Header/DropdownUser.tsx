@@ -127,12 +127,12 @@ const DropdownUser = () => {
               </NavLink>
             </li>
 
-            <li>
+            {/*<li>
               <NavLink to="/shop" className={itemClass} onClick={() => setDropdownOpen(false)}>
                 <CiShoppingCart size={18} />
                 E-Shop
               </NavLink>
-            </li>
+            </li>*/}
 
           
             <li>

@@ -69,7 +69,7 @@ const Livevideos: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Live Videos" />
+      <Breadcrumb pageName="" />
 
       <div className="p-2 md:p-4 2xl:p-8">
 

@@ -95,13 +95,13 @@ const MENU = [
     ],
   },
 
-  {
-    title: 'Plans',
-    items: [
-      { label: 'Choose a Plan', to: '/plans', icon: Plan },
+  //{
+   // title: 'Plans',
+    //items: [
+     // { label: 'Choose a Plan', to: '/plans', icon: Plan },
      
-    ],
-  },
+    //],
+  //},
 
   {
     title: 'You',

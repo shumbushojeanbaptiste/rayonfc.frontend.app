@@ -7,6 +7,7 @@ import Shortvideos from "../Shortsvideos";
 import Trendsvideos from "../Trendsvideos";
 import Menplayers from "../Players/Menplayers";
 import Womenplayers from "../Players/Womeplayers";
+import Livevideos from "../Livevideos";
 //import Allvideos from "../Videos";
 
 const Mainhome: React.FC = () => {
@@ -14,11 +15,11 @@ const Mainhome: React.FC = () => {
   return (
     <div className="">
       <Categories />
-      
+      <Livevideos />
       {/*<Allvideos />*/}
       {/*<Purchvideos/>*/}
-      <Trendsvideos/>
-      {/*<Menplayers />
+      {/*<Trendsvideos/>
+      <Menplayers />
       <Womenplayers />*/}
       <Shortvideos />
       {/*<Freevideos />*/}
