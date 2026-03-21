@@ -6,6 +6,7 @@ import { decodeId, encodeId } from "../../utils/hashid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
+import UniversalPlayer from "../../components/MediaPlayer/UniversalPlayer";
 
 const Videosplay: React.FC = () => {
   const { hash } = useParams();
@@ -315,17 +316,13 @@ useEffect(() => {
             onChannelClick={() => goToProfile(getOwnerId(video))}
           >
             {/* VIDEO PLAYER */}
-            <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-              <video
-                src={fileUrl(getVideoUrl(video))}
-                controls
-                autoPlay
-                onEnded={handleEnded}
-                style={{ width: "100%", height: "auto", maxHeight: "80vh", backgroundColor: "black" }}
-                playsInline
-                webkit-playsinline="true"
-              />
-            </div>
+<div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
+  <UniversalPlayer
+    src={getVideoUrl(video)}
+    live={true}
+    viewers={video.views_count || 0}
+  />
+</div>
 
             {/* DESCRIPTION */}
             <div

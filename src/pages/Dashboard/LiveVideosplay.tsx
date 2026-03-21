@@ -8,6 +8,8 @@ import Hls from "hls.js";
 import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
 import CardVideoPlayLive from "../../components/CardsVideoPlayLive";
+import UniversalPlayer from "../../components/MediaPlayer/UniversalPlayer";
+
 
 
 const VideosplayLive: React.FC = () => {
@@ -336,50 +338,12 @@ useEffect(() => {
             onChannelClick={() => goToProfile(getOwnerId(video))}
           >
   {/* VIDEO PLAYER */}
-  <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-
-{getVideoUrl(video).includes("youtube") || getVideoUrl(video).includes("youtu.be") ? (
-
-  <iframe
-    className="w-full aspect-video"
-    src={`https://www.youtube.com/embed/${getVideoUrl(video)
-      .split("v=")[1]
-      ?.split("&")[0]}`}
-    frameBorder="0"
-    allow="autoplay; encrypted-media"
-    allowFullScreen
-  />
-
-) : getVideoUrl(video).includes("twitch") ? (
-
-  <iframe
+<div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
+  <UniversalPlayer
     src={getVideoUrl(video)}
-    className="w-full aspect-video"
-    allowFullScreen
+    live={true}
+    viewers={video.views_count || 0}
   />
-
-) : getVideoUrl(video).includes(".m3u8") ? (
-
-  <video
-    ref={videoRef}
-    controls
-    autoPlay
-    className="w-full accent-blue-500"
-    style={{ maxHeight: "80vh", backgroundColor: "black" }}
-  />
-
-) : (
-
-  <video
-    src={fileUrl(getVideoUrl(video))}
-    controls
-    autoPlay
-    className="w-full accent-blue-500"
-    style={{ maxHeight: "80vh", backgroundColor: "black" }}
-  /> 
-
-)}
-
 </div>
 
             {/* DESCRIPTION */}
