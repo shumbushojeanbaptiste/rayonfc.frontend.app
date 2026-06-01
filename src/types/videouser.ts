@@ -13,6 +13,7 @@ export interface Video {
   last_name?: string;
   created_at?: string;
   preview?: string;
+   description?: string;
 }
 
 export interface User {

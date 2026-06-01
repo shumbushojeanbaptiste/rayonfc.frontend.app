@@ -3,14 +3,13 @@ import { NavLink, Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import {
   Home,
-  User as UserIcon,
   Settings,
-  LayoutDashboard,
   LogOut,
   BadgeDollarSign,
   HelpCircle,
 } from 'lucide-react';
-import { CiMoneyCheck1, CiShoppingCart } from 'react-icons/ci';
+import { CiMoneyCheck1 } from 'react-icons/ci';
+import { SiYoutubestudio } from "react-icons/si";
 
 interface User {
   first_name?: string;
@@ -32,6 +31,20 @@ const DropdownUser = () => {
     }
   })();
 
+  const getUserRole = (): number | null => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return Number(payload.role);
+    } catch {
+      return null;
+    }
+  };
+
+  const isAdmin = getUserRole() === 2;
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -47,7 +60,6 @@ const DropdownUser = () => {
       ${isActive ? 'bg-gray-100 dark:bg-meta-4 font-medium' : ''}
     `;
 
-  // ✅ CLOSE ON OUTSIDE CLICK
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -67,7 +79,6 @@ const DropdownUser = () => {
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
       <div ref={dropdownRef}>
-        {/* TRIGGER */}
         <Link
           to="#"
           onClick={(e) => {
@@ -90,7 +101,6 @@ const DropdownUser = () => {
           </span>
         </Link>
 
-        {/* DROPDOWN */}
         <div
           className={`
             absolute right-0 top-full mt-2 w-64
@@ -107,58 +117,72 @@ const DropdownUser = () => {
         >
           <ul className="py-2 text-sm text-gray-800 dark:text-gray-400">
             <li>
-              <NavLink to="/" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <NavLink
+                to="/"
+                className={itemClass}
+                onClick={() => setDropdownOpen(false)}
+              >
                 <Home size={18} />
                 Home
               </NavLink>
             </li>
 
-            {/*<li>
-              <NavLink to="/myprofile" className={itemClass} onClick={() => setDropdownOpen(false)}>
-                <UserIcon size={18} />
-                My Profile
-              </NavLink>
-            </li>*/}
-
             <li>
-              <NavLink to="/plans" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <NavLink
+                to="/plans"
+                className={itemClass}
+                onClick={() => setDropdownOpen(false)}
+              >
                 <CiMoneyCheck1 size={18} />
                 Plans
               </NavLink>
             </li>
 
-            {/*<li>
-              <NavLink to="/shop" className={itemClass} onClick={() => setDropdownOpen(false)}>
-                <CiShoppingCart size={18} />
-                E-Shop
-              </NavLink>
-            </li>*/}
+            {isAdmin && (
+              <li>
+                <NavLink
+                  to="/studio"
+                  className={itemClass}
+                  onClick={() => setDropdownOpen(false)}
+                >
+                  <SiYoutubestudio size={18} />
+                  Studio
+                </NavLink>
+              </li>
+            )}
 
-          
             <li>
-              <NavLink to="/finance" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <NavLink
+                to="/finance"
+                className={itemClass}
+                onClick={() => setDropdownOpen(false)}
+              >
                 <BadgeDollarSign size={18} />
                 Finance
               </NavLink>
             </li>
-            
 
-           
             <li>
-              <NavLink to="/settings" className={itemClass} onClick={() => setDropdownOpen(false)}>
+              <NavLink
+                to="/settings"
+                className={itemClass}
+                onClick={() => setDropdownOpen(false)}
+              >
                 <Settings size={18} />
                 Account Settings
               </NavLink>
-            </li> 
-            
+            </li>
 
-          <li>
-            <NavLink to="/help" className={itemClass} onClick={() => setDropdownOpen(false)}>
-              <HelpCircle size={18} />
-              Help
-            </NavLink>
-          </li>
-
+            <li>
+              <NavLink
+                to="/help"
+                className={itemClass}
+                onClick={() => setDropdownOpen(false)}
+              >
+                <HelpCircle size={18} />
+                Help
+              </NavLink>
+            </li>
           </ul>
 
           <div className="border-t border-gray-200 dark:border-strokedark" />

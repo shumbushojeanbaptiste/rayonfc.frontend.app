@@ -172,7 +172,7 @@ const Header: React.FC<HeaderProps> = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search videos, music, and more..."
+                placeholder="Search videos"
                 className="
                   w-full
                   bg-white dark:bg-gray-800
@@ -211,7 +211,7 @@ const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           </form>
-        </div>
+        </div> 
 
         {/* RIGHT */}
         <div className="flex items-center gap-3">

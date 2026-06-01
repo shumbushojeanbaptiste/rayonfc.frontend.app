@@ -16,6 +16,9 @@ module.exports = {
       ...defaultTheme.screens,
     },
     extend: {
+      fontFamily: {
+      canal: ["Montserrat", "sans-serif"],
+    },
       colors: {
         current: 'currentColor',
         transparent: 'transparent',
