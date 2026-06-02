@@ -6,7 +6,6 @@ import { decodeId, encodeId } from "../../utils/hashid";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useLayoutEffect } from "react";
-import UniversalPlayer from "../../components/MediaPlayer/UniversalPlayer";
 
 const Videosplay: React.FC = () => {
   const { hash } = useParams();
@@ -23,7 +22,7 @@ const Videosplay: React.FC = () => {
   const passedVideo = location.state;
   const source = passedVideo?.source || "all";
 
-  const [video, setVideo] = useState<any>(passedVideo || null);
+ const [video, setVideo] = useState<any>(null);
   const [recommended, setRecommended] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
@@ -52,7 +51,8 @@ const activeVideoRef = useRef<HTMLDivElement | null>(null);
 
 
   const getVideoId = (v: any) => v?.video_id || v?.id || id;
-  const getVideoUrl = (v: any) => v?.url || v?.video_url || v?.videoPath || "";
+const getVideoUrl = (v: any) =>
+  v?.video_url || v?.url || v?.videoPath || "";
   const getOwnerName = (v: any) =>
     v?.first_name || v?.last_name
       ? `${v.first_name || ""} ${v.last_name || ""}`.trim()
@@ -156,19 +156,19 @@ useEffect(() => {
 
     const token = localStorage.getItem("token");
 
-    // Load video
-    if (passedVideo) {
-      setVideo(passedVideo);
-      if (token) api.put(`/api/videos/addView/${getVideoId(passedVideo)}`).catch(() => {});
-    } else {
-      api
-        .get(`/api/videos/getOne/${id}`)
-        .then((res) => {
-          setVideo(res.data.data);
-          if (token) api.put(`/api/videos/addView/${getVideoId(res.data.data)}`).catch(() => {});
-        })
-        .catch((err) => console.error("Failed to load video:", err));
+    
+   // Load video
+api
+  .get(`/api/videos/getOne/${id}`)
+  .then((res) => {
+    console.log("VIDEO FROM API:", res.data.data);
+    setVideo(res.data.data);
+
+    if (token) {
+      api.put(`/api/videos/addView/${getVideoId(res.data.data)}`).catch(() => {});
     }
+  })
+  .catch((err) => console.error("Failed to load video:", err));
 
     // Load recommended videos
     api
@@ -316,18 +316,22 @@ useEffect(() => {
             onChannelClick={() => goToProfile(getOwnerId(video))}
           >
             {/* VIDEO PLAYER */}
-<div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
-  <UniversalPlayer
-    src={getVideoUrl(video)}
-    live={true}
-    viewers={video.views_count || 0}
-  />
-</div>
+            <div className="w-full rounded-xl overflow-hidden shadow-lg bg-black">
+              <video
+                src={fileUrl(getVideoUrl(video))}
+                controls
+                autoPlay
+                onEnded={handleEnded}
+                style={{ width: "100%", height: "auto", maxHeight: "80vh", backgroundColor: "black" }}
+                playsInline
+                webkit-playsinline="true"
+              />
+            </div>
 
-            {/* DESCRIPTION */}
+            {/* DESCRIPTION 
             <div
-              className="mt-4 p-4 rounded-xl shadow-sm bg-blue-50 dark:bg-black"
-              style={{ borderTop: `0px solid ${ACCENT}` }}
+              className="mt-4 p-4 rounded-xl shadow-sm bg-slate-100 dark:bg-black"
+              style={{ borderTop: `4px solid ${ACCENT}` }}
             >
               <p
                 className={`text-gray-800 dark:text-slate-100 whitespace-pre-line transition-all duration-300 ${
@@ -345,7 +349,9 @@ useEffect(() => {
                   {showMore ? "Show less" : "Show more"}
                 </button>
               )}
-            </div>
+            </div>*/}
+
+
           </CardVideoPlay>
 
           {/* Comments Section */}
@@ -398,7 +404,7 @@ useEffect(() => {
           */}
         </div>
 
-        {/* RECOMMENDED VIDEOS */}
+        {/* RECOMMENDED VIDEOS 
           <aside
            ref={recommendedRef}
            className="w-full lg:w-[28%] xl:w-[25%] lg:sticky lg:top-4 h-[calc(100vh-2rem)] overflow-y-auto scroll-hover"
@@ -423,7 +429,7 @@ useEffect(() => {
   }}
 >
 
-  {/* Thumbnail */}
+  
   <div className="relative w-36 h-20 overflow-hidden rounded-md">
     <img
       src={fileUrl(r.thumbnail)}
@@ -431,7 +437,7 @@ useEffect(() => {
       className="upnext-thumb w-full h-full object-cover"
     />
 
-    {/* Overlay */}
+    
     <div className="upnext-overlay absolute inset-0 bg-black/30 flex items-center justify-center">
       <svg
         className="upnext-play w-8 h-8 text-white"
@@ -443,7 +449,7 @@ useEffect(() => {
     </div>
   </div>
 
-  {/* Text */}
+ 
   <div className="flex-1">
     <h4 className="font-medium line-clamp-2 text-black dark:text-white">
       {r.title}
@@ -460,6 +466,7 @@ useEffect(() => {
             ))}
           </div>
         </aside>
+*/}
       </div>
       </div>
     </>

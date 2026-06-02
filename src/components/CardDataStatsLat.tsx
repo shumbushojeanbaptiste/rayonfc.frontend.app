@@ -5,6 +5,7 @@ interface Props {
   videoTitle: string;
   channelName: string;
   total: string;
+  duration?: string;
   price?: number | string | null;
   thumbnail?: string;
   profileImage?: string;
@@ -18,62 +19,53 @@ const CardDataStatsLat: React.FC<Props> = ({
   videoTitle,
   channelName,
   total,
+  duration,
   price,
   thumbnail,
-  profileImage,
   onClick,
-  onBuy,
-  onAddMoney,
-  canBuy = false,
 }) => {
-  
-
-
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
   return (
-      <div className="hover:bg-blue-100 rounded-xl p-3 transition-colors duration-200">
     <div
-  onClick={onClick}
-  className="group rounded-xl cursor-pointer transition duration-200 "
-  >
-      <div className="relative"> 
+      onClick={onClick}
+      className="group relative flex-shrink-0 w-[280px] sm:w-[340px] md:w-[440px] cursor-pointer"
+    >
+      <div className="relative overflow-hidden rounded-md bg-zinc-900">
         <img
           src={thumbnail || "/default-avatar.png"}
           alt={videoTitle}
-          className="w-full h-44 object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-[170px] sm:h-[190px] md:h-[250px] object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
-        {isPaid && (
-          <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded">
-            {numericPrice.toFixed(2)}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+
+        {duration && (
+          <div className="absolute top-3 right-3 rounded bg-black/75 px-2 py-1 text-[11px] sm:text-xs text-white">
+            {duration}
           </div>
         )}
+
+        {/*{isPaid && (
+          <div className="absolute bottom-3 right-3 rounded bg-black/75 px-2 py-1 text-[11px] sm:text-xs text-white">
+            {numericPrice.toFixed(0)} RWF
+          </div>
+        )}*/}
       </div>
 
-     <div className="flex items-start gap-3 mt-3">
-      <div className="relative w-10 h-10">
-        <img
-          src={profileImage || "/default-avatar.png"}
-          alt={channelName}
-          className="w-10 h-10 rounded-full object-cover"
-        />
-       
-      </div>
+      <div className="pt-3">
+        <h3 className="font-canal text-white text-[15px] xsm:text-[16px] md:text-[18px] font-semibold leading-tight tracking-tight line-clamp-2 transition-colors duration-200">
+          {videoTitle}
+        </h3>
 
-       <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-1">
-            {videoTitle}
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-white line-clamp-1">
-            {channelName}
-          </p>
-           <div className="flex justify-between items-center mt-2">
-        <p className="text-sm text-gray-600 dark:text-white">{total}</p>
-      </div>
-      </div>
-      </div>
+        <p className="font-canal mt-2 text-gray-400 text-[12px] xsm:text-[13px] md:text-[15px] leading-none line-clamp-1">
+          {channelName}
+        </p>
+
+        {/*<p className="font-canal mt-2 text-gray-500 text-[11px] sm:text-xs md:text-sm line-clamp-1">
+          {total}
+        </p>*/}
       </div>
     </div>
   );

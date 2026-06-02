@@ -9,9 +9,10 @@ interface Props {
   price?: number | string | null;
   thumbnail?: string;
   profileImage?: string;
+  category?: string;
   onClick: () => void;
 }
- 
+
 const CardLive: React.FC<Props> = ({
   videoTitle,
   channelName,
@@ -19,85 +20,50 @@ const CardLive: React.FC<Props> = ({
   duration,
   price,
   thumbnail,
-  profileImage,
+  category,
   onClick,
 }) => {
   const numericPrice = Number(price || 0);
   const isPaid = numericPrice > 0;
 
   return (
+    <div onClick={onClick} className="group cursor-pointer min-w-0">
+      <div className="overflow-hidden rounded-sm bg-black">
+        <div className="relative overflow-hidden bg-neutral-900">
+          <img
+            src={thumbnail || "/default-avatar.png"}
+            alt={videoTitle}
+            className="w-full h-[160px] xsm:h-[180px] sm:h-[210px] md:h-[230px] object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
 
-   <div className="hover:bg-blue-100 rounded-xl p-3 transition-colors duration-200">
-  <div
-  onClick={onClick}
-  className="group rounded-xl cursor-pointer transition duration-200 "
-  >
-      {/* THUMBNAIL */}
-      <div className="relative overflow-hidden rounded-xl">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
 
-        <img
-          src={thumbnail || "/default-avatar.png"}
-          alt={videoTitle}
-          className="w-full h-44 object-cover rounded-xl transition-transform duration-300 group-hover:scale-105"
-        />
+          <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] md:text-[11px] font-bold px-2 py-1 rounded-sm shadow">
+            LIVE
+          </div>
 
-        {/* LIVE BADGE */}
-        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-red-600 text-white px-2 py-1 rounded-md text-xs font-bold shadow-lg">
-          <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-          LIVE
+          <div className="absolute bottom-2 left-2 bg-black/80 text-white text-[9px] md:text-[10px] font-bold px-2 py-1 rounded-sm">
+            RAYON TV
+          </div>
+
+          {/*{isPaid && (
+            <div className="absolute top-2 left-2 bg-black/75 text-white text-[9px] md:text-[10px] font-semibold px-2 py-1 rounded-sm">
+              {numericPrice.toFixed(0)} RWF
+            </div>
+          )}*/}
         </div>
 
-        {/* DURATION 
-        <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-xs">
-          {duration}
-        </div> */}
-
-      </div>
-
-      {/* PROFILE SECTION */}
-      <div className="flex items-start gap-3 mt-3">
-
-<div className="relative w-10 h-10">
-  <img
-    src={profileImage || "/default-avatar.png"}
-    alt={channelName}
-    className="w-10 h-10 rounded-full object-cover border-2 border-white ring-2 ring-red-500"
-  />
-
-  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[9px] px-1 py-[0.5px] rounded-sm font-semibold flex items-center gap-[2px] leading-none">
-  <span className="w-[3px] h-[3px] bg-white rounded-full animate-pulse"></span>
-  LIVE
-</div>
-</div>
-
-        <div className="flex-1">
-          <h3 className="font-semibold text-sm leading-snug line-clamp-2 group-hover:text-red-600 transition">
+        <div className="bg-black px-1 pt-3 md:pt-4 pb-4 md:pb-5">
+          <h3 className="font-canal text-white text-[15px] xsm:text-[16px] md:text-[18px] font-semibold leading-tight tracking-tight line-clamp-2 group-hover:text-red-500 transition-colors duration-200">
             {videoTitle}
           </h3>
 
-          <p className="text-sm text-gray-500 line-clamp-1">
-            {channelName}
+          <p className="font-canal mt-2 text-gray-400 text-[12px] xsm:text-[13px] md:text-[15px] leading-none line-clamp-1">
+            {category || channelName || "Live Sports"}
           </p>
-
-          {/* LIVE VIEWERS */}
-          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-            {/*<span className="flex items-center gap-1">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-              {total}
-            </span>*/}
-
-            {isPaid && (
-              <span className="bg-gray-700 text-white px-2 py-1 rounded text-xs">
-                {numericPrice.toFixed(2)} RWF
-              </span>
-            )}
-          </div>
         </div>
-
       </div>
     </div>
-</div>
-
   );
 };
 

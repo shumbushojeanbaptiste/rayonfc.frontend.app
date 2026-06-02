@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../components/Breadcrumbs/Breadcrumb";
 import api from "../api";
@@ -19,25 +20,20 @@ const Interview: React.FC = () => {
 
   const navigate = useNavigate();
   const user = getAuthUser();
+  const sliderRef = useRef<HTMLDivElement | null>(null);
 
-  /* ===============================
-     LOAD MUSIC VIDEOS
-  ================================ */
   useEffect(() => {
     setLoadingVideos(true);
 
     api
       .post("/api/videos/by_category", {
-        category_id: CATEGORY_ID, // ✅ backend expects category_id
+        category_id: CATEGORY_ID,
       })
-      .then((res) => setVideos(res.data.data || []))
+      .then((res) => setVideos(res.data?.data || []))
       .catch((err) => console.error("FAILED TO LOAD VIDEOS:", err))
       .finally(() => setLoadingVideos(false));
   }, []);
 
-  /* ===============================
-     LOAD WALLET BALANCE
-  ================================ */
   useEffect(() => {
     if (!user) {
       setWalletBalance(0);
@@ -46,30 +42,30 @@ const Interview: React.FC = () => {
 
     api
       .get(`/api/payments/balance/${user.user_id}`)
-      .then((res) =>
-        setWalletBalance(Number(res.data.data?.balance || 0))
-      )
+      .then((res) => setWalletBalance(Number(res.data?.data?.balance || 0)))
       .catch(() => setWalletBalance(0));
   }, [user]);
 
-  /* ===============================
-     FILE URL FALLBACK
-  ================================ */
   const fileUrl = (path?: string) =>
     path && path !== "null" && path !== "undefined"
       ? path
       : "/default-avatar.png";
 
-  /* ===============================
-     HANDLE VIDEO CLICK
-  ================================ */
+  const getChannelName = (video: Video) => {
+    if (video.owner) return video.owner;
+
+    const fullName = `${video.first_name ?? ""} ${video.last_name ?? ""}`.trim();
+    if (fullName) return fullName;
+
+    return "Unknown Artist";
+  };
+
   const handleVideoClick = async (video: Video) => {
     if (!user) {
       alert("Please login first");
       return;
     }
 
-    // Free video
     if (!video.price || Number(video.price) === 0) {
       navigate(`/watch/${encodeId(video.id)}`, {
         state: { ...video, source: "Interview" },
@@ -87,7 +83,7 @@ const Interview: React.FC = () => {
 
       if (hasAccess) {
         navigate(`/watch/${encodeId(video.id)}`, {
-          state: { ...video, source: "Highlights" },
+          state: { ...video, source: "Interview" },
         });
       } else {
         setSelectedVideo(video);
@@ -100,59 +96,117 @@ const Interview: React.FC = () => {
     }
   };
 
-  /* ===============================
-     REFRESH WALLET
-  ================================ */
   const refreshWallet = () => {
     if (!user) return;
+
     api
       .get(`/api/payments/balance/${user.user_id}`)
-      .then((res) =>
-        setWalletBalance(Number(res.data.data?.balance || 0))
-      );
+      .then((res) => setWalletBalance(Number(res.data?.data?.balance || 0)))
+      .catch(() => setWalletBalance(0));
   };
+
+  const scrollSlider = (direction: "left" | "right") => {
+    if (!sliderRef.current) return;
+
+    const scrollAmount = window.innerWidth < 768 ? 320 : 460;
+
+    sliderRef.current.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+  };
+
+  const SkeletonCard = () => (
+    <div className="flex-shrink-0 w-[280px] sm:w-[340px] md:w-[420px] animate-pulse">
+      <div className="h-[170px] sm:h-[190px] md:h-[230px] rounded-md bg-zinc-800 mb-3" />
+      <div className="h-6 w-2/3 bg-zinc-800 rounded mb-2" />
+      <div className="h-5 w-1/3 bg-zinc-800 rounded" />
+    </div>
+  );
 
   return (
     <>
       <Breadcrumb pageName="Interview" />
-    <div className="p-2 md:p-4 2xl:p-8">
-      <div className="px-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loadingVideos ? (
-          <p className="col-span-full text-center text-gray-500">
-            Loading videos...
-          </p>
-        ) : (
-          videos.map((video) => (
-            <CardDataStatsMusic
-              key={video.id}
-              id={video.id}
-              videoTitle={video.title} 
-              channelName={video.owner || "Unknown Artist"}
-              total={`${video.views ?? 0} views`}
-              price={video.price}
-              duration={video.duration || "--"}
-              thumbnail={fileUrl(video.thumbnail)}
-              profileImage={fileUrl(video.profile_photo || video.thumbnail)} // ✅ fallback
-              //onClick={() => handleVideoClick(video)}
-              onClick={() =>  navigate(`/watch/${encodeId(video.id)}`, { state: video })}
-            />
-          ))
-        )}
-      </div>
 
-      {/* BUY MODAL */}
-      {selectedVideo && (
-        <BuyVideoModal
-          video={selectedVideo}
-          walletBalance={walletBalance}
-          onClose={() => setSelectedVideo(null)}
-          onSuccess={() => {
-            setSelectedVideo(null);
-            refreshWallet();
-          }}
-        />
-      )}
+      <div className="min-h-screen text-white px-3 sm:px-5 md:px-8 py-6">
+        <div className="relative">
+          <div className="mb-5 flex items-center justify-between">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-semibold tracking-tight">
+              Interview
+            </h2>
 
+            <div className="hidden md:flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => scrollSlider("left")}
+                className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+              >
+                <ChevronLeft className="w-5 h-5 text-white" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => scrollSlider("right")}
+                className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+              >
+                <ChevronRight className="w-5 h-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={sliderRef}
+            className="flex gap-4 md:gap-6 overflow-x-auto scroll-smooth no-scrollbar"
+          >
+            {loadingVideos
+              ? [...Array(6)].map((_, i) => <SkeletonCard key={i} />)
+              : videos.map((video) => (
+                  <CardDataStatsMusic
+                    key={video.id}
+                    id={video.id}
+                    videoTitle={video.title}
+                    channelName={getChannelName(video)}
+                    total={`${video.views ?? 0} views`}
+                    price={video.price}
+                    duration={video.duration || "--"}
+                    thumbnail={fileUrl(video.thumbnail)}
+                    profileImage={fileUrl(video.profile_photo || video.thumbnail)}
+                    //onClick={() => handleVideoClick(video)}
+                    onClick={() =>  navigate(`/watch/${encodeId(video.id)}`, { state: video })}
+                  />
+                ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-center gap-3 md:hidden">
+            <button
+              type="button"
+              onClick={() => scrollSlider("left")}
+              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+            >
+              <ChevronLeft className="w-5 h-5 text-white" />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => scrollSlider("right")}
+              className="h-10 w-10 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center"
+            >
+              <ChevronRight className="w-5 h-5 text-white" />
+            </button>
+          </div>
+        </div>
+
+        {/*{selectedVideo && (
+          <BuyVideoModal
+            video={selectedVideo}
+            walletBalance={walletBalance}
+            onClose={() => setSelectedVideo(null)}
+            onSuccess={() => {
+              setSelectedVideo(null);
+              refreshWallet();
+            }}
+          />
+        )}*/}
       </div>
     </>
   );

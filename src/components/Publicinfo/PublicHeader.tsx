@@ -40,7 +40,7 @@ const PublicHeader: React.FC<HeaderProps> = ({
 
   const mobileSearchRef = useRef<HTMLDivElement | null>(null);
   const mobileSearchButtonRef = useRef<HTMLButtonElement | null>(null);
-  const desktopSearchRef = useRef<HTMLDivElement | null>(null);
+  const desktopSearchRef = useRef<HTMLDivElement | null>(null); 
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

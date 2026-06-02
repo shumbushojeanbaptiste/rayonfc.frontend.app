@@ -20,7 +20,6 @@ import Sdashboard from "./pages/Oleestupages/Dashboard";
 import Scontent from "./pages/Oleestupages/Content";
 import Sanalytics from "./pages/Oleestupages/Analytics";
 import Scomments from "./pages/Oleestupages/Comments";
-import Supload from "./pages/Oleestupages/Upload";
 import Ssettings from "./pages/Oleestupages/Settings";
 import PublicLayout from "./layout/PublicLayout";
 import Trendsvideos from "./pages/Trendsvideos";
@@ -52,6 +51,32 @@ const RequireAuth = ({ children }: { children: JSX.Element }) => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       return <Navigate to="/auth/signin" replace />;
+    }
+  } catch {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    return <Navigate to="/auth/signin" replace />;
+  }
+
+  return children;
+};
+
+const RequireAdmin = ({ children }: { children: JSX.Element }) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) return <Navigate to="/auth/signin" replace />;
+
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+
+    if (payload.exp * 1000 < Date.now()) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return <Navigate to="/auth/signin" replace />;
+    }
+
+    if (Number(payload.role) !== 2) {
+      return <Navigate to="/" replace />;
     }
   } catch {
     localStorage.removeItem("token");
@@ -95,6 +120,7 @@ import Checkout from "./pages/Shop/Checkout";
 import { CartProvider } from "./pages/Shop/context/CartContext";
 import Livevideos from "./pages/Livevideos";
 import VideosplayLive from "./pages/Dashboard/LiveVideosplay";
+import UploadPage from "./pages/Oleestupages/Upload";
 
 export default function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -230,21 +256,22 @@ export default function App() {
          <Route path="help/terms&condition" element={<TermsConditionsHelp/>} />
         </Route>
 
-        {/* 🔐 OLEEPLAY STUDIO */}
-        <Route
-          element={
-            <RequireAuth>
-              <Slayout />
-            </RequireAuth>
-          }
-        >
-          <Route path="studio" element={<Sdashboard />} />
-          <Route path="studio/content" element={<Scontent />} />
-          <Route path="studio/analytics" element={<Sanalytics />} />
-          <Route path="studio/comments" element={<Scomments />} />
-          <Route path="studio/upload" element={<Supload />} />
-          <Route path="studio/settings" element={<Ssettings />} />
-        </Route>
+       {/* 🔐 OLEEPLAY STUDIO */}
+<Route
+  element={
+    <RequireAdmin>
+      <Slayout />
+    </RequireAdmin>
+  }
+>
+  {/*<Route path="studio" element={<Sdashboard />} />*/}
+  <Route path="studio" element={<UploadPage />} />
+  <Route path="studio/content" element={<Scontent />} />
+  <Route path="studio/analytics" element={<Sanalytics />} />
+  <Route path="studio/comments" element={<Scomments />} />
+  <Route path="studio/upload" element={<UploadPage />} />
+  <Route path="studio/settings" element={<Ssettings />} />
+</Route>
 
         {/* 🔐 OLEEPLAY FINANCE */}
         <Route
