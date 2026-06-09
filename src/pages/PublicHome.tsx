@@ -15,11 +15,11 @@ import Trendsvideos from "./Trendsvideos";
       <div className="">
         <Categories />
         {/*<Plans />*/}
-        <Livevideos />
-        {/*<Trendsvideos />
-        <Menplayers />
+        {/*<Livevideos />*/}
+       <Trendsvideos />
+         {/*<Menplayers />
         <Womenplayers />*/}
-        <Shortvideos />
+        {/*<Shortvideos />*/}
    
        
        

@@ -15,13 +15,13 @@ const Mainhome: React.FC = () => {
   return (
     <div className="">
       <Categories />
-      <Livevideos />
+      {/*<Livevideos />*/}
       {/*<Allvideos />*/}
       {/*<Purchvideos/>*/}
       <Trendsvideos/>
       {/*<Menplayers />
       <Womenplayers />*/}
-      <Shortvideos />
+      {/*<Shortvideos />*/}
       {/*<Freevideos />*/}
       {/*<Latestvideos />*/}
     

@@ -404,7 +404,7 @@ api
           */}
         </div>
 
-        {/* RECOMMENDED VIDEOS 
+        {/* RECOMMENDED VIDEOS*/} 
           <aside
            ref={recommendedRef}
            className="w-full lg:w-[28%] xl:w-[25%] lg:sticky lg:top-4 h-[calc(100vh-2rem)] overflow-y-auto scroll-hover"
@@ -466,7 +466,7 @@ api
             ))}
           </div>
         </aside>
-*/}
+
       </div>
       </div>
     </>
