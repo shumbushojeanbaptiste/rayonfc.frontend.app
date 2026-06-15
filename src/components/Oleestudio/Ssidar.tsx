@@ -12,6 +12,7 @@ import {
   HiArrowDown,
   HiCreditCard,
 } from "react-icons/hi";
+import { BiSolidVideos } from "react-icons/bi";
 
 type SsidebarProps = {
   sidebarOpen: boolean;
@@ -29,6 +30,7 @@ const MENU = [
       //{ to: "/studio/analytics", label: "Analytics", icon: <HiChartBar /> },
       
       { to: "/studio/upload", label: "Upload", icon: <HiUpload /> },
+      { to: "/studio/content", label: "Content", icon: <BiSolidVideos /> },
       
     ],
   },
