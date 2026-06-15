@@ -32,13 +32,13 @@ const CardDataStatsMusic: React.FC<Props> = ({
   return (
     <div
       onClick={onClick}
-      className="group relative flex-shrink-0 w-[280px] sm:w-[340px] md:w-[440px] cursor-pointer"
+      className="group relative flex-shrink-0 w-[260px] sm:w-[320px] md:w-[400px] cursor-pointer"
     >
       <div className="relative overflow-hidden rounded-md bg-zinc-900">
         <img
           src={safeThumbnail}
           alt={videoTitle || "Video thumbnail"}
-          className="w-full h-[170px] sm:h-[190px] md:h-[250px] object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-[145px] sm:h-[175px] md:h-[220px] object-cover transition-transform duration-500 group-hover:scale-105"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
@@ -56,17 +56,17 @@ const CardDataStatsMusic: React.FC<Props> = ({
         */}
       </div>
 
-      <div className="pt-3">
-        <h3 className="font-canal text-white text-[15px] xsm:text-[16px] md:text-[18px] font-semibold leading-tight tracking-tight line-clamp-2 transition-colors duration-200">
+      <div className="pt-2">
+        <h3 className="font-canal text-white text-[14px] sm:text-[15px] md:text-[17px] font-semibold leading-tight tracking-tight line-clamp-2 transition-colors duration-200">
           {videoTitle || "Untitled Video"}
         </h3>
 
-        <p className="font-canal mt-2 text-gray-400 text-[12px] xsm:text-[13px] md:text-[15px] leading-none line-clamp-1">
+        <p className="font-canal mt-1 text-gray-400 text-[12px] sm:text-[13px] md:text-[14px] leading-none line-clamp-1">
           {channelName || "Unknown Artist"}
         </p>
 
         {/* Uncomment this if you want views back
-        <p className="font-canal mt-2 text-gray-500 text-[11px] sm:text-xs md:text-sm line-clamp-1">
+        <p className="font-canal mt-1 text-gray-500 text-[11px] sm:text-xs md:text-sm line-clamp-1">
           {total}
         </p>
         */}

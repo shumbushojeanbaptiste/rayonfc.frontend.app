@@ -1,31 +1,54 @@
 import Categories from "../../components/categories/Categories";
-import ArtistsList from "../Players/Menplayers";
-import Freevideos from "../Freevideos";
 import Latestvideos from "../Latestvideos";
-import Purchvideos from "../Purchasedvideos";
-import Shortvideos from "../Shortsvideos";
 import Trendsvideos from "../Trendsvideos";
-import Menplayers from "../Players/Menplayers";
-import Womenplayers from "../Players/Womeplayers";
-import Livevideos from "../Livevideos";
-//import Allvideos from "../Videos";
+import Highlights from "../Highlights";
+import Training from "../Training";
+import Operations from "../Operations";
+import Interview from "../Interview";
+import Pressconference from "../Pressconference";
+import Behind from "../Behindscenes";
 
 const Mainhome: React.FC = () => {
- 
   return (
-    <div className="">
-      <Categories />
-      {/*<Livevideos />*/}
-      {/*<Allvideos />*/}
-      {/*<Purchvideos/>*/}
-      <Trendsvideos/>
-      {/*<Menplayers />
-      <Womenplayers />*/}
-      {/*<Shortvideos />*/}
-      {/*<Freevideos />*/}
-      {/*<Latestvideos />*/}
-    
-    </div>
+    <main className="min-h-screen bg-[#0f172a] text-white">
+      <div className="mx-auto w-full max-w-[1600px]">
+        <section className="mb-3 sm:mb-4">
+          <Categories />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Latestvideos />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Trendsvideos />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Highlights />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Interview />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Operations />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Behind />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Pressconference />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          <Training />
+        </section>
+      </div>
+    </main>
   );
 };
 
