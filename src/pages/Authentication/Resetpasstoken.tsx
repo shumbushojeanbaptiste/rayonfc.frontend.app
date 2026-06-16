@@ -10,11 +10,27 @@ const ResetPasswordToken = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const isEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
+  const isPhone = (value: string) => {
+    const cleaned = value.replace(/\s/g, "");
+    return /^\+?[0-9]{7,15}$/.test(cleaned);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) {
-      toast.error("Email is required");
+    const emailOrPhone = email.trim();
+
+    if (!emailOrPhone) {
+      toast.error("Email or phone is required");
+      return;
+    }
+
+    if (!isEmail(emailOrPhone) && !isPhone(emailOrPhone)) {
+      toast.error("Enter a valid email or phone number");
       return;
     }
 
@@ -22,14 +38,16 @@ const ResetPasswordToken = () => {
       setLoading(true);
 
       const res = await api.post("/api/accounts/pwd/reset/token", {
-        email,
+        // Backend still expects email field
+        email: emailOrPhone,
       });
 
       if (res.data?.success) {
-        toast.success("Password reset token sent to your email");
+        toast.success("Password reset token sent successfully");
 
-        // 👉 redirect to reset-password page (or verification page)
-        navigate(`/auth/reset-password?email=${encodeURIComponent(email)}`);
+        navigate(
+          `/auth/reset-password?email=${encodeURIComponent(emailOrPhone)}`
+        );
       }
     } catch (error: any) {
       console.error(error);
@@ -42,33 +60,33 @@ const ResetPasswordToken = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-boxdark">
+    <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-boxdark">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="p-10 bg-slate-100 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
+        className="w-full max-w-md rounded-xl bg-slate-100 p-10 shadow-lg dark:bg-black"
       >
-        <h1 className="text-2xl font-bold mb-6 text-center dark:text-slate-300">
+        <h1 className="mb-6 text-center text-2xl font-bold dark:text-slate-300">
           Reset Your Password
         </h1>
 
-        <p className="text-sm text-center mb-6 text-slate-500">
-          Enter your email address and we’ll send you a reset code.
+        <p className="mb-6 text-center text-sm text-slate-500">
+          Enter your email or phone number and we’ll send you a reset code.
         </p>
 
         <form onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium dark:text-slate-300">
-              Email
+            <label className="mb-2 block text-sm font-medium dark:text-slate-300">
+              Email or Phone
             </label>
+
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              className="w-full rounded-lg border border-stroke bg-transparent py-3 px-4 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
+              placeholder="Enter your email or phone"
+              className="w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
               required
             />
           </div>
@@ -78,19 +96,22 @@ const ResetPasswordToken = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white p-4 rounded-lg disabled:opacity-60"
+            className="w-full rounded-lg bg-blue-600 p-4 text-white disabled:opacity-60"
           >
             {loading ? "Sending..." : "Send Reset Token"}
           </motion.button>
 
-              <div className="mt-6 text-center">
-                  <p>
-                    Already have an account?{" "}
-                    <Link to="/auth/signin" className="text-blue-900 dark:text-gray-200">
-                    Sign In
-                    </Link>
-                    </p>
-                    </div>
+          <div className="mt-6 text-center">
+            <p>
+              Already have an account?{" "}
+              <Link
+                to="/auth/signin"
+                className="text-blue-900 dark:text-gray-200"
+              >
+                Sign In
+              </Link>
+            </p>
+          </div>
         </form>
       </motion.div>
     </div>
