@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
-import LogoDark from '../../images/logo/logo2.png';
-import Logo from '../../images/logo/logo2.png';
-import { User, Mail } from "lucide-react";
+import LogoDark from "../../images/logo/logo2.png";
+import Logo from "../../images/logo/logo2.png";
+import { User, Mail, Phone } from "lucide-react";
 import api from "../../api";
 import { toast } from "react-toastify";
-
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
@@ -20,17 +19,53 @@ const SignUp: React.FC = () => {
     email: "",
   });
 
+  const isEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
+
+  const isPhone = (value: string) => {
+    const cleaned = value.replace(/\s/g, "");
+    return /^\+?[0-9]{7,15}$/.test(cleaned);
+  };
+
+  const isEmailOrPhone = (value: string) => {
+    return isEmail(value) || isPhone(value);
+  };
+
   const validate = () => {
     const newErrors: any = {};
-    if (!textFields.first_name.trim()) newErrors.first_name = "First name is required";
-    if (!textFields.last_name.trim()) newErrors.last_name = "Last name is required";
-    if (!textFields.email.trim()) newErrors.email = "Email is required";
+    const emailOrPhone = textFields.email.trim();
+
+    if (!textFields.first_name.trim()) {
+      newErrors.first_name = "First name is required";
+    }
+
+    if (!textFields.last_name.trim()) {
+      newErrors.last_name = "Last name is required";
+    }
+
+    if (!emailOrPhone) {
+      newErrors.email = "Email or phone is required";
+    } else if (!isEmailOrPhone(emailOrPhone)) {
+      newErrors.email =
+        "Enter a valid email or phone number. Example: test@gmail.com or 0789479288";
+    }
+
     return newErrors;
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setTextFields({ ...textFields, [name]: value });
+
+    setTextFields({
+      ...textFields,
+      [name]: value,
+    });
+
+    setErrors({
+      ...errors,
+      [name]: "",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,30 +78,30 @@ const SignUp: React.FC = () => {
     try {
       setLoading(true);
 
+      const emailOrPhone = textFields.email.trim();
+
       const payload = {
-        first_name: textFields.first_name,
-        last_name: textFields.last_name,
-        email: textFields.email,
+        first_name: textFields.first_name.trim(),
+        last_name: textFields.last_name.trim(),
+
+        // Phone OR email must be sent here because backend uses email field
+        email: emailOrPhone,
       };
 
-      const res = await api.post("/api/accounts/new_account", payload); 
+      console.log("SIGNUP PAYLOAD:", payload);
 
-      // ✅ Save JWT & user info to localStorage for persistent login
+      const res = await api.post("/api/accounts/new_account", payload);
+
       if (res.data?.jwt && res.data?.user) {
         localStorage.setItem("token", res.data.jwt);
         localStorage.setItem("user", JSON.stringify(res.data.user));
       }
 
-      // 👉 Redirect to Verify page after successful registration
-      navigate(`/auth/verify?email=${encodeURIComponent(textFields.email)}`);
+      navigate(`/auth/verify?email=${encodeURIComponent(emailOrPhone)}`);
     } catch (error: any) {
-           console.error(error);
-           toast.error(
-           error?.response?.data?.message || "Something went wrong."
-           );
-}
-
-    finally {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Something went wrong.");
+    } finally {
       setLoading(false);
     }
   };
@@ -75,6 +110,9 @@ const SignUp: React.FC = () => {
     { label: "First Name", name: "first_name" },
     { label: "Last Name", name: "last_name" },
   ] as const;
+
+  const emailOrPhone = textFields.email.trim();
+  const showPhoneIcon = emailOrPhone && !emailOrPhone.includes("@");
 
   return (
     <>
@@ -93,7 +131,10 @@ const SignUp: React.FC = () => {
                 <img className="hidden dark:block" src={Logo} alt="Logo" />
                 <img className="dark:hidden" src={LogoDark} alt="Logo" />
               </Link>
-              <p className="2xl:px-20">Create your free account to get started.</p>
+
+              <p className="2xl:px-20">
+                Create your free account to get started.
+              </p>
             </div>
           </div>
 
@@ -116,11 +157,18 @@ const SignUp: React.FC = () => {
                           className="peer w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-4 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
                           required
                         />
-                        <label className="floating-label">{field.label}</label>
-                        <User className="absolute left-4 top-4 w-5 h-5 text-gray-400" />
+
+                        <label className="floating-label">
+                          {field.label}
+                        </label>
+
+                        <User className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
                       </div>
+
                       {errors[field.name] && (
-                        <p className="text-red-500 text-sm">{errors[field.name]}</p>
+                        <p className="text-sm text-red-500">
+                          {errors[field.name]}
+                        </p>
                       )}
                     </div>
                   ))}
@@ -129,17 +177,26 @@ const SignUp: React.FC = () => {
                 <div className="mt-4 mb-4">
                   <div className="relative">
                     <input
-                      type="email"
+                      type="text"
                       name="email"
                       value={textFields.email}
                       onChange={handleChange}
                       className="peer w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-4 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
                       required
                     />
-                    <label className="floating-label">Email</label>
-                    <Mail className="absolute left-4 top-4 w-5 h-5 text-gray-400" />
+
+                    <label className="floating-label">Email or Phone</label>
+
+                    {showPhoneIcon ? (
+                      <Phone className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                    ) : (
+                      <Mail className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                    )}
                   </div>
-                  {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
+                  {errors.email && (
+                    <p className="text-sm text-red-500">{errors.email}</p>
+                  )}
                 </div>
 
                 <motion.button
@@ -147,7 +204,7 @@ const SignUp: React.FC = () => {
                   whileTap={{ scale: 0.98 }}
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-blue-900 dark:bg-blue-600 text-white  p-4 rounded-lg mt-4 disabled:opacity-60"
+                  className="mt-4 w-full rounded-lg bg-blue-900 p-4 text-white disabled:opacity-60 dark:bg-blue-600"
                 >
                   {loading ? "Creating..." : "Create Account"}
                 </motion.button>
@@ -155,7 +212,10 @@ const SignUp: React.FC = () => {
                 <div className="mt-6 text-center">
                   <p>
                     Already have an account?{" "}
-                    <Link to="/auth/signin" className="text-blue-900 dark:text-gray-200">
+                    <Link
+                      to="/auth/signin"
+                      className="text-blue-900 dark:text-gray-200"
+                    >
                       Sign In
                     </Link>
                   </p>

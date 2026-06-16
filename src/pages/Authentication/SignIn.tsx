@@ -1,58 +1,93 @@
-import React, { useState } from 'react'; 
-import { Link, useNavigate } from 'react-router-dom';
-import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
-import LogoDark from '../../images/logo/logo2.png';
-import Logo from '../../images/logo/logo2.png';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
+import LogoDark from "../../images/logo/logo2.png";
+import Logo from "../../images/logo/logo2.png";
 import { motion } from "framer-motion";
-import api from '../../api';
+import { Mail, Phone, Lock } from "lucide-react";
+import api from "../../api";
 
 const SignIn: React.FC = () => {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError(null);
-  setLoading(true);
+  const isEmail = (value: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  };
 
-  try {
-    const response = await api.post("/api/accounts/login", {
-      email,
-      password,
-    });
+  const isPhone = (value: string) => {
+    const cleaned = value.replace(/\s/g, "");
+    return /^\+?[0-9]{7,15}$/.test(cleaned);
+  };
 
-    const result = response.data;
+  const validate = () => {
+    const newErrors: any = {};
+    const emailOrPhone = email.trim();
 
-    if (!result.success) {
-      throw new Error(result.message || "Login failed");
+    if (!emailOrPhone) {
+      newErrors.email = "Email or phone is required";
+    } else if (!isEmail(emailOrPhone) && !isPhone(emailOrPhone)) {
+      newErrors.email =
+        "Enter a valid email or phone number. Example: test@gmail.com or 0789479288";
     }
 
-    // ✅ Save JWT & user info
-    localStorage.setItem("token", result.data.jwt);
-    localStorage.setItem("user", JSON.stringify(result.data));
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    }
 
-    navigate("/", { replace: true });
+    return newErrors;
+  };
 
-  } catch (err: any) {
-    setError(
-      err.response?.data?.message || err.message || "Login failed"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    setError(null);
 
+    const validation = validate();
+    setErrors(validation);
+    if (Object.keys(validation).length > 0) return;
+
+    setLoading(true);
+
+    try {
+      const emailOrPhone = email.trim();
+
+      const response = await api.post("/api/accounts/login", {
+        // Phone OR email is sent inside email field
+        email: emailOrPhone,
+        password,
+      });
+
+      const result = response.data;
+
+      if (!result.success) {
+        throw new Error(result.message || "Login failed");
+      }
+
+      localStorage.setItem("token", result.data.jwt);
+      localStorage.setItem("user", JSON.stringify(result.data));
+
+      navigate("/", { replace: true });
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const emailOrPhone = email.trim();
+  const showPhoneIcon = emailOrPhone && !emailOrPhone.includes("@");
 
   return (
     <>
       <Breadcrumb pageName="Sign In" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
@@ -65,7 +100,10 @@ const handleSubmit = async (e: React.FormEvent) => {
                 <img className="hidden dark:block" src={Logo} alt="Logo" />
                 <img className="dark:hidden" src={LogoDark} alt="Logo" />
               </Link>
-              <p className="2xl:px-20">Login using your email and password</p>
+
+              <p className="2xl:px-20">
+                Login using your email or phone and password
+              </p>
             </div>
           </div>
 
@@ -78,41 +116,72 @@ const handleSubmit = async (e: React.FormEvent) => {
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Email
+                    Email or Phone
                   </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="Enter your email"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
-                  />
+
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        setErrors({ ...errors, email: "" });
+                      }}
+                      required
+                      placeholder="Enter your email or phone"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                    />
+
+                    {showPhoneIcon ? (
+                      <Phone className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                    ) : (
+                      <Mail className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                    )}
+                  </div>
+
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.email}
+                    </p>
+                  )}
                 </div>
 
                 <div className="mb-6">
                   <label className="mb-2.5 block font-medium text-black dark:text-white">
                     Password
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="Enter your password"
-                    className="w-full rounded-lg border border-stroke bg-transparent py-4 px-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
-                  />
+
+                  <div className="relative">
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        setErrors({ ...errors, password: "" });
+                      }}
+                      required
+                      placeholder="Enter your password"
+                      className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-12 pr-6 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white"
+                    />
+
+                    <Lock className="absolute left-4 top-4 h-5 w-5 text-gray-400" />
+                  </div>
+
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.password}
+                    </p>
+                  )}
                 </div>
 
-                {/* 👇 Forgot password link */}
-<div className="mb-6 text-right">
-  <Link
-    to="/auth/reset-token"
-    className="text-sm text-blue-900 dark:text-blue-600 hover:underline"
-  >
-    Forgot password?
-  </Link>
-</div>
+                <div className="mb-6 text-right">
+                  <Link
+                    to="/auth/reset-token"
+                    className="text-sm text-blue-900 hover:underline dark:text-blue-600"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
 
                 {error && (
                   <div className="mb-4 rounded bg-red-100 p-3 text-red-600">
@@ -126,16 +195,19 @@ const handleSubmit = async (e: React.FormEvent) => {
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-lg bg-blue-900 dark:bg-blue-600 p-4 text-white  hover:bg-opacity-90 disabled:opacity-50"
+                    className="w-full rounded-lg bg-blue-900 p-4 text-white hover:bg-opacity-90 disabled:opacity-50 dark:bg-blue-600"
                   >
-                    {loading ? 'Signing in...' : 'Sign In'}
+                    {loading ? "Signing in..." : "Sign In"}
                   </motion.button>
                 </div>
 
                 <div className="mt-6 text-center">
                   <p>
-                    Don’t have an account?{' '}
-                    <Link to="/auth/signup" className="text-blue-900 dark:text-gray-200">
+                    Don’t have an account?{" "}
+                    <Link
+                      to="/auth/signup"
+                      className="text-blue-900 dark:text-gray-200"
+                    >
                       Sign Up
                     </Link>
                   </p>
