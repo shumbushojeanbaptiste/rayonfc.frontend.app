@@ -173,6 +173,20 @@ export default function UploadPage() {
   const scrubCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const scrubTimeoutRef = useRef<number | null>(null);
   const blobUrlsRef = useRef<Set<string>>(new Set());
+  const chunkXhrRef = useRef<XMLHttpRequest | null>(null);
+
+  const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks, safer for slow networks
+  const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024; // 10GB max
+
+  const getChunkUploadUrl = () =>
+    `${String(api.defaults.baseURL || "").replace(/\/$/, "")}/api/upload/chunked`;
+
+  const formatBytes = (bytes: number) => {
+    if (!bytes) return "0 B";
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), sizes.length - 1);
+    return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
+  };
 
   const steps: UploadStep[] = ["details", "elements", "checks", "visibility"];
   const stepIndex = steps.indexOf(currentStep);
@@ -675,6 +689,13 @@ export default function UploadPage() {
   };
 
   const handleCancelUploaded = () => {
+    if (chunkXhrRef.current) {
+      try {
+        chunkXhrRef.current.abort();
+      } catch {}
+      chunkXhrRef.current = null;
+    }
+
     setUploadedVideo(null);
     setShowPreviewCard(false);
     setIsPublished(false);
@@ -725,6 +746,83 @@ export default function UploadPage() {
     }
   };
 
+  const uploadChunk = (
+    file: File,
+    finalThumbnail: File | null,
+    uploadId: string,
+    chunkIndex: number,
+    totalChunks: number
+  ): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      const start = chunkIndex * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
+      const chunk = file.slice(start, end);
+
+      const form = new FormData();
+      form.append("video_file", chunk);
+      form.append("owner_id", ownerId);
+      form.append("title", title.trim());
+      form.append("description", description.trim());
+      form.append("category", categoryId);
+      form.append("price", isPremium === "0" ? "0" : price || "0");
+      form.append("is_premium", isPremium);
+
+      if (finalThumbnail) {
+        // The working HTML sends the thumbnail with every chunk.
+        form.append("thumbnail_file", finalThumbnail);
+      }
+
+      form.append("upload_id", uploadId);
+      form.append("chunk_index", String(chunkIndex));
+      form.append("total_chunks", String(totalChunks));
+      form.append("original_name", file.name);
+
+      const xhr = new XMLHttpRequest();
+      chunkXhrRef.current = xhr;
+
+      xhr.open("POST", getChunkUploadUrl(), true);
+      xhr.timeout = 0; // no timeout for large files / slow networks
+
+      const token = localStorage.getItem("token");
+      if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+
+      xhr.setRequestHeader("X-Upload-Id", uploadId);
+      xhr.setRequestHeader("X-Chunk-Index", String(chunkIndex));
+      xhr.setRequestHeader("X-Total-Chunks", String(totalChunks));
+      xhr.setRequestHeader("X-Original-Name", encodeURIComponent(file.name));
+
+      xhr.upload.onprogress = (progressEvent) => {
+        if (!progressEvent.lengthComputable) return;
+
+        const totalLoadedBeforeThisChunk = chunkIndex * CHUNK_SIZE;
+        const totalLoaded = totalLoadedBeforeThisChunk + progressEvent.loaded;
+        const percent = Math.min(99, Math.round((totalLoaded * 100) / file.size));
+        setUploadProgress(percent);
+      };
+
+      xhr.onload = () => {
+        try {
+          const response = xhr.responseText ? JSON.parse(xhr.responseText) : {};
+
+          if (xhr.status >= 200 && xhr.status < 300 && response?.success !== false) {
+            resolve(response);
+            return;
+          }
+
+          reject(new Error(response?.message || `Chunk ${chunkIndex + 1} upload failed.`));
+        } catch (parseError) {
+          reject(new Error("Invalid server response while uploading chunk."));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Network error while uploading chunk."));
+      xhr.ontimeout = () => reject(new Error("Upload timeout. Your internet/server is too slow."));
+      xhr.onabort = () => reject(new Error("Upload cancelled."));
+
+      xhr.send(form);
+    });
+  };
+
   const submit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
@@ -737,6 +835,11 @@ export default function UploadPage() {
 
     if (!ownerId || !title || !description || !categoryId || !videoFile) {
       setErrorMessage("Please fill all required fields.");
+      return;
+    }
+
+    if (videoFile.size > MAX_FILE_SIZE) {
+      setErrorMessage(`File too large. Maximum allowed is ${formatBytes(MAX_FILE_SIZE)}.`);
       return;
     }
 
@@ -753,28 +856,24 @@ export default function UploadPage() {
         setThumbnailPreview(localThumbUrl);
       }
 
-      const form = new FormData();
-      form.append("owner_id", ownerId);
-      form.append("title", title.trim());
-      form.append("description", description.trim());
-      form.append("category", categoryId);
-      form.append("price", isPremium === "0" ? "0" : price || "0");
-      form.append("is_premium", isPremium);
-      form.append("video_file", videoFile);
+      const uploadId = `upload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      const totalChunks = Math.ceil(videoFile.size / CHUNK_SIZE);
 
-      if (finalThumbnail) form.append("thumbnail_file", finalThumbnail);
+      let finalResponse: any = null;
 
-      const res = await api.post("/api/videos/add", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent: any) => {
-          const total = progressEvent.total || 0;
-          if (!total) return;
-          const percent = Math.round((progressEvent.loaded * 100) / total);
-          setUploadProgress(percent);
-        },
-      });
+      for (let i = 0; i < totalChunks; i += 1) {
+        const response = await uploadChunk(videoFile, finalThumbnail, uploadId, i, totalChunks);
 
-      const payload = res?.data;
+        // Your working HTML returns the final video data on the last chunk.
+        if (response?.data?.video_id || response?.video_id) {
+          finalResponse = response;
+          break;
+        }
+
+        setUploadProgress(Math.min(99, Math.round(((i + 1) * 100) / totalChunks)));
+      }
+
+      const payload = finalResponse || { success: true, message: "Upload complete. Processing video..." };
       const data = payload?.data || payload || {};
       const uploadedId = Number(data?.video_id);
 
@@ -827,6 +926,7 @@ export default function UploadPage() {
       setUploadProgress(0);
     } finally {
       setUploading(false);
+      chunkXhrRef.current = null;
     }
   };
 
@@ -1087,7 +1187,12 @@ export default function UploadPage() {
                     <div className={`${darkPanel} border border-dashed border-[#3a3a3a] bg-[#111111] p-4`}>
                       <div className="mb-3">
                         <div className="text-sm font-semibold text-white">Video file</div>
-                        <div className={muted}>Upload the main video file</div>
+                        <div className={muted}>Upload the main video file. Large files use safe 5MB chunks.</div>
+                        {videoFile && (
+                          <div className="mt-1 text-xs text-blue-300">
+                            Selected: {videoFile.name} • {formatBytes(videoFile.size)}
+                          </div>
+                        )}
                       </div>
 
                       <input
