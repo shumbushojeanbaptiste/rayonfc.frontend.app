@@ -142,6 +142,8 @@ export default function UploadPage() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [publishing, setPublishing] = useState(false);
+  const [publishProgress, setPublishProgress] = useState(0);
+  const [publishStage, setPublishStage] = useState("Ready to publish");
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -174,6 +176,7 @@ export default function UploadPage() {
   const scrubTimeoutRef = useRef<number | null>(null);
   const blobUrlsRef = useRef<Set<string>>(new Set());
   const chunkXhrRef = useRef<XMLHttpRequest | null>(null);
+  const publishProgressTimerRef = useRef<number | null>(null);
 
   const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks, safer for slow networks
   const MAX_FILE_SIZE = 10 * 1024 * 1024 * 1024; // 10GB max
@@ -214,6 +217,11 @@ export default function UploadPage() {
         } catch {}
       });
       blobUrlsRef.current.clear();
+
+      if (publishProgressTimerRef.current) {
+        window.clearInterval(publishProgressTimerRef.current);
+        publishProgressTimerRef.current = null;
+      }
     };
   }, []);
 
@@ -339,6 +347,8 @@ export default function UploadPage() {
     setUploading(false);
     setPublishing(false);
     setUploadProgress(0);
+    setPublishProgress(0);
+    setPublishStage("Ready to publish");
     setSuccessMessage("");
     setErrorMessage("");
     setUploadedVideo(null);
@@ -696,10 +706,70 @@ export default function UploadPage() {
       chunkXhrRef.current = null;
     }
 
+    stopPublishProgressPolling();
+    setPublishProgress(0);
+    setPublishStage("Ready to publish");
     setUploadedVideo(null);
     setShowPreviewCard(false);
     setIsPublished(false);
     resetForm();
+  };
+
+  const stopPublishProgressPolling = () => {
+    if (publishProgressTimerRef.current) {
+      window.clearInterval(publishProgressTimerRef.current);
+      publishProgressTimerRef.current = null;
+    }
+  };
+
+  const startPublishProgressPolling = (videoId: number) => {
+    stopPublishProgressPolling();
+    setPublishProgress(0);
+    setPublishStage("Starting publishing...");
+
+    publishProgressTimerRef.current = window.setInterval(async () => {
+      try {
+        const res = await api.get("/api/videos/progress", {
+          params: { video_id: videoId },
+        });
+
+        const data = res?.data?.data || res?.data || {};
+
+        const rawProgress =
+          data.progress ??
+          data.percent ??
+          data.percentage ??
+          data.publish_progress ??
+          data.publishing_progress ??
+          0;
+
+        const nextProgress = Math.min(100, Math.max(0, Number(rawProgress) || 0));
+        const nextStage =
+          data.stage ||
+          data.message ||
+          data.status_text ||
+          data.status ||
+          "Publishing video...";
+
+        setPublishProgress(nextProgress);
+        setPublishStage(String(nextStage));
+
+        if (
+          nextProgress >= 100 ||
+          data.done === true ||
+          data.completed === true ||
+          data.success === true ||
+          data.status === "completed" ||
+          data.status === "published"
+        ) {
+          setPublishProgress(100);
+          setPublishStage("Publishing completed.");
+          stopPublishProgressPolling();
+        }
+      } catch (err) {
+        console.error("PUBLISH PROGRESS ERROR:", err);
+      }
+    }, 1500);
   };
 
   const handlePublishUploaded = async () => {
@@ -722,6 +792,9 @@ export default function UploadPage() {
 
       const status = getPublishStatus(visibility);
       setPublishing(true);
+      setPublishProgress(0);
+      setPublishStage("Sending publish request...");
+      startPublishProgressPolling(Number(uploadedVideo.video_id));
 
       const res = await api.put("/api/videos/verify", {
         video_id: Number(uploadedVideo.video_id),
@@ -731,6 +804,11 @@ export default function UploadPage() {
 
       setUploadedVideo((prev) => (prev ? { ...prev, status } : prev));
       setIsPublished(status === 1);
+      setPublishProgress(100);
+      setPublishStage(
+        status === 1 ? "Video published successfully." : "Video saved successfully."
+      );
+      stopPublishProgressPolling();
       setSuccessMessage(
         res?.data?.message ||
           (status === 1
@@ -739,6 +817,8 @@ export default function UploadPage() {
       );
     } catch (err: any) {
       console.error("PUBLISH ERROR:", err?.response?.data || err?.message || err);
+      stopPublishProgressPolling();
+      setPublishStage("Publishing failed.");
       setErrorMessage(err?.response?.data?.message || "Publish failed.");
       setIsPublished(false);
     } finally {
@@ -2249,8 +2329,22 @@ export default function UploadPage() {
               <div>
                 <h3 className="text-lg font-semibold text-white">Publishing video...</h3>
                 <p className="text-sm text-[#a1a1a1]">
-                  Please wait while publish request is processed.
+                  {publishStage || "Please wait while your video is being published."}
                 </p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <div className="mb-2 flex items-center justify-between text-sm text-[#d0d0d0]">
+                <span>Publish progress</span>
+                <span>{publishProgress}%</span>
+              </div>
+
+              <div className="h-3 w-full overflow-hidden rounded-full bg-[#1d293d]">
+                <div
+                  className="h-full rounded-full bg-blue-500 transition-all duration-300"
+                  style={{ width: `${publishProgress}%` }}
+                />
               </div>
             </div>
           </div>

@@ -111,13 +111,13 @@ const MENU = [
     ],
   },
 
-   {
-    title: 'E-Shop',
-    items: [
-      { label: 'E-Shop', to: '/shop', icon: Shop },
+   //{
+   // title: 'E-Shop',
+   // items: [
+  //    { label: 'E-Shop', to: '/shop', icon: Shop },
      
-    ],
-  },
+   // ],
+ // },
   
    {
     title: 'Explore',

@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../components/Breadcrumbs/Breadcrumb";
 import api from "../api";
@@ -19,7 +18,6 @@ const Highlights: React.FC = () => {
 
   const navigate = useNavigate();
   const user = getAuthUser();
-  const sliderRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setLoadingVideos(true);
@@ -104,20 +102,11 @@ const Highlights: React.FC = () => {
       .catch(() => setWalletBalance(0));
   };
 
-  const scrollSlider = (direction: "left" | "right") => {
-    if (!sliderRef.current) return;
-
-    const scrollAmount = window.innerWidth < 768 ? 340 : 620;
-
-    sliderRef.current.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth",
-    });
-  };
-
   const SkeletonCard = () => (
-    <div className="flex-shrink-0 w-[210px] sm:w-[250px] md:w-[300px] lg:w-[330px] animate-pulse">
-      <div className="h-[118px] sm:h-[140px] md:h-[170px] lg:h-[185px] rounded bg-zinc-800" />
+    <div className="animate-pulse">
+      <div className="aspect-video w-full rounded-xl bg-zinc-800" />
+      <div className="mt-3 h-4 w-4/5 rounded bg-zinc-800" />
+      <div className="mt-2 h-3 w-2/5 rounded bg-zinc-800" />
     </div>
   );
 
@@ -126,76 +115,57 @@ const Highlights: React.FC = () => {
       <Breadcrumb pageName="" />
 
       <section className="w-full text-white px-4 sm:px-8 lg:px-12 py-5">
-        <div className="relative group">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-              Highlights
-            </h2>
+        <div className="mb-5 flex items-center justify-between">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
+            Highlights
+          </h2>
+        </div>
+
+        {loadingVideos ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+            {[...Array(8)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
           </div>
+        ) : videos.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+            {videos.map((video) => (
+              <div
+                key={video.id}
+                onClick={() =>
+                  navigate(`/watch/${encodeId(video.id)}`, { state: video })
+                }
+                className="group cursor-pointer"
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-zinc-900 shadow-lg">
+                  <img
+                    src={fileUrl(video.thumbnail)}
+                    alt={video.title}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
 
-          <div
-            ref={sliderRef}
-            className="flex gap-2 sm:gap-3 overflow-x-auto scroll-smooth no-scrollbar pb-4"
-          >
-            {loadingVideos ? (
-              [...Array(8)].map((_, i) => <SkeletonCard key={i} />)
-            ) : videos.length > 0 ? (
-              videos.map((video) => (
-                <div
-                  key={video.id}
-                  onClick={() =>
-                    navigate(`/watch/${encodeId(video.id)}`, { state: video })
-                  }
-                  className="group/card relative flex-shrink-0 w-[210px] sm:w-[250px] md:w-[300px] lg:w-[330px] cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20"
-                >
-                  <div className="relative overflow-hidden rounded bg-zinc-900 shadow-lg">
-                    <img
-                      src={fileUrl(video.thumbnail)}
-                      alt={video.title}
-                      className="w-full h-[118px] sm:h-[140px] md:h-[170px] lg:h-[185px] object-cover"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80" />
-
-                    <div className="absolute top-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[11px] text-white">
-                      {video.duration || "--"}
-                    </div>
-
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <h3 className="line-clamp-1 text-sm sm:text-base font-semibold text-white">
-                        {video.title || "Untitled Video"}
-                      </h3>
-
-                      {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
-                        {getChannelName(video)}
-                      </p>*/}
-                    </div>
+                  <div className="absolute bottom-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[11px] text-white">
+                    {video.duration || "--"}
                   </div>
                 </div>
-              ))
-            ) : (
-              <div className="py-6 text-sm text-slate-400">
-                No highlights available.
+
+                <div className="mt-3">
+                  <h3 className="line-clamp-2 text-sm sm:text-base font-semibold text-white">
+                    {video.title || "Untitled Video"}
+                  </h3>
+
+                  {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
+                    {getChannelName(video)}
+                  </p>*/}
+                </div>
               </div>
-            )}
+            ))}
           </div>
-
-          <button
-            type="button"
-            onClick={() => scrollSlider("left")}
-            className="hidden lg:flex absolute left-0 top-[54%] -translate-y-1/2 h-[185px] w-12 items-center justify-center bg-black/40 hover:bg-black/70 transition opacity-0 group-hover:opacity-100"
-          >
-            <ChevronLeft className="w-9 h-9 text-white" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => scrollSlider("right")}
-            className="hidden lg:flex absolute right-0 top-[54%] -translate-y-1/2 h-[185px] w-12 items-center justify-center bg-black/40 hover:bg-black/70 transition opacity-0 group-hover:opacity-100"
-          >
-            <ChevronRight className="w-9 h-9 text-white" />
-          </button>
-        </div>
+        ) : (
+          <div className="py-6 text-sm text-slate-400">
+            No highlights available.
+          </div>
+        )}
 
         {/*{selectedVideo && (
           <BuyVideoModal
