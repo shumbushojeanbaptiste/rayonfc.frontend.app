@@ -97,7 +97,7 @@ const MENU = [
       { label: 'Last Videos', to: '/last', icon: LatestIcon },
       //{ label: 'Free videos', to: '/videos', icon: RunIcon },
     ],
-  },
+  }, 
   
    {
     title: 'Plans ',

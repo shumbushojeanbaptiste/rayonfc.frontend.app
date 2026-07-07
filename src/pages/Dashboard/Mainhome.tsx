@@ -7,6 +7,14 @@ import Operations from "../Operations";
 import Interview from "../Interview";
 import Pressconference from "../Pressconference";
 import Behind from "../Behindscenes";
+import Latestvideoshome from "../Latestvideoshome";
+import Trendsvideoshome from "../Trendsvideoshome";
+import Highlightshome from "../Highlightshome";
+import Traininghome from "../Traininghome";
+import Interviewhome from "../Interviewhome";
+import Behindhome from "../Behindsceneshome";
+import Operationshome from "../Operationshome";
+import Pressconferencehome from "../Pressconferencehome";
 
 const Mainhome: React.FC = () => {
   return (
@@ -17,39 +25,39 @@ const Mainhome: React.FC = () => {
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Latestvideos />
+          <Latestvideoshome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Trendsvideos />
+          <Trendsvideoshome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Highlights />
+          <Highlightshome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Interview />
+          <Interviewhome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Operations />
+          <Operationshome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Behind />
+          <Behindhome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Pressconference />
+          <Pressconferencehome />
         </section>
 
         <section className="mb-3 sm:mb-4">
-          <Training />
+          <Traininghome />
         </section>
       </div>
     </main>
   );
 };
 
-export default Mainhome;
+export default Mainhome; 

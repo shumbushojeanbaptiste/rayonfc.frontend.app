@@ -3,18 +3,25 @@
 import Plans from "../components/balance/plans/Plans";
 import Categories from "../components/categories/Categories";
 import Behind from "./Behindscenes";
+import Behindhome from "./Behindsceneshome";
 import Highlights from "./Highlights";
+import Highlightshome from "./Highlightshome";
 import Interview from "./Interview";
+import Interviewhome from "./Interviewhome";
 import Latestvideos from "./Latestvideos";
 import Livevideos from "./Livevideos";
 import Operations from "./Operations";
+import Operationshome from "./Operationshome";
 import Menplayers from "./Players/Menplayers";
 import ArtistsList from "./Players/Menplayers";
 import Womenplayers from "./Players/Womeplayers";
 import Pressconference from "./Pressconference";
+import Pressconferencehome from "./Pressconferencehome";
 import Shortvideos from "./Shortsvideos";
 import Training from "./Training";
+import Traininghome from "./Traininghome";
 import Trendsvideos from "./Trendsvideos";
+import Trendsvideoshome from "./Trendsvideoshome";
 
  const PublicHome: React.FC = () => {
   return (
@@ -28,31 +35,31 @@ import Trendsvideos from "./Trendsvideos";
              
       
               <section className="mb-3 sm:mb-4">
-                <Trendsvideos />
+                <Trendsvideoshome />
               </section>
       
               <section className="mb-3 sm:mb-4">
-                <Highlights />
+                <Highlightshome />
+              </section>
+      
+              <section className="mb-3 sm:mb-4"> 
+                <Interviewhome />
               </section>
       
               <section className="mb-3 sm:mb-4">
-                <Interview />
+                <Operationshome />
               </section>
       
               <section className="mb-3 sm:mb-4">
-                <Operations />
+                <Behindhome />
               </section>
       
               <section className="mb-3 sm:mb-4">
-                <Behind />
+                <Pressconferencehome />
               </section>
       
               <section className="mb-3 sm:mb-4">
-                <Pressconference />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Training />
+                <Traininghome />
               </section>
             </div>
           </main>
