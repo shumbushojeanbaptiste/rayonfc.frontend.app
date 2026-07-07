@@ -101,6 +101,11 @@ interface EditForm {
   currency_id: string;
 }
 
+interface Category {
+  category_id: number;
+  category_name: string;
+}
+
 const TABS: { key: Tab; label: string }[] = [
   { key: "videos", label: "Pending Videos" },
   { key: "public", label: "Public Videos" },
@@ -260,8 +265,22 @@ export default function Content() {
     currency_id: "",
   });
   const [editLoading, setEditLoading] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        const resCategories = await api.get("/api/categories/all");
+        setCategories(resCategories?.data?.data || []);
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+      }
+    }
+
+    loadCategories();
+  }, []);
 
   const loadPendingVideos = async () => {
     try {
@@ -693,6 +712,7 @@ export default function Content() {
         <EditVideoModal
           item={editItem}
           form={editForm}
+          categories={categories}
           loading={editLoading}
           onChange={handleEditChange}
           onCancel={closeEditModal}
@@ -970,6 +990,7 @@ function ActionMenu({
 function EditVideoModal({
   item,
   form,
+  categories,
   loading,
   onChange,
   onCancel,
@@ -977,6 +998,7 @@ function EditVideoModal({
 }: {
   item: Item;
   form: EditForm;
+  categories: Category[];
   loading: boolean;
   onChange: (field: keyof EditForm, value: string) => void;
   onCancel: () => void;
@@ -1029,13 +1051,18 @@ function EditVideoModal({
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-xs text-[#aaaaaa]">Category</label>
-              <input
-                type="number"
+              <select
                 value={form.category}
                 onChange={(e) => onChange("category", e.target.value)}
                 className="w-full rounded-lg border border-[#2f2f2f] bg-gray-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500"
-                placeholder="1"
-              />
+              >
+                <option value="">Select Category</option>
+                {categories.map((c) => (
+                  <option key={c.category_id} value={c.category_id}>
+                    {c.category_name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
