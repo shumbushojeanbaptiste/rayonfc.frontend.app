@@ -168,16 +168,16 @@ const Interviewhome: React.FC = () => {
                     <div className="absolute top-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[11px] text-white">
                       {video.duration || "--"}
                     </div>
+                  </div>
 
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <h3 className="line-clamp-1 text-sm sm:text-base font-semibold text-white">
-                        {video.title || "Untitled Video"}
-                      </h3>
+                  <div className="mt-2">
+                    <h3 className="line-clamp-1 text-sm sm:text-base font-semibold text-white">
+                      {video.title || "Untitled Video"}
+                    </h3>
 
-                      {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
-                        {getChannelName(video)}
-                      </p>*/}
-                    </div>
+                    {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
+                      {getChannelName(video)}
+                    </p>*/}
                   </div>
                 </div>
               ))

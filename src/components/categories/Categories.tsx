@@ -1,26 +1,29 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ use React Router
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import api from "../../api";
 
-type Category = {
+export type Category = {
   category_id: number;
   category_name: string;
 };
 
-export default function Categories() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [active, setActive] = useState<string>("All");
+type CategoriesProps = {
+  activeCategory: string;
+  onCategoryChange: (category: Category) => void;
+};
 
+export default function Categories({
+  activeCategory,
+  onCategoryChange,
+}: CategoriesProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(true);
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate(); // ✅ React Router hook
 
-  // 🔄 Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -28,8 +31,6 @@ export default function Categories() {
 
         if (res.data?.success) {
           const apiCategories: Category[] = res.data.data;
-
-          // Add "All" at the beginning
           setCategories([{ category_id: 0, category_name: "All" }, ...apiCategories]);
         }
       } catch (error) {
@@ -70,42 +71,12 @@ export default function Categories() {
     return () => el.removeEventListener("scroll", listener);
   }, [categories]);
 
-  // Handle category click
   const handleCategoryClick = (category: Category) => {
-    setActive(category.category_name);
-
-    if (category.category_name === "Highlights") {
-      navigate("/highlights"); 
-    }
-    else if (category.category_name === "Training") {
-      navigate("/trainings"); 
-    }
-     else if (category.category_name === "Operations") {
-      navigate("/operations"); 
-    }
-     else if (category.category_name === "Interview") {
-      navigate("/interviews"); 
-    }
-     else if (category.category_name === "Press Conference") {
-      navigate("/pconference"); 
-    }
-     else if (category.category_name === "Behind the Scenes") {
-      navigate("/bscenes"); 
-    }
-     else if (category.category_name === "Live") {
-      navigate("/live"); 
-    }
-    else if (category.category_id !== 0) {
-      navigate(`/category/${category.category_id}`); // optional dynamic category page
-    } else {
-      navigate("/"); // All categories
-    } 
-    
+    onCategoryChange(category);
   };
 
   return (
     <div className="relative w-full border-gray-200 select-none">
-      {/* LEFT ARROW */}
       {showLeft && (
         <button
           onClick={scrollLeft}
@@ -119,7 +90,6 @@ export default function Categories() {
         </button>
       )}
 
-      {/* SCROLLABLE CATEGORIES */}
       <div
         ref={scrollRef}
         className="flex gap-3 overflow-x-auto scrollbar-hide scroll-smooth
@@ -135,7 +105,7 @@ export default function Categories() {
               md:px-5 md:py-2.5 md:text-sm
               font-medium transition
               ${
-                active === category.category_name
+                activeCategory === category.category_name
                   ? "bg-blue-900 text-white"
                   : "bg-gray-200 text-gray-950 hover:bg-gray-300 dark:text-white dark:bg-gray-800"
               }
@@ -146,7 +116,6 @@ export default function Categories() {
         ))}
       </div>
 
-      {/* RIGHT ARROW */}
       {showRight && (
         <button
           onClick={scrollRight}

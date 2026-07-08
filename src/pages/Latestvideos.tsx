@@ -91,8 +91,10 @@ const Latestvideos: React.FC = () => {
                 <h3 className="line-clamp-2 text-sm sm:text-base font-semibold text-white">
                   {video.title || "Untitled Video"}
                 </h3>
-
-                {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
+                {/*<h3 className="line-clamp-2 text-xs sm:text-base font-normal text-white">
+                  {video.description || "Untitled Video"}
+                </h3>
+                <p className="mt-1 line-clamp-1 text-xs text-gray-300">
                   {video.owner_name || video.owner || "Unknown Owner"}
                 </p>*/}
               </div>

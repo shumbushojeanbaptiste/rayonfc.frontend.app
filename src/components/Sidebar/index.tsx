@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   Home,
   TrendingUp,
@@ -15,32 +15,21 @@ import {
   Library,
   History,
   Bookmark,
-  User,
-  Bolt,
   Settings,
   HeartHandshake,
-  BadgeDollarSign,
-  ListVideo,
-  Clapperboard,
-  Music4,
-  Tv,
-  MicVocal,
   Handshake,
 } from 'lucide-react';
 
-import { CgGirl } from "react-icons/cg";
-import { TbMoodBoy } from "react-icons/tb";
 import { GrRun } from "react-icons/gr";
 import { GiMicrophone } from 'react-icons/gi';
 import { FcConferenceCall } from "react-icons/fc";
 import { RiMovieAiLine } from 'react-icons/ri';
 import { CiMoneyCheck1, CiShoppingCart, CiVideoOn } from "react-icons/ci";
-import { MdLiveTv } from "react-icons/md";
 import { IoRadioOutline } from "react-icons/io5";
 
-/* ICON PROPS */
 const iconClass = 'w-5 h-5 ';
 const iconClas = 'w-6 h-6';
+
 const RunIcon = () => <GrRun className={iconClas} />;
 const InterviewIcon = () => <GiMicrophone className={iconClas} />;
 const Operation = () => <Handshake className={iconClass} />;
@@ -50,11 +39,11 @@ const Scenes = () => <RiMovieAiLine className={iconClas} />;
 const Plan = () => <CiMoneyCheck1 className={iconClas} />;
 const Shop = () => <CiShoppingCart className={iconClas} />;
 const Live = () => (
-  <div className="flex items-center gap-1 text-red  rounded-md">
+  <div className="flex items-center gap-1 text-red rounded-md">
     <IoRadioOutline className="w-6 h-6" />
   </div>
 );
-/* ICON WRAPPERS */
+
 const HomeIcon = () => <Home className={iconClass} />;
 const ChartIcon = () => <TrendingUp className={iconClass} />;
 const LatestIcon = () => <Clock className={iconClass} />;
@@ -70,7 +59,21 @@ const LibraryIcon = () => <Library className={iconClass} />;
 const HistoryIcon = () => <History className={iconClass} />;
 const WatchLaterIcon = () => <Bookmark className={iconClass} />;
 
-/* TOOLTIP */
+type MenuItem = {
+  label: string;
+  to: string;
+  icon: React.FC;
+  state?: {
+    category_id: number;
+    category_name: string;
+  };
+};
+
+type MenuSection = {
+  title: string;
+  items: MenuItem[];
+};
+
 const Tooltip = ({ label }: { label: string }) => (
   <span
     className="
@@ -86,8 +89,7 @@ const Tooltip = ({ label }: { label: string }) => (
   </span>
 );
 
-/* MENU */
-const MENU = [
+const MENU: MenuSection[] = [
   {
     title: '',
     items: [
@@ -95,40 +97,57 @@ const MENU = [
       { label: 'Live', to: '/live', icon: Live },
       { label: 'Trending', to: '/trends', icon: ChartIcon },
       { label: 'Last Videos', to: '/last', icon: LatestIcon },
-      //{ label: 'Free videos', to: '/videos', icon: RunIcon },
-    ],
-  }, 
-  
-   {
-    title: 'Plans ',
-    items: [
-      { label: 'Update your Plan', to: '/plans', icon: Plan },
-     
     ],
   },
 
-  //{
-   // title: 'E-Shop',
-    //items: [
-     // { label: 'E-Shop', to: '/shop', icon: Shop },
-     
-   // ],
- // },
+  {
+    title: 'Plans ',
+    items: [{ label: 'Update your Plan', to: '/plans', icon: Plan }],
+  },
 
- {
+  {
     title: 'Explore',
     items: [
-      { label: 'Highlights', to: '/highlights', icon: Highlights },
-      { label: 'Training', to: '/trainings', icon: RunIcon },
-      { label: 'Operations', to: '/operations', icon: Operation },
-      { label: 'Interview', to: '/interviews', icon: InterviewIcon },
-      { label: 'Press Conference', to: '/pconference', icon: Conference },
-      { label: 'Behind the Scenes', to: '/bscenes', icon: Scenes },
+      {
+        label: 'Highlights',
+        to: '/',
+        state: { category_id: 1, category_name: 'Highlights' },
+        icon: Highlights,
+      },
+      {
+        label: 'Training',
+        to: '/',
+        state: { category_id: 2, category_name: 'Training' },
+        icon: RunIcon,
+      },
+      {
+        label: 'Operations',
+        to: '/',
+        state: { category_id: 3, category_name: 'Operations' },
+        icon: Operation,
+      },
+      {
+        label: 'Interview',
+        to: '/',
+        state: { category_id: 4, category_name: 'Interview' },
+        icon: InterviewIcon,
+      },
+      {
+        label: 'Press Conference',
+        to: '/',
+        state: { category_id: 5, category_name: 'Press Conference' },
+        icon: Conference,
+      },
+      {
+        label: 'Behind the Scenes',
+        to: '/',
+        state: { category_id: 6, category_name: 'Behind the Scenes' },
+        icon: Scenes,
+      },
     ],
   },
- 
 
-  { 
+  {
     title: '',
     items: [
       { label: 'Settings', to: '/settings', icon: Settings },
@@ -145,7 +164,11 @@ interface SidebarProps {
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  const activeCategoryId = (location.state as any)?.category_id;
 
   useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth < 1024);
@@ -163,18 +186,19 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
         setSidebarOpen(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () =>
       document.removeEventListener('mousedown', handleClickOutside);
   }, [sidebarOpen, setSidebarOpen]);
 
   useEffect(() => {
-  if (sidebarOpen && isMobile) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
-}, [sidebarOpen, isMobile]);
+    if (sidebarOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [sidebarOpen, isMobile]);
 
   return (
     <>
@@ -237,8 +261,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
                     : 'space-y-1'
                 }`}
               >
-                {section.items.map(item => {
+                {section.items.map((item) => {
                   const Icon = item.icon;
+                  const itemCategoryId = item.state?.category_id;
+
                   return (
                     <li
                       key={item.label}
@@ -248,20 +274,31 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
                     >
                       <NavLink
                         to={item.to}
+                        state={item.state}
                         onClick={() => isMobile && setSidebarOpen(false)}
-                        className={({ isActive }) =>
-                          `${
+                        className={({ isActive }) => {
+                          const isCategoryActive =
+                            !!itemCategoryId &&
+                            Number(activeCategoryId) === Number(itemCategoryId);
+
+                          const active =
+                            isCategoryActive ||
+                            (!activeCategoryId && item.label === 'Home' && isActive) ||
+                            (!itemCategoryId && item.label !== 'Home' && isActive);
+
+                          return `${
                             !expanded && !isMobile
                               ? 'flex flex-col items-center justify-center py-2 px-1 rounded-lg w-full'
                               : 'flex items-center gap-3 px-3 py-2 rounded-lg'
                           } ${
-                            isActive
+                            active
                               ? 'bg-gray-100 dark:bg-meta-4 font-medium'
                               : 'hover:bg-gray-50 dark:hover:bg-meta-4'
-                          }`
-                        }
+                          }`;
+                        }}
                       >
                         <Icon />
+
                         {!expanded && !isMobile ? (
                           <span className="text-xs mt-1 text-center">
                             {item.label}
@@ -269,6 +306,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, expanded }: SidebarProps) => {
                         ) : (
                           <span className="text-md">{item.label}</span>
                         )}
+
                         {!expanded && !isMobile && <Tooltip label={item.label} />}
                       </NavLink>
                     </li>
