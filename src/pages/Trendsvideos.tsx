@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api";
 import { encodeId } from "../utils/hashid";
 import { Video } from "../types/videouser";
+import Categories, { Category } from "../components/categories/Categories";
+import CategoryVideos from "./CategoryVideos";
 
 const Trendsvideos: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [videos, setVideos] = useState<Video[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(true);
-
-  const navigate = useNavigate();
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [activeCategoryId, setActiveCategoryId] = useState<number>(0);
 
   const fileUrl = (path?: string) =>
     path && path !== "null" && path !== "undefined"
@@ -16,6 +21,26 @@ const Trendsvideos: React.FC = () => {
       : "/default-avatar.png";
 
   useEffect(() => {
+    const category = location.state as
+      | {
+          category_id?: number;
+          category_name?: string;
+        }
+      | undefined;
+
+    if (category?.category_id && category?.category_name) {
+      setActiveCategory(category.category_name);
+      setActiveCategoryId(category.category_id);
+      return;
+    }
+
+    setActiveCategory("All");
+    setActiveCategoryId(0);
+  }, [location.state]);
+
+  useEffect(() => {
+    if (activeCategoryId !== 0) return;
+
     setLoadingVideos(true);
 
     api
@@ -29,7 +54,12 @@ const Trendsvideos: React.FC = () => {
       .finally(() => {
         setLoadingVideos(false);
       });
-  }, []);
+  }, [activeCategoryId]);
+
+  const handleCategoryChange = (category: Category) => {
+    setActiveCategory(category.category_name);
+    setActiveCategoryId(category.category_id);
+  };
 
   const SkeletonCard = () => (
     <div className="animate-pulse">
@@ -39,22 +69,29 @@ const Trendsvideos: React.FC = () => {
     </div>
   );
 
-  return (
-    <section className="w-full text-white px-4 sm:px-8 lg:px-12 py-5">
-      <div className="mb-5 flex items-center justify-between">
-        <h2 className="text-xl sm:text-2xl font-bold tracking-tight">
-          Trends Videos
-        </h2>
-      </div>
+  const renderContent = () => {
+    if (activeCategoryId !== 0) {
+      return (
+        <CategoryVideos
+          categoryId={activeCategoryId}
+          title={activeCategory}
+        />
+      );
+    }
 
-      {loadingVideos ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+    if (loadingVideos) {
+      return (
+        <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {[...Array(8)].map((_, i) => (
             <SkeletonCard key={i} />
           ))}
         </div>
-      ) : videos.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8">
+      );
+    }
+
+    if (videos.length > 0) {
+      return (
+        <div className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {videos.map((video) => (
             <div
               key={video.id}
@@ -78,22 +115,37 @@ const Trendsvideos: React.FC = () => {
               </div>
 
               <div className="mt-3">
-                <h3 className="line-clamp-2 text-sm sm:text-base font-semibold text-white">
+                <h3 className="line-clamp-2 text-sm font-semibold text-white sm:text-base">
                   {video.title || "Untitled Video"}
                 </h3>
-
-                {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
-                  {video.owner || "Canal+ Original"}
-                </p>*/}
               </div>
             </div>
           ))}
         </div>
-      ) : (
-        <div className="py-6 text-sm text-slate-400">
-          No trending videos available.
-        </div>
-      )}
+      );
+    }
+
+    return (
+      <div className="py-6 text-sm text-slate-400">
+        No trending videos available.
+      </div>
+    );
+  };
+
+  return (
+    <section className="w-full text-white">
+      <div className="mx-auto w-full max-w-[1600px]">
+        <section className="mb-3 sm:mb-4">
+          <Categories
+            activeCategory={activeCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+        </section>
+
+        <section className="px-4 py-5 sm:px-8 lg:px-12">
+          {renderContent()}
+        </section>
+      </div>
     </section>
   );
 };
