@@ -47,6 +47,7 @@ const Trendsvideoshome: React.FC = () => {
   const SkeletonCard = () => (
     <div className="flex-shrink-0 w-[210px] sm:w-[250px] md:w-[300px] lg:w-[330px] animate-pulse">
       <div className="h-[118px] sm:h-[140px] md:h-[170px] lg:h-[185px] rounded bg-zinc-800" />
+      <div className="mt-2 h-4 w-3/4 rounded bg-zinc-800" />
     </div>
   );
 
@@ -82,7 +83,7 @@ const Trendsvideoshome: React.FC = () => {
                     state: { ...video, source: "trending" },
                   })
                 }
-                className="group/card relative flex-shrink-0 w-[210px] sm:w-[250px] md:w-[300px] lg:w-[330px] cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20"
+                className="group/card flex-shrink-0 w-[210px] sm:w-[250px] md:w-[300px] lg:w-[330px] cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-20"
               >
                 <div className="relative overflow-hidden rounded bg-zinc-900 shadow-lg">
                   <img
@@ -91,21 +92,21 @@ const Trendsvideoshome: React.FC = () => {
                     className="w-full h-[118px] sm:h-[140px] md:h-[170px] lg:h-[185px] object-cover"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-70" />
 
                   <div className="absolute top-2 right-2 rounded bg-black/80 px-2 py-0.5 text-[11px] text-white">
                     {video.duration || "--"}
                   </div>
+                </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="line-clamp-1 text-sm sm:text-base font-semibold text-white">
-                      {video.title || "Untitled Video"}
-                    </h3>
+                <div className="px-1 pt-2 pb-1">
+                  <h3 className="line-clamp-2 text-sm sm:text-base font-semibold text-white leading-snug">
+                    {video.title || "Untitled Video"}
+                  </h3>
 
-                    {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
-                      {video.owner || "Canal+ Original"}
-                    </p>*/}
-                  </div>
+                  {/*<p className="mt-1 line-clamp-1 text-xs text-gray-300">
+                    {video.owner || "Canal+ Original"}
+                  </p>*/}
                 </div>
               </div>
             ))

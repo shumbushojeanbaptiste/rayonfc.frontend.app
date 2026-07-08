@@ -461,6 +461,13 @@ export default function Content() {
 
   const openEditModal = (item: Item) => {
     const raw = item.raw || {};
+    const rawPrice = raw?.price ?? "";
+    const detectedPremium =
+      raw?.is_premium !== undefined && raw?.is_premium !== null
+        ? String(raw.is_premium)
+        : Number(rawPrice || 0) > 0
+        ? "1"
+        : "0";
 
     setOpenMenuId("");
     setPlayerItem(null);
@@ -471,8 +478,8 @@ export default function Content() {
       title: raw?.title || raw?.video_title || item.title || "",
       description: raw?.description || raw?.video_description || "",
       category: String(raw?.category ?? raw?.category_id ?? ""),
-      price: String(raw?.price ?? ""),
-      is_premium: String(raw?.is_premium ?? 0),
+      price: detectedPremium === "0" ? "0" : String(rawPrice || ""),
+      is_premium: detectedPremium,
       currency_id: String(raw?.currency_id ?? ""),
     });
   };
@@ -486,10 +493,20 @@ export default function Content() {
     field: keyof EditForm,
     value: string
   ) => {
-    setEditForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setEditForm((prev) => {
+      if (field === "is_premium") {
+        return {
+          ...prev,
+          is_premium: value,
+          price: value === "0" ? "0" : prev.price,
+        };
+      }
+
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
   };
 
   const handleEditSubmit = async () => {
@@ -511,7 +528,7 @@ export default function Content() {
         title: editForm.title.trim(),
         description: editForm.description.trim(),
         category: Number(editForm.category || 0),
-        price: Number(editForm.price || 0),
+        price: editForm.is_premium === "0" ? 0 : Number(editForm.price || 0),
         is_premium: Number(editForm.is_premium || 0),
         currency_id: Number(editForm.currency_id || 0),
       });
@@ -1066,30 +1083,32 @@ function EditVideoModal({
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-[#aaaaaa]">Price</label>
-              <input
-                type="number"
-                step="0.01"
-                value={form.price}
-                onChange={(e) => onChange("price", e.target.value)}
-                className="w-full rounded-lg border border-[#2f2f2f] bg-gray-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500"
-                placeholder="100.50"
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-xs text-[#aaaaaa]">Premium</label>
+              <label className="mb-1 block text-xs text-[#aaaaaa]">Video type</label>
               <select
                 value={form.is_premium}
                 onChange={(e) => onChange("is_premium", e.target.value)}
                 className="w-full rounded-lg border border-[#2f2f2f] bg-gray-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500"
               >
-                <option value="0">No</option>
-                <option value="1">Yes</option>
+                <option value="1">Premium</option>
+                <option value="0">Free</option>
               </select>
             </div>
 
             <div>
+              <label className="mb-1 block text-xs text-[#aaaaaa]">Price</label>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.is_premium === "0" ? "0" : form.price}
+                disabled={form.is_premium === "0"}
+                onChange={(e) => onChange("price", e.target.value)}
+                className="w-full rounded-lg border border-[#2f2f2f] bg-gray-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+                placeholder="100.50"
+              />
+            </div>
+
+            {/*<div>
               <label className="mb-1 block text-xs text-[#aaaaaa]">Currency ID</label>
               <input
                 type="number"
@@ -1098,7 +1117,7 @@ function EditVideoModal({
                 className="w-full rounded-lg border border-[#2f2f2f] bg-gray-900 px-3 py-2 text-sm text-slate-200 outline-none focus:border-blue-500"
                 placeholder="3"
               />
-            </div>
+            </div>*/}
           </div>
         </div>
 

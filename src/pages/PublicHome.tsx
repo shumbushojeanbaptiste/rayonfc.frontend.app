@@ -1,69 +1,66 @@
-// src/pages/PublicHome.tsx 
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import Categories, { Category } from "../components/categories/Categories";
+import PublicVideos from "./PublicVideos";
+import CategoryVideos from "./CategoryVideos";
 
-import Plans from "../components/balance/plans/Plans";
-import Categories from "../components/categories/Categories";
-import Behind from "./Behindscenes";
-import Behindhome from "./Behindsceneshome";
-import Highlights from "./Highlights";
-import Highlightshome from "./Highlightshome";
-import Interview from "./Interview";
-import Interviewhome from "./Interviewhome";
-import Latestvideos from "./Latestvideos";
-import Livevideos from "./Livevideos";
-import Operations from "./Operations";
-import Operationshome from "./Operationshome";
-import Menplayers from "./Players/Menplayers";
-import ArtistsList from "./Players/Menplayers";
-import Womenplayers from "./Players/Womeplayers";
-import Pressconference from "./Pressconference";
-import Pressconferencehome from "./Pressconferencehome";
-import Shortvideos from "./Shortsvideos";
-import Training from "./Training";
-import Traininghome from "./Traininghome";
-import Trendsvideos from "./Trendsvideos";
-import Trendsvideoshome from "./Trendsvideoshome";
+const PublicHome: React.FC = () => {
+  const location = useLocation();
 
- const PublicHome: React.FC = () => {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategoryId, setActiveCategoryId] = useState(0);
+
+  useEffect(() => {
+    const category = location.state as
+      | {
+          category_id?: number;
+          category_name?: string;
+        }
+      | undefined;
+
+    if (category?.category_id && category?.category_name) {
+      setActiveCategory(category.category_name);
+      setActiveCategoryId(category.category_id);
+      return;
+    }
+
+    setActiveCategory("All");
+    setActiveCategoryId(0);
+  }, [location.state]);
+
+  const handleCategoryChange = (category: Category) => {
+    setActiveCategory(category.category_name);
+    setActiveCategoryId(category.category_id);
+  };
+
+  const renderContent = () => {
+    if (activeCategoryId === 0) {
+      return <PublicVideos />;
+    }
+
+    return (
+      <CategoryVideos
+        categoryId={activeCategoryId}
+        title={activeCategory}
+      />
+    );
+  };
+
   return (
-   
-      <main className="min-h-screen bg-[#0f172a] text-white">
-            <div className="mx-auto w-full max-w-[1600px]">
-              <section className="mb-3 sm:mb-4">
-                <Categories />
-              </section>
-      
-             
-      
-              <section className="mb-3 sm:mb-4">
-                <Trendsvideoshome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Highlightshome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4"> 
-                <Interviewhome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Operationshome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Behindhome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Pressconferencehome />
-              </section>
-      
-              <section className="mb-3 sm:mb-4">
-                <Traininghome />
-              </section>
-            </div>
-          </main>
- 
+    <main className="min-h-screen bg-[#0f172a] text-white">
+      <div className="mx-auto w-full max-w-[1600px]">
+        <section className="mb-3 sm:mb-4">
+          <Categories
+            activeCategory={activeCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+        </section>
+
+        <section className="mb-3 sm:mb-4">
+          {renderContent()}
+        </section>
+      </div>
+    </main>
   );
 };
 
