@@ -971,7 +971,7 @@ function ActionMenu({
             <button
               type="button"
               onClick={() => onAskConfirm("unpublish", item)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-yellow-300 transition hover:bg-yellow-500/10"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-white transition hover:bg-gray-500/10"
             >
               <span className="flex h-5 w-5 items-center justify-center">
                 <VisibilityOffIcon />
@@ -984,7 +984,7 @@ function ActionMenu({
             <button
               type="button"
               onClick={() => onAskConfirm("remove", item)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-500 transition hover:bg-red-500/10"
+              className="flex w-full items-center gap-3 px-4 py-3 text-left text-sm text-red-500 transition hover:bg-gray-500/10"
             >
               <span className="flex h-5 w-5 items-center justify-center">
                 <TrashIcon />
@@ -1222,7 +1222,7 @@ function VideoPlayerModal({
               <button
                 type="button"
                 onClick={() => onAskConfirm("publish", item)}
-                className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-500"
+                className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-500"
               >
                 <PublishIcon />
                 {item.type === "private" ? "Publish Publicly" : "Publish Video"}

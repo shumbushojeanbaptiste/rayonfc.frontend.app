@@ -88,9 +88,9 @@ const PublicVideos: React.FC = () => {
                   {video.title || "Untitled Video"}
                 </h3>
 
-                <p className="mt-1 line-clamp-1 text-xs text-gray-400">
+                {/*<p className="mt-1 line-clamp-1 text-xs text-gray-400">
                   {video.owner || "Public Video"}
-                </p>
+                </p>*/}
               </div>
             </div>
           ))}
