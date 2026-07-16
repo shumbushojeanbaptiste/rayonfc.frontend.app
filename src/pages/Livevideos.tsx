@@ -91,12 +91,12 @@ const Livevideos: React.FC = () => {
           {/* TOP BAR */}
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="font-canal text-2xl md:text-3xl font-semibold tracking-tight">
+              {/*<h1 className="font-canal text-2xl md:text-3xl font-semibold tracking-tight">
                 Live Streaming
               </h1>
               <p className="mt-1 text-sm text-gray-400">
                 Discover live content in a premium entertainment style.
-              </p>
+              </p>*/}
             </div>
 
             {/*<div className="relative w-full md:w-[360px]">

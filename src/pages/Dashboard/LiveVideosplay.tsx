@@ -493,7 +493,7 @@ useEffect(() => {
           `}
           onClick={() => {
             forceScrollTop();
-            navigate(`/live/watch/${encodeId(getVideoId(r))}`, { state: r });
+            navigate(`/watch/${encodeId(getVideoId(r))}`, { state: r });
           }}
         >
 
