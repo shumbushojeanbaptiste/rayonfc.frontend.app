@@ -13,19 +13,6 @@ const Verify = () => {
   const [loading, setLoading] = useState(false);
   const [initialized, setInitialized] = useState(false);
 
-  const isStrongPassword = (password: string) => {
-    const hasAlphabet = /[A-Za-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecialChar = /[^A-Za-z0-9]/.test(password);
-
-    return (
-      password.length >= 6 &&
-      hasAlphabet &&
-      hasNumber &&
-      hasSpecialChar
-    );
-  };
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const emailParam = params.get("email");
@@ -43,19 +30,8 @@ const Verify = () => {
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const emailOrPhone = email.trim();
-    const verificationCode = code.trim();
-    const userPassword = password.trim();
-
-    if (!emailOrPhone || !verificationCode || !userPassword) {
+    if (!email || !code || !password) {
       toast.error("All fields are required");
-      return;
-    }
-
-    if (!isStrongPassword(userPassword)) {
-      toast.error(
-        "Password must be at least 6 characters and include a letter, number, and special character"
-      );
       return;
     }
 
@@ -63,9 +39,9 @@ const Verify = () => {
       setLoading(true);
 
       await api.post("/api/accounts/verify-email", {
-        email: emailOrPhone,
-        token: verificationCode,
-        password: userPassword,
+        email,
+        token: code,
+        password,
       });
 
       toast.success("Account verified successfully!");
@@ -80,72 +56,66 @@ const Verify = () => {
 
   if (!initialized) {
     return (
-      <div className="flex h-screen items-center justify-center text-slate-300">
+      <div className="flex items-center justify-center h-screen text-slate-300">
         <p>Loading verification…</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100 dark:bg-boxdark">
+    <div className="flex items-center justify-center h-screen bg-gray-100 dark:bg-boxdark">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
-        className="w-full max-w-md rounded-xl bg-slate-100 p-10 shadow-lg dark:bg-black"
+        className="p-10 bg-slate-100 dark:bg-black rounded-xl shadow-lg w-full max-w-md"
       >
-        <h1 className="mb-6 text-center text-2xl font-bold dark:text-slate-300">
+        <h1 className="text-2xl font-bold mb-6 text-center dark:text-slate-300">
           Verify Your Account
         </h1>
 
         <form onSubmit={handleConfirm}>
+          {/* Email */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium dark:text-slate-300">
-              Email or Phone
+            <label className="block mb-2 text-sm font-medium dark:text-slate-300">
+              Email
             </label>
-
             <input
-              type="text"
+              type="email"
               value={email}
               disabled
-              className="w-full rounded-lg border border-stroke bg-gray-100 px-4 py-3 text-black dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
+              className="w-full rounded-lg border border-stroke bg-gray-100 py-3 px-4 text-black dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
             />
           </div>
 
+          {/* Verification Code */}
           <div className="mb-4">
-            <label className="mb-2 block text-sm font-medium dark:text-slate-300">
+            <label className="block mb-2 text-sm font-medium dark:text-slate-300">
               Verification Code
             </label>
-
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="Enter verification code"
-              className="w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-center text-black tracking-widest outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
+              placeholder="Enter code sent to your email"
+              className="w-full rounded-lg border border-stroke bg-transparent py-3 px-4 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300 text-center tracking-widest"
               required
             />
           </div>
 
-          <div className="mb-2">
-            <label className="mb-2 block text-sm font-medium dark:text-slate-300">
+          {/* Password */}
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-medium dark:text-slate-300">
               Create Password
             </label>
-
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Example: Pass@123"
-              className="w-full rounded-lg border border-stroke bg-transparent px-4 py-3 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
+              className="w-full rounded-lg border border-stroke bg-transparent py-3 px-4 text-black outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-slate-300"
               required
             />
           </div>
-
-          <p className="mb-6 text-xs text-slate-500 dark:text-slate-400">
-            Password must be at least 6 characters and include a letter, number,
-            and special character.
-          </p>
 
           <motion.button
             whileHover={{ scale: 1.02 }}
