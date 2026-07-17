@@ -98,7 +98,7 @@ const Latestvideos: React.FC = () => {
           {videos.map((video, idx) => (
             <div
               key={`${video.id}-${idx}`}
-              onClick={() =>
+              onClick={() => 
                 navigate(`/watch/${encodeId(video.id)}`, {
                   state: {
                     ...video,

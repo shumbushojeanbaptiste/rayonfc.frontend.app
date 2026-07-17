@@ -197,7 +197,7 @@ export default function App() {
         <Route element={<UniversalLayout />}>
           <Route path="reels" element={<Shortvideos />} />
           <Route path="trends" element={<Trendsvideos />} />
-          <Route path="live" element={<Livevideos />} />
+         
           <Route path="watch/:hash" element={<Videosplay />} />
           <Route path="live/watch/:hash" element={<VideosplayLive />} />
           <Route path="highlights" element={<Highlights />} />
@@ -229,6 +229,7 @@ export default function App() {
           <Route path="sports" element={<Trendsvideos />} />*/}
           <Route path="videos" element={<Freevideos />} />
           {/*<Route path="myvideos" element={<Purchvideos />} />*/}
+           <Route path="live" element={<Livevideos />} />
           <Route path="last" element={<Latestvideos />} />
           {/*<Route path="myprofile" element={<Profile />} />/}
           {/*<Route path="profile" element={<Profileclient />} />
