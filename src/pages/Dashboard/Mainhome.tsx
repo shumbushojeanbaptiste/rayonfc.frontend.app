@@ -45,6 +45,7 @@ const Mainhome: React.FC = () => {
   };
 
   return (
+    <>
     <main className="min-h-screen bg-[#0f172a] text-white">
       <div className="mx-auto w-full max-w-[1600px]">
         <section className="mb-3 sm:mb-4">
@@ -57,6 +58,7 @@ const Mainhome: React.FC = () => {
         <section className="mb-3 sm:mb-4">{renderContent()}</section>
       </div>
     </main>
+    </>
   );
 };
 
