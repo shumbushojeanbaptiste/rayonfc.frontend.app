@@ -164,7 +164,7 @@ const DropdownNotification = () => {
               <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
               <button
                 onClick={markAllAsRead}
-                className="text-xs text-green-600 hover:underline"
+                className="text-xs text-blue-500 hover:underline"
               >
                 Mark all as read
               </button>
@@ -176,7 +176,7 @@ const DropdownNotification = () => {
                   <Link
                     onClick={() => markAsRead(n._id)}
                     className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${
-                      n.reader_count === 0 ? "bg-gray-100 dark:bg-green-950" : ""
+                      n.reader_count === 0 ? "bg-gray-100 dark:bg-blue-950" : ""
                     }`}
                     to={n.url}
                   >
