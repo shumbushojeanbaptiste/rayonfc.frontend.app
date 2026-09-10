@@ -10,7 +10,7 @@ import PublicHome from "./pages/PublicHome";
 import SignIn from "./pages/Authentication/SignIn";
 import SignUp from "./pages/Authentication/SignUp";
 import Verify from "./pages/Authentication/Verify";
-import Videosplay from "./pages/Dashboard/Videosplay";
+import Videosplay from "./pages/Dashboard/Videosplay"; 
 
 /* Auth pages */
 import Mainhome from "./pages/Dashboard/Mainhome";
