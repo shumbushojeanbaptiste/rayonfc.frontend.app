@@ -7,7 +7,6 @@ export const api = axios.create({
 
 // 🔐 Attach JWT + handle FormData
 api.interceptors.request.use((config) => {
-  // Use localStorage instead of sessionStorage
   const token = localStorage.getItem("token");
 
   if (token) {
@@ -16,7 +15,7 @@ api.interceptors.request.use((config) => {
 
   // Let browser set multipart boundary
   if (config.data instanceof FormData) {
-    delete config.headers["Content-Type"]; 
+    delete config.headers["Content-Type"];
   }
 
   return config;
@@ -26,11 +25,19 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 || err.response?.status === 403) {
-      localStorage.removeItem("token"); // ✅ changed
+    const status = err.response?.status;
+
+    // redirect when login credentials are wrong
+   
+
+    if ((status === 401 || status === 403)) {
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
-      window.location.href = "/"; // redirect to login page
+
+      // Send authenticated users to Sign In
+      window.location.href = "/auth/signin";
     }
+
     return Promise.reject(err);
   }
 );

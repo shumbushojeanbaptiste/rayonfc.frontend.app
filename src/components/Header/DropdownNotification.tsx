@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import ClickOutside from "../ClickOutside";
 import api from "../../api";
@@ -14,127 +14,198 @@ interface Notification {
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notifying, setNotifying] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const dropdownRef = useRef<HTMLDivElement | null>(null); // for click outside detection
+  const fetchingRef = useRef(false);
 
-  // Polling interval in milliseconds
-  const POLL_INTERVAL = 15000; // 15 seconds
+  // ------------------------------------------------
+  // UPDATE UNREAD COUNT
+  // ------------------------------------------------
+  const updateUnread = useCallback((data: Notification[]) => {
+    const unread = data.filter(
+      (notification) => notification.reader_count === 0
+    ).length;
 
-  
+    setUnreadCount(unread);
+  }, []);
 
-  // Fetch notifications from API
-  const fetchNotifications = async () => {
+  // ------------------------------------------------
+  // FETCH NOTIFICATIONS
+  // ------------------------------------------------
+  const fetchNotifications = useCallback(async () => {
+    // Prevent duplicate requests
+    if (fetchingRef.current) {
+      return;
+    }
+
+    // Don't fetch when browser tab is hidden
+    if (document.visibilityState === "hidden") {
+      return;
+    }
+
+    fetchingRef.current = true;
+    setLoading(true);
+
     try {
       const res = await api.get("/api/metadata/notifications");
-      const data = res.data.data;
+
+      const data: Notification[] = res.data?.data || [];
+
       setNotifications(data);
       updateUnread(data);
     } catch (err) {
       console.error("Failed to fetch notifications:", err);
+    } finally {
+      fetchingRef.current = false;
+      setLoading(false);
     }
-  };
+  }, [updateUnread]);
 
-  // Update unread count
-  const updateUnread = (data: Notification[]) => {
-    const unread = data.filter((n) => n.reader_count === 0).length;
-    setUnreadCount(unread);
-    setNotifying(unread > 0);
-  };
+  // ------------------------------------------------
+  // INITIAL LOAD
+  // ------------------------------------------------
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
-  // Mark a notification as read
+  // ------------------------------------------------
+  // REFRESH WHEN TAB BECOMES ACTIVE
+  // ------------------------------------------------
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    return () => {
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+    };
+  }, [fetchNotifications]);
+
+  // ------------------------------------------------
+  // MARK ONE NOTIFICATION AS READ
+  // ------------------------------------------------
   const markAsRead = async (id: string) => {
-  try {
-    // Ensure 'id' is a string
-    if (typeof id !== "string") {
+    if (typeof id !== "string" || !id) {
       console.error("Invalid notification id:", id);
       return;
     }
 
-    await api.put("/api/metadata/notifications/view/add", {
-      notification_ids: id,  // must be string
-      user_id: 1,
-    });
-
-    const updated = notifications.map((n) =>
-      n._id === id ? { ...n, reader_count: 1 } : n
-    );
-    setNotifications(updated);
-    updateUnread(updated);
-  } catch (err) {
-    console.error("Failed to mark notification as read:", err);
-  }      
-};
-
-
-  // Mark all as read
-  const markAllAsRead = async () => {
     try {
-      const ids = notifications.map((n) => n._id);
-      await api.put("/api/metadata/notifications/view/add", {
-        notification_ids: ids.join(","), // comma-separated string of IDs
-        user_id: 1,
+      await api.put(
+        "/api/metadata/notifications/view/add",
+        {
+          notification_ids: id,
+          user_id: 1,
+        }
+      );
+
+      setNotifications((currentNotifications) => {
+        const updated = currentNotifications.map(
+          (notification) =>
+            notification._id === id
+              ? {
+                  ...notification,
+                  reader_count: 1,
+                }
+              : notification
+        );
+
+        updateUnread(updated);
+
+        return updated;
       });
-      const updated = notifications.map((n) => ({ ...n, reader_count: 1 }));
-      setNotifications(updated);
-      updateUnread(updated);
     } catch (err) {
-      console.error("Failed to mark all notifications as read:", err);
+      console.error(
+        "Failed to mark notification as read:",
+        err
+      );
     }
   };
 
-  // Poll notifications on mount and every POLL_INTERVAL ms
-  useEffect(() => {
-    fetchNotifications(); // initial fetch
-    const interval = setInterval(fetchNotifications, POLL_INTERVAL);
+  // ------------------------------------------------
+  // MARK ALL AS READ
+  // ------------------------------------------------
+  const markAllAsRead = async () => {
+    if (notifications.length === 0) {
+      return;
+    }
 
-    return () => clearInterval(interval); // cleanup
-  }, []);
+    try {
+      const ids = notifications.map(
+        (notification) => notification._id
+      );
 
-  // Close dropdown when clicking outside (additional to ClickOutside wrapper)
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+      await api.put(
+        "/api/metadata/notifications/view/add",
+        {
+          notification_ids: ids.join(","),
+          user_id: 1,
+        }
+      );
 
-  const SearchIcon = (
-    <svg
-      className="fill-body hover:fill-green-950 dark:fill-bodydark dark:hover:fill-green-950"
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M9.16666 3.33332C5.945 3.33332 3.33332 5.945 3.33332 9.16666C3.33332 12.3883 5.945 15 9.16666 15C12.3883 15 15 12.3883 15 9.16666C15 5.945 12.3883 3.33332 9.16666 3.33332ZM1.66666 9.16666C1.66666 5.02452 5.02452 1.66666 9.16666 1.66666C13.3088 1.66666 16.6667 5.02452 16.6667 9.16666C16.6667 13.3088 13.3088 16.6667 9.16666 16.6667C5.02452 16.6667 1.66666 13.3088 1.66666 9.16666Z"
-      />
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M13.2857 13.2857C13.6112 12.9603 14.1388 12.9603 14.4642 13.2857L18.0892 16.9107C18.4147 17.2362 18.4147 17.7638 18.0892 18.0892C17.7638 18.4147 17.2362 18.4147 16.9107 18.0892L13.2857 14.4642C12.9603 14.1388 12.9603 13.6112 13.2857 13.2857Z"
-      />
-    </svg>
-  );
+      setNotifications((currentNotifications) => {
+        const updated = currentNotifications.map(
+          (notification) => ({
+            ...notification,
+            reader_count: 1,
+          })
+        );
+
+        updateUnread(updated);
+
+        return updated;
+      });
+    } catch (err) {
+      console.error(
+        "Failed to mark all notifications as read:",
+        err
+      );
+    }
+  };
+
+  // ------------------------------------------------
+  // OPEN / CLOSE DROPDOWN
+  // ------------------------------------------------
+  const handleNotificationClick = () => {
+    const nextState = !dropdownOpen;
+
+    setDropdownOpen(nextState);
+
+    // Fetch fresh data only when opening the dropdown
+    if (nextState) {
+      fetchNotifications();
+    }
+  };
 
   return (
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
-      <div ref={dropdownRef} className="relative">
+    <ClickOutside
+      onClick={() => setDropdownOpen(false)}
+      className="relative"
+    >
+      <div className="relative">
+
+        {/* NOTIFICATION BUTTON */}
         <Link
-          onClick={() => setDropdownOpen(!dropdownOpen)}
           to="#"
+          onClick={(event) => {
+            event.preventDefault();
+            handleNotificationClick();
+          }}
           className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-green-950 dark:hover:text-slate-100 dark:border-strokedark dark:bg-meta-4 dark:text-slate-300"
         >
+          {/* UNREAD INDICATOR */}
           <span
             className={`absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1 ${
               unreadCount === 0 ? "hidden" : "inline"
@@ -143,6 +214,7 @@ const DropdownNotification = () => {
             <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
           </span>
 
+          {/* NOTIFICATION ICON */}
           <svg
             className="fill-current duration-300 ease-in-out"
             width="18"
@@ -158,40 +230,72 @@ const DropdownNotification = () => {
           </svg>
         </Link>
 
+        {/* DROPDOWN */}
         {dropdownOpen && (
           <div className="absolute -right-27 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80">
-            <div className="px-4.5 py-3 flex justify-between items-center">
-              <h5 className="text-sm font-medium text-bodydark2">Notification</h5>
-              <button
-                onClick={markAllAsRead}
-                className="text-xs text-blue-500 hover:underline"
-              >
-                Mark all as read
-              </button>
+
+            {/* HEADER */}
+            <div className="flex items-center justify-between px-4.5 py-3">
+              <h5 className="text-sm font-medium text-bodydark2">
+                Notification
+              </h5>
+
+              {notifications.length > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  disabled={unreadCount === 0}
+                  className="text-xs text-blue-500 hover:underline disabled:opacity-50"
+                >
+                  Mark all as read
+                </button>
+              )}
             </div>
 
+            {/* LOADING */}
+            {loading && notifications.length === 0 && (
+              <div className="px-4.5 py-4 text-sm text-gray-500">
+                Loading notifications...
+              </div>
+            )}
+
+            {/* NOTIFICATION LIST */}
             <ul className="flex h-auto flex-col overflow-y-auto">
-              {notifications.map((n) => (
-                <li key={n._id}>
-                  <Link
-                    onClick={() => markAsRead(n._id)}
-                    className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${
-                      n.reader_count === 0 ? "bg-gray-100 dark:bg-blue-950" : ""
-                    }`}
-                    to={n.url}
-                  >
-                    <p className="text-sm">
-                      <span className="text-black dark:text-white">
-                        {n.title}
-                      </span>{" "}
-                      {n.message}
-                    </p>
-                    <p className="text-xs">
-                      {new Date(n.createdAt).toLocaleDateString()}
-                    </p>
-                  </Link>
+
+              {notifications.length === 0 && !loading ? (
+                <li className="px-4.5 py-6 text-center text-sm text-gray-500">
+                  No notifications
                 </li>
-              ))}
+              ) : (
+                notifications.map((notification) => (
+                  <li key={notification._id}>
+                    <Link
+                      to={notification.url}
+                      onClick={() =>
+                        markAsRead(notification._id)
+                      }
+                      className={`flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4 ${
+                        notification.reader_count === 0
+                          ? "bg-gray-100 dark:bg-blue-950"
+                          : ""
+                      }`}
+                    >
+                      <p className="text-sm">
+                        <span className="text-black dark:text-white">
+                          {notification.title}
+                        </span>{" "}
+                        {notification.message}
+                      </p>
+
+                      <p className="text-xs">
+                        {new Date(
+                          notification.createdAt
+                        ).toLocaleDateString()}
+                      </p>
+                    </Link>
+                  </li>
+                ))
+              )}
+
             </ul>
           </div>
         )}
