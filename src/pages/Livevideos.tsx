@@ -7,7 +7,7 @@ import { Video } from "../types/videouser";
 import { encodeId } from "../utils/hashid";
 import { toast } from "react-toastify";
 import CardLive from "../components/CardLive";
-import { Search, ChevronRight } from "lucide-react";
+import { Search, ChevronRight, Lock } from "lucide-react";
 
 const Livevideos: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -22,9 +22,18 @@ const Livevideos: React.FC = () => {
       ? path
       : "/default-avatar.png";
 
+  const canWatchVideo = (video: Video): boolean => {
+    return (video as Video & { can_watch?: boolean }).can_watch === true;
+  };
+
   const handleVideoClick = (video: Video) => {
     if (!user) {
       toast.error("Please login first");
+      return;
+    }
+
+    if (!canWatchVideo(video)) {
+      toast.info("You need to subscribe to watch this video.");
       return;
     }
 
@@ -54,19 +63,28 @@ const Livevideos: React.FC = () => {
 
     api
       .get("/api/videos/live")
-      .then((res) => setVideos(res.data.data || []))
-      .catch((err) => console.error("FAILED TO LOAD LIVE VIDEOS:", err))
-      .finally(() => setLoadingVideos(false));
+      .then((res) => {
+        setVideos(res.data.data || []);
+      })
+      .catch((err) => {
+        console.error("FAILED TO LOAD LIVE VIDEOS:", err);
+      })
+      .finally(() => {
+        setLoadingVideos(false);
+      });
   }, []);
 
   const filteredVideos = useMemo(() => {
     const q = search.trim().toLowerCase();
+
     if (!q) return videos;
 
     return videos.filter((video) =>
       [video.title, video.owner]
         .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(q))
+        .some((value) =>
+          String(value).toLowerCase().includes(q)
+        )
     );
   }, [videos, search]);
 
@@ -88,19 +106,25 @@ const Livevideos: React.FC = () => {
 
       <div className="min-h-screen text-white">
         <div className="px-3 md:px-5 lg:px-8 py-4">
+
           {/* TOP BAR */}
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              {/*<h1 className="font-canal text-2xl md:text-3xl font-semibold tracking-tight">
+              {/* 
+              <h1 className="font-canal text-2xl md:text-3xl font-semibold tracking-tight">
                 Live Streaming
               </h1>
+
               <p className="mt-1 text-sm text-gray-400">
                 Discover live content in a premium entertainment style.
-              </p>*/}
+              </p>
+              */}
             </div>
 
-            {/*<div className="relative w-full md:w-[360px]">
+            {/*
+            <div className="relative w-full md:w-[360px]">
               <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+
               <input
                 type="text"
                 value={search}
@@ -108,25 +132,51 @@ const Livevideos: React.FC = () => {
                 placeholder="Search live videos..."
                 className="h-11 w-full rounded-full border border-white/10 pl-11 pr-4 text-sm text-white outline-none placeholder:text-gray-500 focus:border-red-500/40"
               />
-            </div>*/}
+            </div>
+            */}
           </div>
 
           {/* HERO */}
           {featuredVideo && (
             <div
-              className="relative mb-8 md:mb-10 overflow-hidden rounded-2xl  cursor-pointer"
+              className={`relative mb-8 md:mb-10 overflow-hidden rounded-2xl ${
+                canWatchVideo(featuredVideo)
+                  ? "cursor-pointer"
+                  : "cursor-not-allowed"
+              }`}
               onClick={() => handleVideoClick(featuredVideo)}
             >
               <img
                 src={fileUrl(featuredVideo.thumbnail)}
                 alt={featuredVideo.title}
-                className="h-[220px] xsm:h-[250px] sm:h-[320px] md:h-[420px] w-full object-cover"
+                className={`h-[220px] xsm:h-[250px] sm:h-[320px] md:h-[420px] w-full object-cover ${
+                  !canWatchVideo(featuredVideo)
+                    ? "brightness-[0.55]"
+                    : ""
+                }`}
               />
 
               <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
+
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
 
+              {/* HERO LOCK */}
+              {!canWatchVideo(featuredVideo) && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="flex flex-col items-center">
+                    <div className="flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-full bg-black/75 border border-white/20 backdrop-blur-sm">
+                      <Lock className="h-7 w-7 md:h-9 md:w-9 text-white" />
+                    </div>
+
+                    <div className="mt-3 rounded-full bg-black/75 px-4 py-2 text-xs md:text-sm font-semibold text-white backdrop-blur-sm">
+                      Subscribe to watch
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="absolute left-4 bottom-4 md:left-10 md:bottom-10 max-w-[90%] md:max-w-[650px]">
+
                 <div className="mb-2 md:mb-3 inline-flex items-center gap-2 rounded-sm bg-red-600 px-2.5 py-1 md:px-3 md:py-1 text-[10px] md:text-xs font-bold uppercase tracking-wide text-white">
                   <span className="h-2 w-2 rounded-full bg-white animate-pulse" />
                   Live Now
@@ -137,13 +187,29 @@ const Livevideos: React.FC = () => {
                 </h2>
 
                 <p className="mt-2 md:mt-3 text-xs sm:text-sm md:text-base text-gray-300">
-                  {(featuredVideo.owner || "Rayon TV")} •{" "}
+                  {featuredVideo.owner || "Rayon TV"} •{" "}
                   {(featuredVideo.views ?? 0).toLocaleString()} watching
                 </p>
 
-                <button className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 md:px-5 md:py-3 text-xs md:text-sm font-semibold text-black transition hover:bg-red-600 hover:text-white">
-                  Watch now
-                  <ChevronRight className="h-4 w-4" />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleVideoClick(featuredVideo);
+                  }}
+                  className="mt-4 md:mt-5 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2.5 md:px-5 md:py-3 text-xs md:text-sm font-semibold text-black transition hover:bg-red-600 hover:text-white"
+                >
+                  {canWatchVideo(featuredVideo) ? (
+                    <>
+                      Watch now
+                      <ChevronRight className="h-4 w-4" />
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="h-4 w-4" />
+                      Subscribe to watch
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -151,6 +217,7 @@ const Livevideos: React.FC = () => {
 
           {/* TRENDING ROW */}
           <section className="mb-8 md:mb-10">
+
             <div className="mb-3 md:mb-4 flex items-center justify-between">
               <h2 className="font-canal text-lg sm:text-xl md:text-2xl font-semibold">
                 Trending Live
@@ -158,13 +225,12 @@ const Livevideos: React.FC = () => {
             </div>
 
             <div className="group relative">
-              {/* LEFT ARROW - desktop only */}
+
+              {/* LEFT ARROW */}
               <button
                 type="button"
                 onClick={() => scrollRow(trendingRowRef, "left")}
-                className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center
-                           w-11 h-20 rounded-md bg-black/55 text-white backdrop-blur-sm
-                           opacity-0 transition-all duration-300 hover:bg-black/75 md:flex group-hover:opacity-100"
+                className="absolute left-2 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center w-11 h-20 rounded-md bg-black/55 text-white backdrop-blur-sm opacity-0 transition-all duration-300 hover:bg-black/75 md:flex group-hover:opacity-100"
                 aria-label="Scroll left"
               >
                 <svg
@@ -183,13 +249,11 @@ const Livevideos: React.FC = () => {
                 </svg>
               </button>
 
-              {/* RIGHT ARROW - desktop only */}
+              {/* RIGHT ARROW */}
               <button
                 type="button"
                 onClick={() => scrollRow(trendingRowRef, "right")}
-                className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center
-                           w-11 h-20 rounded-md bg-black/55 text-white backdrop-blur-sm
-                           opacity-0 transition-all duration-300 hover:bg-black/75 md:flex group-hover:opacity-100"
+                className="absolute right-2 top-1/2 z-20 hidden -translate-y-1/2 items-center justify-center w-11 h-20 rounded-md bg-black/55 text-white backdrop-blur-sm opacity-0 transition-all duration-300 hover:bg-black/75 md:flex group-hover:opacity-100"
                 aria-label="Scroll right"
               >
                 <svg
@@ -210,7 +274,9 @@ const Livevideos: React.FC = () => {
 
               {/* MOBILE SWIPE HINT */}
               <div className="mb-2 flex md:hidden justify-end">
-                <span className="text-[11px] text-gray-400">Swipe to explore</span>
+                <span className="text-[11px] text-gray-400">
+                  Swipe to explore
+                </span>
               </div>
 
               {/* SLIDER ROW */}
@@ -218,40 +284,55 @@ const Livevideos: React.FC = () => {
                 ref={trendingRowRef}
                 className="flex gap-3 md:gap-4 overflow-x-auto scroll-smooth pb-2 scrollbar-hide snap-x snap-mandatory"
               >
-                {loadingVideos
-                  ? [...Array(6)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="snap-start min-w-[78%] xsm:min-w-[68%] sm:min-w-[260px] md:min-w-[290px] flex-shrink-0"
-                      >
-                        <SkeletonCard />
-                      </div>
-                    ))
-                  : trendingVideos.map((video) => (
-                      <div
-                        key={video.id}
-                        className="snap-start min-w-[78%] xsm:min-w-[68%] sm:min-w-[260px] md:min-w-[290px] flex-shrink-0"
-                      >
-                        <CardLive
-                          id={video.id}
-                          videoTitle={video.title}
-                          channelName={video.owner || "Live Channel"}
-                          total={`${video.views ?? 0} watching`}
-                          duration={video.duration || "Live"}
-                          thumbnail={fileUrl(video.thumbnail)}
-                          profileImage={fileUrl(video.profile_photo || video.thumbnail)}
-                          price={video.price}
-                          category="Live Football"
-                          onClick={() => handleVideoClick(video)}
-                        />
-                      </div>
-                    ))}
+                {loadingVideos ? (
+                  [...Array(6)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="snap-start min-w-[78%] xsm:min-w-[68%] sm:min-w-[260px] md:min-w-[290px] flex-shrink-0"
+                    >
+                      <SkeletonCard />
+                    </div>
+                  ))
+                ) : (
+                  trendingVideos.map((video) => (
+                    <div
+                      key={video.id}
+                      className="snap-start min-w-[78%] xsm:min-w-[68%] sm:min-w-[260px] md:min-w-[290px] flex-shrink-0"
+                    >
+                      <CardLive
+                        id={video.id}
+                        videoTitle={video.title}
+                        channelName={video.owner || "Live Channel"}
+                        total={`${video.views ?? 0} watching`}
+                        duration={video.duration || "Live"}
+                        thumbnail={fileUrl(video.thumbnail)}
+                        profileImage={fileUrl(
+                          video.profile_photo || video.thumbnail
+                        )}
+                        price={video.price}
+                        category="Live Football"
+                        canWatch={
+                          (video as Video & {
+                            can_watch?: boolean;
+                          }).can_watch === true
+                        }
+                        requiresSubscription={
+                          (video as Video & {
+                            requires_subscription?: boolean;
+                          }).requires_subscription
+                        }
+                        onClick={() => handleVideoClick(video)}
+                      />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </section>
 
           {/* ALL LIVE GRID */}
           <section className="mb-10">
+
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-canal text-lg sm:text-xl md:text-2xl font-semibold">
                 More Live Channels
@@ -259,37 +340,57 @@ const Livevideos: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 xsm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
-              {loadingVideos
-                ? [...Array(8)].map((_, i) => (
-                    <div key={i}>
-                      <div className="h-[160px] xsm:h-[180px] sm:h-[210px] md:h-[230px] rounded-sm bg-neutral-800 animate-pulse" />
-                      <div className="mt-3 h-5 w-3/4 rounded bg-neutral-800 animate-pulse" />
-                      <div className="mt-2 h-4 w-1/2 rounded bg-neutral-800 animate-pulse" />
-                    </div>
-                  ))
-                : moreLiveVideos.map((video) => (
-                    <CardLive
-                      key={video.id}
-                      id={video.id}
-                      videoTitle={video.title}
-                      channelName={video.owner || "Live Channel"}
-                      total={`${video.views ?? 0} watching`}
-                      duration={video.duration || "Live"}
-                      thumbnail={fileUrl(video.thumbnail)}
-                      profileImage={fileUrl(video.profile_photo || video.thumbnail)}
-                      price={video.price}
-                      category="Live Sports"
-                      onClick={() => handleVideoClick(video)}
-                    />
-                  ))}
+
+              {loadingVideos ? (
+                [...Array(8)].map((_, i) => (
+                  <div key={i}>
+                    <div className="h-[160px] xsm:h-[180px] sm:h-[210px] md:h-[230px] rounded-sm bg-neutral-800 animate-pulse" />
+
+                    <div className="mt-3 h-5 w-3/4 rounded bg-neutral-800 animate-pulse" />
+
+                    <div className="mt-2 h-4 w-1/2 rounded bg-neutral-800 animate-pulse" />
+                  </div>
+                ))
+              ) : (
+                moreLiveVideos.map((video) => (
+                  <CardLive
+                    key={video.id}
+                    id={video.id}
+                    videoTitle={video.title}
+                    channelName={video.owner || "Live Channel"}
+                    total={`${video.views ?? 0} watching`}
+                    duration={video.duration || "Live"}
+                    thumbnail={fileUrl(video.thumbnail)}
+                    profileImage={fileUrl(
+                      video.profile_photo || video.thumbnail
+                    )}
+                    price={video.price}
+                    category="Live Sports"
+                    canWatch={
+                      (video as Video & {
+                        can_watch?: boolean;
+                      }).can_watch === true
+                    }
+                    requiresSubscription={
+                      (video as Video & {
+                        requires_subscription?: boolean;
+                      }).requires_subscription
+                    }
+                    onClick={() => handleVideoClick(video)}
+                  />
+                ))
+              )}
+
             </div>
           </section>
 
+          {/* EMPTY STATE */}
           {!loadingVideos && filteredVideos.length === 0 && (
             <div className="rounded-2xl border border-white/10 bg-[#111] p-8 md:p-10 text-center text-gray-300">
               No live videos found.
             </div>
           )}
+
         </div>
       </div>
     </>
